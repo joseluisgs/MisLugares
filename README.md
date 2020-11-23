@@ -12,11 +12,12 @@
 Sencilla app para trabajar con todos los contenidos desarrollados a lo largo del primer trimestre.
 
 Entre ellos destaca:
-- Kotlin
+- [Android](https://developer.android.com/docs)
+- [Kotlin](https://kotlinlang.org/)
 - Realm como BB.DD
 - Cámara
 - Sistema de almacenamiento
-- Permisos
+- [Permisos](https://developer.android.com/training/permissions/requesting?hl=es-419)
 - Manejo de Intents
 - Geolocalización
 - Mapas
