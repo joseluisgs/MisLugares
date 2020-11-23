@@ -11,7 +11,7 @@
 
 Sencilla app para trabajar con todos los contenidos desarrollados a lo largo del primer trimestre.
 
-Entre ellos destaca:
+Se destacan las siguientes tecnologías
 - [Android](https://developer.android.com/docs)
 - [Kotlin](https://kotlinlang.org/)
 - [Realm](https://realm.io/docs/kotlin/latest/)
@@ -22,7 +22,7 @@ Entre ellos destaca:
 - Geolocalización
 - Mapas
 - [Preferencias](https://developer.android.com/training/data-storage/shared-preferences?hl=es)
-- Librerías externas
+- [Gson](https://github.com/google/gson)
 
 ### Referencias
 Las referencias usadas se irán completando en las distintas fases del trabajo
