@@ -6,7 +6,9 @@ import com.google.gson.Gson
 import com.joseluisgs.mislugares.Usuarios.Usuario
 import com.joseluisgs.mislugares.Usuarios.UsuarioController
 
-
+/**
+ * Clase para el manejo de preferencias
+ */
 object PreferenciasController {
     private var USER_ID: Long = 0L
     private lateinit var USER: Usuario
@@ -32,7 +34,7 @@ object PreferenciasController {
         // Esto lo creo porque no voy a tener registro si no no podría hacerlo así, debería registrar
         // De esta manera si saliese de la sesión siempre crearía el mismo usuario con distinto ID
         var usuario = Usuario(
-            nombre = "Jose Luis",
+            nombre = "José Luis González Sánchez",
             login = "joseluisgs",
             password = Cifrador.toHash("1234", "SHA-256")!!,
             avatar = "https://avatars0.githubusercontent.com/u/47913953?s=460&u=225a157fde1cb059c0541fd76f8230682b5cf130&v=4",

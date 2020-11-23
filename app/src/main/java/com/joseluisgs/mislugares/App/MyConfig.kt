@@ -12,9 +12,10 @@ import io.realm.RealmConfiguration
 
 
 class MyConfig : Application() {
-    private lateinit var usuarioActivo: Usuario
+    private lateinit var USUARIO_SESION: Usuario
     private val DATOS_BD = "MIS_LUGARES_BD"
     private val DATOS_BD_VERSION = 1L
+
     override fun onCreate() {
         super.onCreate()
         Log.i("Config", "Init Configuración")
@@ -50,12 +51,12 @@ class MyConfig : Application() {
         // Comprobamos si hay sesion, es decir, si es != 0
         if(PreferenciasController.comprobarSesion(applicationContext)) {
             Log.i("Config", "Sí existe Sesión de usuario")
-            usuarioActivo = PreferenciasController.leerSesion(applicationContext)
+            USUARIO_SESION = PreferenciasController.leerSesion(applicationContext)
         } else {
             Log.i("Config", "No existe Sesión de usuario")
-            usuarioActivo = PreferenciasController.crearSesion(applicationContext)
+            USUARIO_SESION = PreferenciasController.crearSesion(applicationContext)
         }
-        Log.i("Config", "Usuario activo Login: ${usuarioActivo.login} con Correo: ${usuarioActivo.correo}")
+        Log.i("Config", "Usuario activo Login: ${USUARIO_SESION.login} con datos: $USUARIO_SESION")
         Log.i("Config", "Fin Preferencias")
     }
 }

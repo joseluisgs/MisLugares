@@ -27,6 +27,24 @@ open class Usuario(
     var correo: String ="",
     var twitter: String ="",
     var github: String ="") : RealmObject() {
-        constructor(nombre: String, login: String, password: String, avatar: String, correo: String, twitter: String, github: String) :
+
+    /**
+     * Constructor
+     * @param nombre String
+     * @param login String
+     * @param password String
+     * @param avatar String
+     * @param correo String
+     * @param twitter String
+     * @param github String
+     * @constructor
+     */
+    constructor(nombre: String, login: String, password: String, avatar: String, correo: String, twitter: String, github: String) :
                 this((System.currentTimeMillis() / 1000L), nombre, login, password, avatar, correo, twitter, github)
+
+    override fun toString(): String {
+        return "Usuario(id=$id, nombre='$nombre', login='$login', password='$password', avatar='$avatar', correo='$correo', twitter='$twitter', github='$github')"
+    }
+
+
 }

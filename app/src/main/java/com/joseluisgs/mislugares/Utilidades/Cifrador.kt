@@ -5,7 +5,7 @@ import kotlin.experimental.and
 
 
 /**
- * Singleton de Cifrador
+ * Cifrador
  */
 object Cifrador {
     // tipo por ejemplo: "SHA-256"
