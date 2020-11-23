@@ -21,6 +21,7 @@ Entre ellos destaca:
 - Manejo de Intents
 - Geolocalización
 - Mapas
+- [Preferencias](https://developer.android.com/training/data-storage/shared-preferences?hl=es)
 - Librerías externas
 
 ### Referencias
