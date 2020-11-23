@@ -5,22 +5,24 @@
 [![Android](https://img.shields.io/badge/App-Android-g)](https://www.android.com/intl/es_es/)
 [![Kotlin](https://img.shields.io/badge/Code-Kotlin-blue)](https://kotlinlang.org/)
 [![LICENSE](https://img.shields.io/badge/Lisence-MIT-green)](https://github.com/joseluisgs/RetrofitCRUD2020/blob/master/LICENSE)
-![GitHub](https://img.shields.io/github/last-commit/joseluisgs/MisLuguaresKotlinRealm)
+![GitHub](https://img.shields.io/github/last-commit/joseluisgs/MisLugaresKotlinRealm)
 
 ## Descripción
 
 Sencilla app para trabajar con todos los contenidos desarrollados a lo largo del primer trimestre.
 
-Entre ellos destaca:
-- Kotlin
-- Realm como BB.DD
+Se destacan las siguientes tecnologías
+- [Android](https://developer.android.com/docs)
+- [Kotlin](https://kotlinlang.org/)
+- [Realm](https://realm.io/docs/kotlin/latest/)
 - Cámara
 - Sistema de almacenamiento
-- Permisos
+- [Permisos](https://developer.android.com/training/permissions/requesting?hl=es-419)
 - Manejo de Intents
 - Geolocalización
 - Mapas
-- Librerías externas
+- [Preferencias](https://developer.android.com/training/data-storage/shared-preferences?hl=es)
+- [Gson](https://github.com/google/gson)
 
 ### Referencias
 Las referencias usadas se irán completando en las distintas fases del trabajo
@@ -32,4 +34,4 @@ Las referencias usadas se irán completando en las distintas fases del trabajo
 
 ## Licencia
 
-Este proyecto esta licenciado bajo licencia **MIT**, si desea saber más, visite el fichero [LICENSE](https://github.com/joseluisgs/MisLuguaresKotlinRealm/blob/master/LICENSE) para su uso docente y educativo.
+Este proyecto esta licenciado bajo licencia **MIT**, si desea saber más, visite el fichero [LICENSE](https://github.com/joseluisgs/MisLugaresKotlinRealm/blob/master/LICENSE) para su uso docente y educativo.
