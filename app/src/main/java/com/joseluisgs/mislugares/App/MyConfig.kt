@@ -1,5 +1,6 @@
 package com.joseluisgs.mislugares.App
 
+import Utilidades.Cifrador
 import android.app.Application
 import android.content.Context
 import android.util.Log
@@ -60,14 +61,14 @@ class MyConfig : Application() {
             // Si no lo hay, lo creamos, lo insertamos y escribimos las preferencias
             Log.i("Config", "No existe usuario")
              usuario = Usuario(
-                nombre = "Jose Luis",
-                login = "joseluisgs",
-                password = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-                avatar = "https://avatars0.githubusercontent.com/u/47913953?s=460&u=225a157fde1cb059c0541fd76f8230682b5cf130&v=4",
-                correo = "jlgs@cifpvirgendegracia.com",
-                twitter = "https://twitter.com/joseluisgonsan",
-                github = "https://github.com/joseluisgs"
-            )
+                 nombre = "Jose Luis",
+                 login = "joseluisgs",
+                 password = Cifrador.toHash("1234", "SHA-256")!!,
+                 avatar = "https://avatars0.githubusercontent.com/u/47913953?s=460&u=225a157fde1cb059c0541fd76f8230682b5cf130&v=4",
+                 correo = "jlgs@cifpvirgendegracia.com",
+                 twitter = "https://twitter.com/joseluisgonsan",
+                 github = "https://github.com/joseluisgs"
+             )
             // Lo insertamos
             UsuarioController.insert(usuario);
             // Consultamos su ID
