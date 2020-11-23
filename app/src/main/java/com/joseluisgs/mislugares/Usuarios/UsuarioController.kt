@@ -37,12 +37,22 @@ object UsuarioController {
         }
     }
 
+    /**
+     * Busca usuario por Login
+     * @param login String
+     * @return Usuario?
+     */
     fun selectByLogin(login: String): Usuario? {
         return getDefaultInstance().copyFromRealm(
             getDefaultInstance().where<Usuario>().equalTo("login", login).findFirst()
         )
     }
 
+    /**
+     * Busca usuarios por ID
+     * @param id Long
+     * @return Usuario?
+     */
     fun selectById(id: Long): Usuario? {
         return getDefaultInstance().copyFromRealm(
             getDefaultInstance().where<Usuario>().equalTo("id", id).findFirst()

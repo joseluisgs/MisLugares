@@ -15,13 +15,16 @@ class MyConfig : Application() {
     override fun onCreate() {
         super.onCreate()
         Log.i("Config", "Init Configuración")
-        // Cargamos las preferencias o escribimos las prefernecias pordefector
+        // Cargamos las preferencias o escribimos las preferencias por defecto
         // Configuramos todo lo relacionado con REALM
         realmBD()
         preferenciasApp()
         Log.i("Config", "Fin Configuración")
     }
 
+    /**
+     * Inicia Realm
+     */
     private fun realmBD() {
         Log.i("Config", "Init Realm")
         Realm.init(applicationContext)
@@ -34,6 +37,9 @@ class MyConfig : Application() {
         Log.i("Config", "Fin Realm")
     }
 
+    /**
+     * Inicia algunas preferencias por defecto
+     */
     private fun preferenciasApp() {
         // Vamos a simular que una vez que nos conectamos hemos metido al usuario en la BB.DD
         Log.i("Config", "Init Preferencias")
@@ -49,6 +55,7 @@ class MyConfig : Application() {
             // usuario = UsuarioController.selectById(USER_ID)!!
             // Escribiriamos o leeriamos las preferencias
             Log.i("Config", USER_LOGIN!!)
+            // Si no hay deberíamos ir a Login, etc...
         } else {
             // Si no lo hay, lo creamos, lo insertamos y escribimos las preferencias
             Log.i("Config", "No existe usuario")
