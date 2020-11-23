@@ -1,4 +1,4 @@
-package com.joseluisgs.misluguares
+package com.joseluisgs.mislugares
 
 import android.os.Bundle
 import android.view.Menu

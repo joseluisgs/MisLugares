@@ -1,4 +1,4 @@
-package com.joseluisgs.misluguares
+package com.joseluisgs.mislugares
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
