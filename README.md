@@ -14,7 +14,7 @@ Sencilla app para trabajar con todos los contenidos desarrollados a lo largo del
 Entre ellos destaca:
 - [Android](https://developer.android.com/docs)
 - [Kotlin](https://kotlinlang.org/)
-- Realm como BB.DD
+- [Realm](https://realm.io/docs/kotlin/latest/)
 - Cámara
 - Sistema de almacenamiento
 - [Permisos](https://developer.android.com/training/permissions/requesting?hl=es-419)
