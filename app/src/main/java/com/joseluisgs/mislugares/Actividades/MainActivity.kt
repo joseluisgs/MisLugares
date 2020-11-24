@@ -1,7 +1,9 @@
 package com.joseluisgs.mislugares.Actividades
 
+import android.Manifest
 import android.os.Bundle
 import android.view.Menu
+import android.widget.Toast
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
@@ -14,8 +16,14 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.joseluisgs.mislugares.R
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 
 class MainActivity : AppCompatActivity() {
+    private var permisos = false
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
