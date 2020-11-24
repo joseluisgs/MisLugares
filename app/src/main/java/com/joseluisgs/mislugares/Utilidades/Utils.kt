@@ -2,12 +2,15 @@ package com.joseluisgs.mislugares.Utilidades
 
 import android.content.Context
 import android.content.Intent
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 
 object Utils {
@@ -83,6 +86,19 @@ object Utils {
                 return true
             }
         }
+        Log.i("Internet", "Sin red")
         return false
+    }
+
+    fun isGPSAvaliable (context: Context?): Boolean {
+        val locationManager = context?.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
+        val gpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        return if (gpsStatus) {
+            Log.i("GPS", "GPS Activado")
+            true
+        } else {
+            Log.i("GPS", "GPS Desactivado")
+            false
+        }
     }
 }
