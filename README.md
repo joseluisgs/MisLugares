@@ -18,7 +18,7 @@ Se destacan las siguientes tecnologías
 - Cámara
 - Sistema de almacenamiento
 - [Permisos](https://developer.android.com/training/permissions/requesting?hl=es-419)
-- Manejo de Intents
+- [Intents](https://developer.android.com/guide/components/intents-common?hl=es)
 - Geolocalización
 - Mapas
 - [Preferencias](https://developer.android.com/training/data-storage/shared-preferences?hl=es)
