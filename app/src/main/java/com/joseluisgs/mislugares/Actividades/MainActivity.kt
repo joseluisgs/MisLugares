@@ -16,11 +16,13 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Utilidades.Utils
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import io.realm.internal.Util
 
 class MainActivity : AppCompatActivity() {
     private var permisos = false
@@ -50,6 +52,19 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        comprobarConexion()
+    }
+
+    private fun comprobarConexion() {
+        if(Utils.isNetworkAvailable(applicationContext)) {
+            Toast.makeText(applicationContext, "Existe conexión a internet", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            val snackbar = Snackbar.make(findViewById(android.R.id.content), "Es necesaria una conexión a internet y GPS para el correcto funcionamiento", Snackbar.LENGTH_LONG)
+            // snackbar.setActionTextColor(R.color.colorPrimary)
+            snackbar.show()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
