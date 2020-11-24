@@ -1,7 +1,12 @@
 package com.joseluisgs.mislugares.Actividades
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -57,12 +62,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun comprobarConexion() {
-        if(Utils.isNetworkAvailable(applicationContext)) {
+        // Comprobamos la red
+        comprobarRed()
+        comprobarGPS()
+    }
+
+    private fun comprobarGPS() {
+        if (Utils.isGPSAvaliable(applicationContext)) {
+            Toast.makeText(applicationContext, "Existe conexión a GPS", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            val snackbar = Snackbar.make(
+                findViewById(android.R.id.content),
+                "Es necesaria una conexión a GPS",
+                Snackbar.LENGTH_INDEFINITE
+            )
+            snackbar.setActionTextColor(getColor(R.color.colorAccent))
+            snackbar.setAction("Conectar") {
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent);
+            }
+            snackbar.show()
+        }
+    }
+
+    private fun comprobarRed() {
+        if (Utils.isNetworkAvailable(applicationContext)) {
             Toast.makeText(applicationContext, "Existe conexión a internet", Toast.LENGTH_SHORT)
                 .show()
         } else {
-            val snackbar = Snackbar.make(findViewById(android.R.id.content), "Es necesaria una conexión a internet y GPS para el correcto funcionamiento", Snackbar.LENGTH_LONG)
-            // snackbar.setActionTextColor(R.color.colorPrimary)
+            val snackbar = Snackbar.make(
+                findViewById(android.R.id.content),
+                "Es necesaria una conexión a internet",
+                Snackbar.LENGTH_INDEFINITE
+            )
+            snackbar.setActionTextColor(getColor(R.color.colorAccent))
+            snackbar.setAction("Conectar") {
+                val intent = Intent(Settings.ACTION_WIFI_SETTINGS)
+                startActivity(intent);
+            }
             snackbar.show()
         }
     }
