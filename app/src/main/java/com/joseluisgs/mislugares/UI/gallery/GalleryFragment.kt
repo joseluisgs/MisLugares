@@ -1,4 +1,4 @@
-package com.joseluisgs.mislugares.ui.gallery
+package com.joseluisgs.mislugares.UI.gallery
 
 import android.os.Bundle
 import android.view.LayoutInflater

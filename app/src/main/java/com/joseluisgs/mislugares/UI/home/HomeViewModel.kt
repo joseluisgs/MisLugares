@@ -1,4 +1,4 @@
-package com.joseluisgs.mislugares.ui.home
+package com.joseluisgs.mislugares.UI.home
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
