@@ -87,29 +87,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             <ImageButton
-                    android:layout_width="100dp"
-                    android:layout_height="100dp" app:srcCompat="@drawable/ic_email"
-                    android:id="@+id/imageButton2"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp" app:srcCompat="@drawable/ic_email"
+                    android:id="@+id/acercaDeMail"
                     app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginStart="16dp" app:layout_constraintBottom_toBottomOf="parent"
                     tools:srcCompat="@drawable/ic_email" style="@android:style/Widget.Material.ImageButton"
                     android:scaleType="fitXY" android:background="@color/colorAccent"
                     app:layout_constraintVertical_bias="0.495"/>
             <ImageButton
-                    android:layout_width="100dp"
-                    android:layout_height="100dp" app:srcCompat="@drawable/ic_twitter"
-                    android:id="@+id/imageButton3"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp" app:srcCompat="@drawable/ic_twitter"
+                    android:id="@+id/acercaDeTwitter"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     tools:srcCompat="@drawable/ic_twitter" style="@android:style/Widget.Material.ImageButton"
                     android:scaleType="fitXY" android:background="@color/colorAccent"
                     app:layout_constraintVertical_bias="0.495"
-                    app:layout_constraintStart_toEndOf="@+id/imageButton2" app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintEnd_toStartOf="@+id/imageButton4"/>
+                    app:layout_constraintStart_toEndOf="@+id/acercaDeMail" app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintEnd_toStartOf="@+id/acercaDeGithub"/>
             <ImageButton
-                    android:layout_width="100dp"
-                    android:layout_height="100dp" app:srcCompat="@drawable/ic_github"
-                    android:id="@+id/imageButton4"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp" app:srcCompat="@drawable/ic_github"
+                    android:id="@+id/acercaDeGithub"
                     tools:srcCompat="@drawable/ic_github" style="@android:style/Widget.Material.ImageButton"
                     android:scaleType="fitXY" android:background="@color/colorAccent"
                     app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
