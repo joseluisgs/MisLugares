@@ -8,8 +8,8 @@
         tools:context="com.joseluisgs.mislugares.SplashActivityActivity" android:background="@color/colorAccent">
     <ImageView
             android:src="@drawable/ic_mapa"
-            android:layout_width="233dp"
-            android:layout_height="283dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="317dp"
+            android:layout_height="342dp" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" android:id="@+id/splashImage"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.254"/>
