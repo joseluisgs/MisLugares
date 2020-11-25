@@ -24,6 +24,9 @@ import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
 import com.joseluisgs.mislugares.Utilidades.Utils
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.nav_header_main.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 
 class MainActivity : AppCompatActivity() {
