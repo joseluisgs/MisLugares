@@ -21,12 +21,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
+import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.Utils
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.nav_header_main.*
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
 
 
 class MainActivity : AppCompatActivity() {
@@ -59,18 +56,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun initIU() {
         // actualizamos el perfil con los datos de la sesion
-        val navigationView : NavigationView  = findViewById(R.id.nav_view)
-        val headerView : View = navigationView.getHeaderView(0)
-        val navUsername : TextView = headerView.findViewById(R.id.navHeaderUserName)
-        val navUserEmail : TextView = headerView.findViewById(R.id.navHeaderUserEmail)
+        val navigationView: NavigationView = findViewById(R.id.nav_view)
+        val headerView: View = navigationView.getHeaderView(0)
+        val navUsername: TextView = headerView.findViewById(R.id.navHeaderUserName)
+        val navUserEmail: TextView = headerView.findViewById(R.id.navHeaderUserEmail)
         val navUserImage: ImageView = headerView.findViewById(R.id.navHeaderUserImage)
         navUsername.text = (this.application as MyApp).SESION_USUARIO.login
         navUserEmail.text = (this.application as MyApp).SESION_USUARIO.correo
-        if((this.application as MyApp).SESION_USUARIO.avatar!=null){
+        if ((this.application as MyApp).SESION_USUARIO.avatar != null) {
             Picasso.get()
-                .load(R.drawable.user_avatar) //Instanciamos un objeto de la clase (creada más abajo) para redondear la imagen
-               .transform(CirculoTransformacion())
-               .resize(150, 150)
+                // .load(R.drawable.user_avatar)
+                .load(ImageBase64.fromTempUri(ImageBase64.toBitmap((this.application as MyApp).SESION_USUARIO.avatar)!!,applicationContext))
+                .transform(CirculoTransformacion())
+                .resize(130, 130)
                 .into(navUserImage)
         }
     }
