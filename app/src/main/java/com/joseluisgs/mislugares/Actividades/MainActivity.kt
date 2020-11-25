@@ -20,6 +20,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Usuarios.Usuario
 import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.Utils
@@ -27,9 +28,10 @@ import com.squareup.picasso.Picasso
 
 
 class MainActivity : AppCompatActivity() {
-    private var permisos = false
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    // Obtenemos el usuario de la sesión
+    private lateinit var USER: Usuario
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,35 +52,60 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         // Elementos propios de la interfaz y funcionalidad
+        leerSesion()
         comprobarConexion()
         initIU()
     }
 
+    private fun leerSesion() {
+        USER = (this.application as MyApp).SESION_USUARIO
+    }
+
+    /**
+     * Inicia la interfaz de usuario
+     */
     private fun initIU() {
+        mostrarDatosUsuarioMenu()
+    }
+
+
+    /**
+     * Carga los datos del usuario
+     */
+    private fun mostrarDatosUsuarioMenu() {
         // actualizamos el perfil con los datos de la sesion
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         val headerView: View = navigationView.getHeaderView(0)
         val navUsername: TextView = headerView.findViewById(R.id.navHeaderUserName)
         val navUserEmail: TextView = headerView.findViewById(R.id.navHeaderUserEmail)
         val navUserImage: ImageView = headerView.findViewById(R.id.navHeaderUserImage)
-        navUsername.text = (this.application as MyApp).SESION_USUARIO.login
-        navUserEmail.text = (this.application as MyApp).SESION_USUARIO.correo
-        if ((this.application as MyApp).SESION_USUARIO.avatar != null) {
-            Picasso.get()
-                // .load(R.drawable.user_avatar)
-                .load(ImageBase64.fromTempUri(ImageBase64.toBitmap((this.application as MyApp).SESION_USUARIO.avatar)!!,applicationContext))
-                .transform(CirculoTransformacion())
-                .resize(130, 130)
-                .into(navUserImage)
-        }
+        navUsername.text = USER.login
+        navUserEmail.text = USER.correo
+        Picasso.get()
+            // .load(R.drawable.user_avatar)
+            .load(
+                ImageBase64.fromTempUri(
+                    ImageBase64.toBitmap(USER.avatar)!!,
+                    applicationContext
+                )
+            )
+            .transform(CirculoTransformacion())
+            .resize(130, 130)
+            .into(navUserImage)
     }
 
+    /**
+     * Comprueba que exista las conexiones para funcionar
+     */
     private fun comprobarConexion() {
         // Comprobamos la red
         comprobarRed()
         comprobarGPS()
     }
 
+    /**
+     * Comprueba que existe GPS si no llama a activarlo
+     */
     private fun comprobarGPS() {
         if (Utils.isGPSAvaliable(applicationContext)) {
             Toast.makeText(applicationContext, "Existe conexión a GPS", Toast.LENGTH_SHORT)
@@ -92,12 +119,15 @@ class MainActivity : AppCompatActivity() {
             snackbar.setActionTextColor(getColor(R.color.colorAccent))
             snackbar.setAction("Conectar") {
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent);
+                startActivity(intent)
             }
             snackbar.show()
         }
     }
 
+    /**
+     * Comprueba que haya red, si no llama a activarlo
+     */
     private fun comprobarRed() {
         if (Utils.isNetworkAvailable(applicationContext)) {
             Toast.makeText(applicationContext, "Existe conexión a internet", Toast.LENGTH_SHORT)
@@ -111,7 +141,7 @@ class MainActivity : AppCompatActivity() {
             snackbar.setActionTextColor(getColor(R.color.colorAccent))
             snackbar.setAction("Conectar") {
                 val intent = Intent(Settings.ACTION_WIFI_SETTINGS)
-                startActivity(intent);
+                startActivity(intent)
             }
             snackbar.show()
         }
@@ -122,6 +152,7 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
+
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)

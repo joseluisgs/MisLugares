@@ -35,6 +35,13 @@ object ImageBase64 {
         val byteArray: ByteArray = stream.toByteArray()
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
+
+    /**
+     * Devuelve la Uri de un fichero temporal (en cache) de nuestro Bitmap
+     * @param bitmap Bitmap
+     * @param context Context
+     * @return Uri
+     */
      fun fromTempUri(bitmap: Bitmap, context: Context): Uri {
          val uri = Uri.fromFile(File.createTempFile("temp_file_name", ".jpg", context.cacheDir))
          val outputStream: OutputStream? = context.contentResolver.openOutputStream(uri)
@@ -42,6 +49,4 @@ object ImageBase64 {
          outputStream?.close()
          return uri
      }
-
-    // https://stackoverflow.com/questions/34629424/how-to-load-bitmap-directly-with-picasso-library-like-following
 }
