@@ -2,9 +2,13 @@ package com.joseluisgs.mislugares.Preferencias
 
 import Utilidades.Cifrador
 import android.content.Context
+import android.graphics.BitmapFactory
 import com.google.gson.Gson
+import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.R.drawable.user_avatar
 import com.joseluisgs.mislugares.Usuarios.Usuario
 import com.joseluisgs.mislugares.Usuarios.UsuarioController
+import com.joseluisgs.mislugares.Utilidades.ImageBase64
 
 /**
  * Clase para el manejo de preferencias
@@ -37,8 +41,8 @@ object PreferenciasController {
             nombre = "José Luis González Sánchez",
             login = "joseluisgs",
             password = Cifrador.toHash("1234", "SHA-256")!!,
-            avatar = "https://avatars0.githubusercontent.com/u/47913953?s=460&u=225a157fde1cb059c0541fd76f8230682b5cf130&v=4",
-            correo = "jlgs@cifpvirgendegracia.com",
+            avatar = ImageBase64.toBase64( BitmapFactory.decodeResource(context.resources, user_avatar))!!,
+            correo  = "jlgs@cifpvirgendegracia.com",
             twitter = "https://twitter.com/joseluisgonsan",
             github = "https://github.com/joseluisgs"
         )

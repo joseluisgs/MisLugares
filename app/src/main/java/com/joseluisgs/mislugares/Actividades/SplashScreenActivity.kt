@@ -7,6 +7,10 @@ import android.os.Handler
 import android.os.Looper
 import com.joseluisgs.mislugares.Actividades.MainActivity
 
+/**
+ * Actividad Splash
+ * @property TIME Long
+ */
 class SplashActivityActivity : AppCompatActivity() {
     private val TIME: Long = 2000
     override fun onCreate(savedInstanceState: Bundle?) {

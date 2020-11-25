@@ -15,4 +15,6 @@
     <string name="curso">Programación Multimedia y Dispositivos Móviles</string>
     <string name="instituto">CIFP Virgen de Gracia</string>
     <string name="lugar">Puertollano (Ciudad Real)</string>
+    <string name="mis_lugares">Mis Lugares</string>
+    <string name="mi_mapa">Mi Mapa</string>
 </resources>

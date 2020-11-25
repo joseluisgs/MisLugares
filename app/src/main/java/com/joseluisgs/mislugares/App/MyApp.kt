@@ -18,11 +18,14 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 
 
-class MyConfig : Application() {
-    private lateinit var SESION_USUARIO: Usuario
+class MyApp : Application() {
+    // Propiedades, getters and setters (visibilidad)
+    lateinit var SESION_USUARIO: Usuario
+        private set
     private val BD_NOMBRE = "MIS_LUGARES_BD"
     private val BD_VERSION = 1L
-    private var APP_PERMISOS = false
+    var APP_PERMISOS = false
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -32,6 +35,7 @@ class MyConfig : Application() {
         initPreferencias()
         Log.i("Config", "Fin Configuración")
     }
+
 
     /**
      * Inicia Realm

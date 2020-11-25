@@ -90,6 +90,11 @@ object Utils {
         return false
     }
 
+    /**
+     * Comprueba si esta el GPS Activo
+     * @param context Context?
+     * @return Boolean
+     */
     fun isGPSAvaliable (context: Context?): Boolean {
         val locationManager = context?.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
         val gpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
