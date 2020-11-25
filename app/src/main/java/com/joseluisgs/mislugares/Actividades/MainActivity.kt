@@ -1,33 +1,30 @@
 package com.joseluisgs.mislugares.Actividades
 
-import android.Manifest
-import android.content.Context
 import android.content.Intent
-import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.Menu
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
+import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
 import com.joseluisgs.mislugares.Utilidades.Utils
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import io.realm.internal.Util
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.nav_header_main.*
+
 
 class MainActivity : AppCompatActivity() {
     private var permisos = false
@@ -36,29 +33,43 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // elementos de la interfaz propios
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-        val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+        // Identificamos los elementos para navegar
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_acerca_de
+                R.id.nav_lugares, R.id.nav_mapa, R.id.nav_slideshow, R.id.nav_acerca_de
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        // Elementos propios de la interfaz y funcionalidad
         comprobarConexion()
+        initIU()
+    }
+
+    private fun initIU() {
+        // actualizamos el perfil con los datos de la sesion
+        val navigationView : NavigationView  = findViewById(R.id.nav_view)
+        val headerView : View = navigationView.getHeaderView(0)
+        val navUsername : TextView = headerView.findViewById(R.id.navHeaderUserName)
+        val navUserEmail : TextView = headerView.findViewById(R.id.navHeaderUserEmail)
+        val navUserImage: ImageView = headerView.findViewById(R.id.navHeaderUserImage)
+        navUsername.text = (this.application as MyApp).SESION_USUARIO.login
+        navUserEmail.text = (this.application as MyApp).SESION_USUARIO.correo
+        if((this.application as MyApp).SESION_USUARIO.avatar!=null){
+            Picasso.get()
+                .load(R.drawable.user_avatar) //Instanciamos un objeto de la clase (creada más abajo) para redondear la imagen
+               .transform(CirculoTransformacion())
+               .resize(150, 150)
+                .into(navUserImage)
+        }
     }
 
     private fun comprobarConexion() {
