@@ -1,8 +1,10 @@
 package com.joseluisgs.mislugares.Usuarios
 
 import io.realm.RealmObject
+import io.realm.annotations.Index
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
+import io.realm.annotations.Required
 
 /**
  * Clase Modelo de Usuario
@@ -16,17 +18,24 @@ import io.realm.annotations.RealmClass
  * @property github String
  * @constructor
  */
+@RealmClass
 open class Usuario(
     // Es importante iniciar todos los valores de la clases
     // Ponemos los datos que queremos almacenar
-    @PrimaryKey var id: Long = 0,
+    @PrimaryKey
+    var id: Long = 0,
+    @Required
     var nombre: String ="",
+    @Required @Index
     var login: String ="",
+    @Required
     var password: String ="",
     var avatar: String ="",
+    @Required @Index
     var correo: String ="",
     var twitter: String ="",
-    var github: String ="") : RealmObject() {
+    var github: String =""
+) : RealmObject() {
 
     /**
      * Constructor

@@ -6,6 +6,9 @@ import kotlin.experimental.and
 
 /**
  * Cifrador
+ * "SHA-256"
+ * "SHA-512"
+ * "MD5"
  */
 object Cifrador {
     // tipo por ejemplo: "SHA-256"

@@ -29,9 +29,9 @@ object UsuarioController {
     }
 
     /**
-     * Actualiza un lugar en el sistema de almacenamiento
+     * Actualiza un usuario en el sistema de almacenamiento
      */
-    fun updateDato(usuario: Usuario) {
+    fun update(usuario: Usuario) {
         getDefaultInstance().executeTransaction {
             it.copyToRealmOrUpdate(usuario)
         }
@@ -64,7 +64,7 @@ object UsuarioController {
      */
     fun removeAll() {
         getDefaultInstance().executeTransaction {
-            it.deleteAll();
+            getDefaultInstance().where<Usuario>().findAll().deleteAllFromRealm();
         }
     }
 }

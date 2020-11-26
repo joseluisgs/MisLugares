@@ -52,11 +52,23 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         // Elementos propios de la interfaz y funcionalidad
+        initPermisos()
         leerSesion()
         comprobarConexion()
         initIU()
     }
 
+    /**
+     * Inicia/ Comprueba los permisos de la App
+     */
+    private fun initPermisos() {
+        if (!(this.application as MyApp).APP_PERMISOS)
+            (this.application as MyApp).initPermisos()
+    }
+
+    /**
+     * Lee la sesión o usuario conectado
+     */
     private fun leerSesion() {
         USER = (this.application as MyApp).SESION_USUARIO
     }

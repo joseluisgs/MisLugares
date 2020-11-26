@@ -41,7 +41,7 @@ object PreferenciasController {
             nombre = "José Luis González Sánchez",
             login = "joseluisgs",
             password = Cifrador.toHash("1234", "SHA-256")!!,
-            avatar = ImageBase64.toBase64( BitmapFactory.decodeResource(context.resources, user_avatar))!!,
+            avatar = ImageBase64.toBase64(BitmapFactory.decodeResource(context.resources, user_avatar))!!,
             correo  = "jlgs@cifpvirgendegracia.com",
             twitter = "https://twitter.com/joseluisgonsan",
             github = "https://github.com/joseluisgs"
@@ -49,7 +49,7 @@ object PreferenciasController {
         // Lo insertamos en la Base de Datos
         UsuarioController.insert(usuario);
         // Consultamos su ID
-        usuario = UsuarioController.selectByLogin(usuario.login)!!
+        // usuario = UsuarioController.selectByLogin(usuario.login)!!
 
         // Abrimos las preferemcias en modo escritura
         val prefs = context.getSharedPreferences("MisLugares", Context.MODE_PRIVATE)
