@@ -30,7 +30,7 @@ class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
         Log.i("Config", "Init Configuración")
-        initPermisos()
+        // initPermisos()
         initRealmBD()
         initPreferencias()
         Log.i("Config", "Fin Configuración")
@@ -74,7 +74,7 @@ class MyApp : Application() {
     /**
      * Comprobamos los permisos de la aplicación
      */
-    private fun initPermisos() {
+     fun initPermisos() {
         Log.i("Config", "Init Permisos")
         // Indicamos el permisos y el manejador de eventos de los mismos
         Dexter.withContext(this)
