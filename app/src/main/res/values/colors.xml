@@ -4,4 +4,9 @@
     <color name="colorPrimaryDark">#008856</color>
     <color name="colorAccent">#78ecb3</color>
     <color name="letter_color_splash">#004D40</color>
+    <color name="secondaryColor">#004d40</color>
+    <color name="secondaryLightColor">#39796b</color>
+    <color name="secondaryDarkColor">#00251a</color>
+    <color name="primaryTextColor">#000000</color>
+    <color name="secondaryTextColor">#ffffff</color>
 </resources>
