@@ -9,4 +9,10 @@
     <color name="secondaryDarkColor">#00251a</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#ffffff</color>
+    <color name="itemListColor">#FFE6FFF2</color>
+    <color name="favOffColor">#FFFFDFDF</color>
+    <color name="favOnColor">#FFFF7A7A</color>
+    <color name="recyclerListColor">#FBFFFD</color>
+    <color name="addLocationButtonColor">#52B0EC</color>
+    <color name="vozButtonColor">#DC71EE</color>
 </resources>

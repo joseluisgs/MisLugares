@@ -7,9 +7,10 @@
                                    android:layout_width="match_parent"
                                    android:layout_height="wrap_content"
                                    android:layout_margin="16dp"
-                                   app:cardBackgroundColor="@color/colorAccent"
+                                   app:cardBackgroundColor="@color/itemListColor"
                                    app:cardCornerRadius="10dp"
-                                   app:cardElevation="8dp">
+                                   app:cardElevation="10dp"
+                                   app:cardUseCompatPadding="false">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -22,7 +23,7 @@
                 android:scaleType="centerCrop" app:srcCompat="@drawable/ic_mapa"
                 android:background="@color/colorAccent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="4dp"
                 android:adjustViewBounds="true"/>
 
@@ -71,7 +72,8 @@
                 android:layout_height="wrap_content"
                 android:clickable="true" app:srcCompat="@drawable/ic_favorito_off" android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent" android:id="@+id/floatingActionButton"
-                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="72dp"/>
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="72dp"
+                app:backgroundTint="@color/favOffColor"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
