@@ -34,10 +34,6 @@
                 android:name="com.google.android.geo.API_KEY"
                 android:value="@string/google_maps_key"/>
 
-        <activity
-                android:name="com.joseluisgs.misluguares.MapsActivity"
-                android:label="@string/title_activity_maps">
-        </activity>
         <!-- Ponemos de comienzo la actividad Splash que llama a la main -->
         <activity android:name=".SplashActivityActivity">
             <intent-filter>

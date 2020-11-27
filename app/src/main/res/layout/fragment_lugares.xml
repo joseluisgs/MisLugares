@@ -38,7 +38,7 @@
             android:layout_marginStart="10dp"
             android:clickable="true"
             android:focusable="true"
-            app:backgroundTint="@color/vozButtonColor"
+            app:backgroundTint="@color/addLocationButtonColor"
             app:srcCompat="@drawable/ic_mic"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
