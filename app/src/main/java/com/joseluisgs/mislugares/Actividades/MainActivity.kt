@@ -20,7 +20,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Usuarios.Usuario
+import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.Utils
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         // Identificamos los elementos para navegar
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_lugares, R.id.nav_mapa, R.id.nav_slideshow, R.id.nav_acerca_de
+                R.id.nav_lugares, R.id.nav_mapa, R.id.nav_lugar_detalle, R.id.nav_acerca_de
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

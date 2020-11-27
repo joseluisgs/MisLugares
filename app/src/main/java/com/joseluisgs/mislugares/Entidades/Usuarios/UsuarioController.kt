@@ -1,6 +1,5 @@
-package com.joseluisgs.mislugares.Usuarios
+package com.joseluisgs.mislugares.Entidades.Usuarios
 
-import io.realm.Realm
 import io.realm.Realm.*
 import io.realm.kotlin.where
 

@@ -1,4 +1,4 @@
-package com.joseluisgs.mislugares.Lugares
+package com.joseluisgs.mislugares.Entidades.Lugares
 
 import io.realm.Realm
 import io.realm.kotlin.where
