@@ -1,14 +1,12 @@
 package com.joseluisgs.mislugares.App
 
-import Utilidades.Cifrador
 import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import com.joseluisgs.mislugares.Preferencias.PreferenciasController
-import com.joseluisgs.mislugares.Usuarios.Usuario
-import com.joseluisgs.mislugares.Usuarios.UsuarioController
+import com.joseluisgs.mislugares.Entidades.Preferencias.PreferenciasController
+import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken

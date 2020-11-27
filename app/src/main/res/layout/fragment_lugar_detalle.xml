@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@color/recyclerListColor">
+
+
+    <ImageView
+            android:id="@+id/detalleLugarImagen"
+            android:layout_width="match_parent"
+            android:layout_height="145dp"
+            android:background="@color/itemListColor"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_launcher_foreground"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/detalleLugarFabCamara"
+            style="@android:style/Widget.Material.ImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="115dp"
+            android:layout_marginRight="8dp"
+            android:backgroundTint="@color/colorAccent"
+            android:clickable="true"
+            android:src="@drawable/ic_camara"
+            app:rippleColor="#FFFFFF"/>
+
+    <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="140dp"
+            android:layout_marginEnd="10dp"
+            android:background="#FFFFFF">
+
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/detalleLugarTextNombre"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="#FFFFFF"
+                android:hint="Nombre">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/detalleLugarInputNombre"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/detalleLugarTextTipo"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/detalleLugarTextNombre"
+                android:layout_marginTop="20dp"
+                android:background="#FFFFFF"
+                android:hint="Tipo">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false" android:id="@+id/detalleLugarInputTipo"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <LinearLayout
+                android:id="@+id/linearLayoutDetalleLugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/spinnerLugarDetalleTipo"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+            <EditText
+                    android:id="@+id/detalleLugarEditFecha"
+                    android:layout_width="177dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/detalleLugarTextTipo"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:textAlignment="center"
+                    android:enabled="false"
+                    android:hint="Fecha Visita"
+                    android:inputType="date"/>
+
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/detalleLugarBotonFecha"
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    android:layout_width="14dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAlignment="viewEnd"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    app:icon="@drawable/ic_fecha" android:textColor="@color/colorPrimary"
+                    app:iconTint="@color/colorPrimary"/>
+            <TextView
+                    android:text="20 votos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/detalleLugarTextVotos"
+                    android:layout_weight="1" android:textColor="@color/colorPrimary" android:clickable="false"
+                    android:gravity="right" android:textStyle="bold"/>
+
+        </LinearLayout>
+
+
+        <Spinner
+                android:id="@+id/spinnerLugarDetalleTipo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/detalleLugarTextTipo"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp" android:spinnerMode="dialog" android:entries="@array/tipos_lugares"/>
+
+        <fragment
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/detalleLugarMapa"
+                tools:context="com.example.mislugares.UI.noticias.NoticiasFragment"
+                android:name="com.google.android.gms.maps.SupportMapFragment" android:layout_marginTop="5dp"
+                android:layout_marginStart="0dp" android:layout_marginEnd="0dp"
+                android:layout_below="@+id/linearLayoutDetalleLugar"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                style="@android:style/Widget.Material.ImageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="15dp"
+                android:layout_marginStart="15dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:id="@+id/detalleLugarFabAccion"
+                app:rippleColor="#FFFFFF" android:src="@drawable/ic_add"/>
+
+
+    </RelativeLayout>
+</FrameLayout>

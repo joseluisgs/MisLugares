@@ -1,4 +1,4 @@
-package com.joseluisgs.mislugares.Usuarios
+package com.joseluisgs.mislugares.Entidades.Usuarios
 
 import io.realm.RealmObject
 import io.realm.annotations.Index

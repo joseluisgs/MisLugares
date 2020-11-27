@@ -27,4 +27,13 @@
         <item>Bar</item>
         <item>Comida</item>
     </string-array>
+
+    <!-- Tipos de busqueda -->
+    <string-array name="tipos_busqueda">
+        <item>Ordenar por nombre</item>
+        <item>Ordenar por fecha</item>
+        <item>Ordenar por tipo</item>
+        <item>Ordenar por favoritos</item>
+        <item>Ordenar por votos</item>
+    </string-array>
 </resources>

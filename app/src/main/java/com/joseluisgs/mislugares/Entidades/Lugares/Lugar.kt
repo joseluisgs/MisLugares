@@ -1,6 +1,5 @@
-package com.joseluisgs.mislugares.Lugares
+package com.joseluisgs.mislugares.Entidades.Lugares
 
-import com.joseluisgs.mislugares.Usuarios.Usuario
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
