@@ -26,7 +26,6 @@
             android:backgroundTint="@color/colorAccent"
             android:clickable="true"
             android:src="@drawable/ic_menu_camera"
-            app:backgroundTint="#5790BD"
             app:rippleColor="#FFFFFF"/>
 
     <RelativeLayout
@@ -82,7 +81,7 @@
 
             <EditText
                     android:id="@+id/detalleLugarEditFecha"
-                    android:layout_width="0dp"
+                    android:layout_width="177dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/detalleLugarTextTipo"
                     android:layout_weight="1"
@@ -96,17 +95,16 @@
             <com.google.android.material.button.MaterialButton
                     android:id="@+id/detalleLugarBotonFecha"
                     style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                    android:layout_width="0dp"
+                    android:layout_width="14dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Seleccionar"
                     android:textAlignment="viewEnd"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     app:icon="@drawable/ic_fecha" android:textColor="@color/colorPrimary"
                     app:iconTint="@color/letter_color_splash"/>
             <TextView
                     android:text="20 votos"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/detalleLugarTextVotos"
                     android:layout_weight="1" android:textColor="@color/colorPrimary" android:clickable="false"
                     android:gravity="right" android:textStyle="bold"/>

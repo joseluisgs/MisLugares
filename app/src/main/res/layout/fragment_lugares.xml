@@ -12,7 +12,8 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"
-            android:gravity="right" android:entries="@array/tipos_busqueda"/>
+            android:gravity="right" android:entries="@array/tipos_busqueda" android:spinnerMode="dropdown"
+    />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/lugaresFabNuevo"
@@ -24,7 +25,7 @@
             android:layout_marginBottom="19dp"
             android:clickable="true"
             android:focusable="true"
-            app:backgroundTint="@color/addLocationButtonColor"
+            app:backgroundTint="@color/colorAccent"
             app:srcCompat="@drawable/ic_add"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
