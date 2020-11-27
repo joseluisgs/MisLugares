@@ -25,7 +25,7 @@
             android:layout_marginRight="8dp"
             android:backgroundTint="@color/colorAccent"
             android:clickable="true"
-            android:src="@drawable/ic_menu_camera"
+            android:src="@drawable/ic_camara"
             app:rippleColor="#FFFFFF"/>
 
     <RelativeLayout
@@ -101,7 +101,7 @@
                     android:textAlignment="viewEnd"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     app:icon="@drawable/ic_fecha" android:textColor="@color/colorPrimary"
-                    app:iconTint="@color/letter_color_splash"/>
+                    app:iconTint="@color/colorPrimary"/>
             <TextView
                     android:text="20 votos"
                     android:layout_width="wrap_content"
