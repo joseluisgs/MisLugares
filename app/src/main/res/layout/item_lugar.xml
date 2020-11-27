@@ -8,7 +8,7 @@
                                    android:layout_height="wrap_content"
                                    android:layout_margin="16dp"
                                    app:cardBackgroundColor="@color/itemListColor"
-                                   app:cardCornerRadius="10dp"
+                                   app:cardCornerRadius="20dp"
                                    app:cardElevation="10dp"
                                    app:cardUseCompatPadding="false">
 
@@ -20,11 +20,11 @@
         <ImageView
                 android:id="@+id/itemLugarImagen"
                 android:layout_height="225dp"
-                android:scaleType="centerCrop" app:srcCompat="@drawable/ic_mapa"
+                android:scaleType="centerCrop" app:srcCompat="@drawable/ic_mapa_item_lista"
                 android:background="@color/colorAccent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="4dp"
+                app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="16dp"
                 android:adjustViewBounds="true"/>
 
 
@@ -48,7 +48,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/itemLugarNombre"
                 android:text="10/10/2020" android:layout_marginTop="12dp"
                 android:textStyle="bold" app:layout_constraintEnd_toStartOf="@+id/itemLugarTipo"
-                android:layout_marginEnd="24dp"/>
+                android:layout_marginEnd="24dp" app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="16dp"/>
         <TextView
                 android:id="@+id/itemLugarTipo"
                 android:layout_width="wrap_content"
@@ -59,14 +60,16 @@
                 android:layout_marginTop="12dp"
                 app:layout_constraintTop_toBottomOf="@+id/itemLugarNombre" app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toEndOf="@+id/itemLugarFecha"
-                app:layout_constraintHorizontal_bias="0.5"/>
+                app:layout_constraintHorizontal_bias="0.5" app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="16dp"/>
         <TextView
                 android:text="1 voto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/itemLugar" android:textStyle="bold"
                 android:textColor="@color/colorPrimary" android:layout_marginTop="12dp"
                 app:layout_constraintTop_toBottomOf="@+id/itemLugarNombre"
-                app:layout_constraintStart_toEndOf="@+id/itemLugarTipo" android:layout_marginStart="24dp"/>
+                app:layout_constraintStart_toEndOf="@+id/itemLugarTipo" android:layout_marginStart="24dp"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="16dp"/>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
