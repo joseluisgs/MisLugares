@@ -12,7 +12,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"
-            android:gravity="right" android:entries="@array/tipos_lugares"/>
+            android:gravity="right" android:entries="@array/tipos_busqueda"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/lugaresFabNuevo"
@@ -21,7 +21,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="19dp"
             android:clickable="true"
             android:focusable="true"
             app:backgroundTint="@color/addLocationButtonColor"
