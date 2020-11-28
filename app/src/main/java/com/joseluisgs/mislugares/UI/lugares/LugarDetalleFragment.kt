@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -20,7 +19,9 @@ import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
+import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -31,6 +32,7 @@ import java.time.format.DateTimeFormatter
  * @constructor
  */
 class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+    private lateinit var USUARIO: Usuario
     private var PERMISOS: Boolean = false
     private val MODO = Modo.INSERTAR
 
@@ -38,7 +40,7 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private lateinit var mMap: GoogleMap
     private val LOCATION_REQUEST_CODE = 1
     private var mPosicion: FusedLocationProviderClient? = null
-    private var lugarActual: Lugar? = null
+    private var lugar: Lugar? = null
     private var marcadorTouch: Marker? = null
     private var localizacion: Location? = null
     private var posicion: LatLng? = null
@@ -66,6 +68,7 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private fun initIU() {
         // Inicializamos las cosas comunes y las específicass
         initPermisos()
+        initUsuario()
         // Si es insertar
         if (this.MODO == Modo.INSERTAR) {
             initModoInsertar()
@@ -74,6 +77,16 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         initMapa()
     }
 
+    /**
+     * Lee el usuario
+     */
+    private fun initUsuario() {
+        this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
+    }
+
+    /**
+     * Lee los permisos
+     */
     private fun initPermisos() {
         this.PERMISOS = (activity?.application as MyApp).APP_PERMISOS
     }
@@ -91,7 +104,28 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         val date = LocalDateTime.now()
         detalleLugarBotonFecha.text = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(date)
         detalleLugarBotonFecha.setOnClickListener { escogerFecha() }
+        detalleLugarFabAccion.setOnClickListener { insertarLugar() }
 
+    }
+
+    /**
+     * Inserta un lugar
+     */
+    private fun insertarLugar() {
+        if (comprobarFormulario()) {
+            lugar = Lugar(
+                nombre = detalleLugarInputNombre.text.toString(),
+                fecha =  detalleLugarBotonFecha.text.toString(),
+                tipo = (detalleLugarSpinnerTipo.selectedItem as String),
+                latitud = posicion?.latitude.toString(),
+                longitud = posicion?.latitude.toString(),
+                // imagen = ImageBase64.toBase64(detalleLugarImagen.im)!!
+                usuarioID = USUARIO.id
+
+            )
+            Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
+            Log.i("Insertar", lugar.toString())
+        }
     }
 
     /**
@@ -107,6 +141,19 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
             }, date.year, date.monthValue - 1, date.dayOfMonth
         )
         datePickerDialog.show()
+    }
+
+    /**
+     * Comprueba que no haya campos nulos
+     * @return Boolean
+     */
+    private fun comprobarFormulario(): Boolean {
+        var sal = true
+        if (detalleLugarInputNombre.text?.isEmpty()!!) {
+            detalleLugarInputNombre.error = "El nombre no puede ser vacío"
+            sal = false
+        }
+        return sal
     }
 
     /**
