@@ -98,10 +98,13 @@
                     android:layout_width="14dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textAlignment="viewEnd"
+                    android:textAlignment="textStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     app:icon="@drawable/ic_fecha" android:textColor="@color/colorPrimary"
-                    app:iconTint="@color/colorPrimary"/>
+                    app:iconTint="@color/colorPrimary"
+                    android:paddingLeft="10dp"
+                    android:gravity="left|center_vertical" tools:ignore="RtlHardcoded"
+                    android:layout_gravity="left|center_vertical"/>
             <TextView
                     android:text="20 votos"
                     android:layout_width="wrap_content"
