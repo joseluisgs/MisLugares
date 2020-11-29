@@ -13,7 +13,11 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
+/**
+ * Clase de Fotografías
+ */
 object Fotos {
+
     /**
      * Función para obtener el nombre del fichero en base a un prefijo y una extensión
      */

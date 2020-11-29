@@ -13,7 +13,8 @@
             android:layout_height="145dp"
             android:background="@color/itemListColor"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher_foreground"/>
+            android:src="@mipmap/ic_launcher_foreground" app:srcCompat="@mipmap/ic_launcher_foreground"
+            tools:srcCompat="@mipmap/ic_launcher_foreground"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/detalleLugarFabCamara"

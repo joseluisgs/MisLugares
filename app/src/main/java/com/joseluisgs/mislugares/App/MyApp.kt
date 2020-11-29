@@ -25,6 +25,8 @@ class MyApp : Application() {
     var APP_PERMISOS = false
         private set
 
+
+
     override fun onCreate() {
         super.onCreate()
         Log.i("Config", "Init Configuración")

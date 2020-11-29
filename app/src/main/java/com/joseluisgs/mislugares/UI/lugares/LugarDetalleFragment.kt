@@ -6,6 +6,7 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.net.Uri
 import android.os.Build
@@ -30,10 +31,11 @@ import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.Fotos
-import com.joseluisgs.mislugares.Utilidades.Utils
+import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import java.io.IOException
 import java.time.LocalDateTime
@@ -93,11 +95,12 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         initUsuario()
         // Modos de ejecución
         when (this.MODO) {
-            Modo.INSERTAR ->  initModoInsertar()
+            Modo.INSERTAR -> initModoInsertar()
             // VISUALIZAR -> initModoVisualizar
             // ELIMINAR ->  initModoEliminar()
             // ACTUALIZAR -> initModoActualizar()
-            else -> {}
+            else -> {
+            }
         }
         leerPoscionGPSActual()
         initMapa()
@@ -143,16 +146,22 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
             lugar = Lugar(
                 nombre = detalleLugarInputNombre.text.toString(),
                 tipo = (detalleLugarSpinnerTipo.selectedItem as String),
-                fecha =  detalleLugarBotonFecha.text.toString(),
+                fecha = detalleLugarBotonFecha.text.toString(),
                 latitud = posicion?.latitude.toString(),
                 longitud = posicion?.latitude.toString(),
-                imagen = "",
+                imagen = ImageBase64.toBase64(this.FOTO)!!,
                 favorito = false,
                 votos = 0,
                 usuarioID = USUARIO.id
             )
-            Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
-            Log.i("Insertar", lugar.toString())
+            try {
+                LugarController.insert(lugar!!)
+                Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
+                Log.i("Insertar", lugar.toString())
+            } catch (ex: Exception) {
+                Toast.makeText(context, "Error al insertar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
+                Log.i("Insertar", "Error al insertar: " + ex.localizedMessage)
+            }
         }
     }
 
@@ -180,6 +189,11 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         if (detalleLugarInputNombre.text?.isEmpty()!!) {
             detalleLugarInputNombre.error = "El nombre no puede ser vacío"
             sal = false
+        }
+        if(!this::FOTO.isInitialized) {
+            this.FOTO = (detalleLugarImagen.drawable as BitmapDrawable).bitmap
+            // Toast.makeText(context, "La imagen no puede estar vacía", Toast.LENGTH_SHORT).show()
+            // sal = false
         }
         return sal
     }
@@ -239,7 +253,8 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
             // VISUALIZAR -> mapaVisualizar()
             // ELIMINAR -> mapaVisualizar()
             // ACTUALIZAR -> mapaActualizar()
-            else -> {}
+            else -> {
+            }
         }
     }
 
@@ -366,7 +381,7 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         // Eso para alta o baja
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         // Nombre de la imagen
-        IMAGEN_NOMBRE = Fotos.crearNombreFoto("camara",".jpg")
+        IMAGEN_NOMBRE = Fotos.crearNombreFoto("camara", ".jpg")
         // Salvamos el fichero
         val fichero = Fotos.salvarFoto(IMAGEN_DIR, IMAGEN_NOMBRE, context!!)
         IMAGEN_URI = Uri.fromFile(fichero)
@@ -375,6 +390,7 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         // Esto para alta y baja
         startActivityForResult(intent, CAMARA)
     }
+
     /**
      * Siempre se ejecuta al realizar una acción
      * @param requestCode Int
@@ -400,13 +416,19 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
                     if (Build.VERSION.SDK_INT < 28) {
                         this.FOTO = MediaStore.Images.Media.getBitmap(context?.contentResolver, contentURI);
                     } else {
-                        val source: ImageDecoder.Source = ImageDecoder.createSource(context?.contentResolver!!, contentURI)
+                        val source: ImageDecoder.Source =
+                            ImageDecoder.createSource(context?.contentResolver!!, contentURI)
                         this.FOTO = ImageDecoder.decodeBitmap(source)
                     }
                     // Para jugar con las proporciones y ahorrar en memoria no cargando toda la foto, solo carga 600px max
                     val prop = this.IMAGEN_PROPORCION / this.FOTO.width.toFloat()
                     // Actualizamos el bitmap para ese tamaño, luego podríamos reducir su calidad
-                    this.FOTO = Bitmap.createScaledBitmap(this.FOTO, this.IMAGEN_PROPORCION, (this.FOTO.height * prop).toInt(), false)
+                    this.FOTO = Bitmap.createScaledBitmap(
+                        this.FOTO,
+                        this.IMAGEN_PROPORCION,
+                        (this.FOTO.height * prop).toInt(),
+                        false
+                    )
                     Toast.makeText(context, "¡Foto rescatada de la galería!", Toast.LENGTH_SHORT).show()
                     detalleLugarImagen.setImageBitmap(this.FOTO)
                     // Vamos a copiar nuestra imagen en nuestro directorio
@@ -438,7 +460,7 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
                 // Si estamos en módo publico la añadimos en la biblioteca
                 // if (PUBLICO) {
-                    // Por su queemos guardar el URI con la que se almacena en la Mediastore
+                // Por su queemos guardar el URI con la que se almacena en la Mediastore
                 IMAGEN_URI = Fotos.añadirFotoGaleria(IMAGEN_URI, IMAGEN_NOMBRE, context!!)!!
                 // }
 
