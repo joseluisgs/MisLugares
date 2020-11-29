@@ -3,6 +3,7 @@ package com.joseluisgs.mislugares.UI.lugares
 import android.app.Activity.RESULT_CANCELED
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -139,29 +140,36 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
     }
 
     /**
-     * Inserta un lugar
+     * Precondiciones para insertar
      */
     private fun insertarLugar() {
         if (comprobarFormulario()) {
-            lugar = Lugar(
-                nombre = detalleLugarInputNombre.text.toString(),
-                tipo = (detalleLugarSpinnerTipo.selectedItem as String),
-                fecha = detalleLugarBotonFecha.text.toString(),
-                latitud = posicion?.latitude.toString(),
-                longitud = posicion?.latitude.toString(),
-                imagen = ImageBase64.toBase64(this.FOTO)!!,
-                favorito = false,
-                votos = 0,
-                usuarioID = USUARIO.id
-            )
-            try {
-                LugarController.insert(lugar!!)
-                Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
-                Log.i("Insertar", lugar.toString())
-            } catch (ex: Exception) {
-                Toast.makeText(context, "Error al insertar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
-                Log.i("Insertar", "Error al insertar: " + ex.localizedMessage)
-            }
+            alertaDialogo("Insertar Lugar", "¿Desea salvar este lugar?")
+        }
+    }
+
+    /**
+     * Inserta en el sistema de persistencia o almacenamiento
+     */
+    private fun insertar() {
+        lugar = Lugar(
+            nombre = detalleLugarInputNombre.text.toString(),
+            tipo = (detalleLugarSpinnerTipo.selectedItem as String),
+            fecha = detalleLugarBotonFecha.text.toString(),
+            latitud = posicion?.latitude.toString(),
+            longitud = posicion?.latitude.toString(),
+            imagen = ImageBase64.toBase64(this.FOTO)!!,
+            favorito = false,
+            votos = 0,
+            usuarioID = USUARIO.id
+        )
+        try {
+            LugarController.insert(lugar!!)
+            Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
+            Log.i("Insertar", lugar.toString())
+        } catch (ex: Exception) {
+            Toast.makeText(context, "Error al insertar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
+            Log.i("Insertar", "Error al insertar: " + ex.localizedMessage)
         }
     }
 
@@ -178,6 +186,31 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
             }, date.year, date.monthValue - 1, date.dayOfMonth
         )
         datePickerDialog.show()
+    }
+
+    /**
+     * Dialogo de opciones
+     */
+    private fun alertaDialogo(titulo: String, texto: String){
+        val builder = AlertDialog.Builder(context)
+        with(builder)
+        {
+            setTitle(titulo)
+            setMessage(texto)
+            setPositiveButton(R.string.aceptar) { _, _ ->
+                when (MODO) {
+                    Modo.INSERTAR -> insertar()
+                    // VISUALIZAR -> initModoVisualizar
+                    // ELIMINAR ->  initModoEliminar()
+                    // ACTUALIZAR -> initModoActualizar()
+                    else -> {
+                    }
+                }
+            }
+            setNegativeButton(R.string.cancelar, null)
+            // setNeutralButton("Maybe", neutralButtonClick)
+            show()
+        }
     }
 
     /**
