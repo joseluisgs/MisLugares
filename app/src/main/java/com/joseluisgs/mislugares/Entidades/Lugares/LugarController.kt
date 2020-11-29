@@ -1,9 +1,22 @@
 package com.joseluisgs.mislugares.Entidades.Lugares
 
+import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import io.realm.Realm
 import io.realm.kotlin.where
 
+/**
+ * Controlador de Lugar
+ */
 object LugarController  {
+    /**
+     * Devuelve una lista de lugares
+     * @return MutableList<Lugar>?
+     */
+    fun selectAll(): MutableList<Lugar>? {
+        return Realm.getDefaultInstance().copyFromRealm(
+            Realm.getDefaultInstance().where<Lugar>().findAll()
+        )
+    }
     /**
      * Inserta un lugar
      * @param lugar Lugar
