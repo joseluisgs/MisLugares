@@ -42,7 +42,7 @@
             app:srcCompat="@drawable/ic_mic"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/lugaresRefresh"
+            android:id="@+id/lugaresSwipeRefresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/lugaresSpinnerFiltro"
