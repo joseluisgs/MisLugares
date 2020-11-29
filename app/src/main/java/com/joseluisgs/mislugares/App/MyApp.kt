@@ -56,7 +56,6 @@ class MyApp : Application() {
     private fun initPreferencias() {
         // Vamos a simular que una vez que nos conectamos hemos metido al usuario en la BB.DD
         Log.i("Config", "Init Preferencias")
-        val prefs = getSharedPreferences("MisLugares", Context.MODE_PRIVATE)
         // Comprobamos si hay sesion, es decir, si es != 0
         if(PreferenciasController.comprobarSesion(applicationContext)) {
             Log.i("Config", "Sí existe Sesión de usuario")

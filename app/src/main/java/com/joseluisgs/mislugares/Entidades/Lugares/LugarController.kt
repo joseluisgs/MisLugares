@@ -46,10 +46,10 @@ object LugarController  {
 
     /**
      * Busca lugares por ID
-     * @param id Long
+     * @param id String
      * @return Usuario?
      */
-    fun selectById(id: Long): Lugar? {
+    fun selectById(id: String): Lugar? {
         return Realm.getDefaultInstance().copyFromRealm(
             Realm.getDefaultInstance().where<Lugar>().equalTo("id", id).findFirst()
         )

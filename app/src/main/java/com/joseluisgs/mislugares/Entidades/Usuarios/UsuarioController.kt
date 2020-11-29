@@ -49,10 +49,10 @@ object UsuarioController {
 
     /**
      * Busca usuarios por ID
-     * @param id Long
+     * @param id String
      * @return Usuario?
      */
-    fun selectById(id: Long): Usuario? {
+    fun selectById(id: String): Usuario? {
         return getDefaultInstance().copyFromRealm(
             getDefaultInstance().where<Usuario>().equalTo("id", id).findFirst()
         )
