@@ -35,7 +35,6 @@ class LugaresFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.i("Lugares", "Creando Lista Lugares")
         // Iniciamos la interfaz
         initUI()
 
@@ -46,11 +45,12 @@ class LugaresFragment : Fragment() {
      * Inicia la Interfaz de Usuario
      */
     private fun initUI() {
-        Log.i("Lugares", "Iniciando la IU")
+        Log.i("Lugares", "Init IU")
         iniciarSwipeRecarga()
         cargarLugares()
         iniciarSwipeHorizontal()
-        lugaresRecycler.layoutManager = LinearLayoutManager(context);
+        lugaresRecycler.layoutManager = LinearLayoutManager(context)
+        Log.i("Lugares", "Fin la IU")
 
     }
 

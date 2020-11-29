@@ -1,5 +1,6 @@
 package com.joseluisgs.mislugares.UI.lugares
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,9 @@ import kotlinx.android.synthetic.main.item_lugar.view.*
 
 class LugaresListAdapter(
     private val listaLugares: MutableList<Lugar>,
-    private val listener: (Lugar) -> Unit
+    // Famos a tener distintas acciones y eventos
+    private val accionPrincipal: (Lugar) -> Unit
+
 ) : RecyclerView.Adapter<LugaresListAdapter.LugarViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LugarViewHolder {
@@ -31,16 +34,19 @@ class LugaresListAdapter(
         holder.itemLugarImagen.setImageBitmap(ImageBase64.toBitmap(listaLugares[position].imagen))
         holder.itemLugarNombre.text = listaLugares[position].nombre
         holder.itemLugarFecha.text = listaLugares[position].fecha
-        holder.itemLugarTipo.text = listaLugares[position].fecha
+        holder.itemLugarTipo.text = listaLugares[position].tipo
         holder.itemLugarVotos.text = listaLugares[position].votos.toString()
 
         // Queda procesar el botón de favoritos...
+        holder.itemLugarFavorito.setOnClickListener {
+            Log.i("Lugares", "Has pinchado el favorito de: " + listaLugares[position].id)
+        }
 
         // Programamos el clic de cada fila (itemView)
         holder.itemLugarImagen
             .setOnClickListener {
                 // Devolvemos la noticia
-                listener(listaLugares[position])
+                accionPrincipal(listaLugares[position])
             }
     }
 
