@@ -17,6 +17,8 @@
     <string name="lugar">Puertollano (Ciudad Real)</string>
     <string name="mis_lugares">Mis Lugares</string>
     <string name="mi_mapa">Mi Mapa</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="cancelar">Cancelar</string>
 
     <!-- Tipos de lugares para insertar -->
     <string-array name="tipos_lugares">
