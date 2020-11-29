@@ -1,12 +1,23 @@
 package com.joseluisgs.mislugares.UI.lugares
 
+import android.app.Activity.RESULT_CANCELED
+import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.location.Location
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.StrictMode
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -21,8 +32,10 @@ import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Utilidades.ImageBase64
+import com.joseluisgs.mislugares.Utilidades.Fotos
+import com.joseluisgs.mislugares.Utilidades.Utils
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
+import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -38,12 +51,21 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     // Variables a usar y permisos del mapa
     private lateinit var mMap: GoogleMap
-    private val LOCATION_REQUEST_CODE = 1
     private var mPosicion: FusedLocationProviderClient? = null
     private var lugar: Lugar? = null
     private var marcadorTouch: Marker? = null
     private var localizacion: Location? = null
     private var posicion: LatLng? = null
+
+    // Variables para la camara
+    private val GALERIA = 1
+    private val CAMARA = 2
+    private lateinit var IMAGEN_NOMBRE: String
+    private lateinit var IMAGEN_URI: Uri
+    private val IMAGEN_DIR = "/MisLugares"
+    private val IMAGEN_PROPORCION = 600
+    private lateinit var FOTO: Bitmap
+    private var IMAGEN_COMPRES = 80
 
 
     override fun onCreateView(
@@ -69,9 +91,13 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         // Inicializamos las cosas comunes y las específicass
         initPermisos()
         initUsuario()
-        // Si es insertar
-        if (this.MODO == Modo.INSERTAR) {
-            initModoInsertar()
+        // Modos de ejecución
+        when (this.MODO) {
+            Modo.INSERTAR ->  initModoInsertar()
+            // VISUALIZAR -> initModoVisualizar
+            // ELIMINAR ->  initModoEliminar()
+            // ACTUALIZAR -> initModoActualizar()
+            else -> {}
         }
         leerPoscionGPSActual()
         initMapa()
@@ -99,12 +125,13 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         detalleLugarTextVotos.visibility = View.GONE // View.INVISIBLE
         detalleLugarInputTipo.visibility = View.GONE
         detalleLugarEditFecha.visibility = View.GONE
-        detalleLugarInputNombre.setText("Tu Lugar Ahora")
+        detalleLugarInputNombre.setText("Tu Lugar Ahora") // Quitar luego!!
         // Fecha
         val date = LocalDateTime.now()
         detalleLugarBotonFecha.text = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(date)
         detalleLugarBotonFecha.setOnClickListener { escogerFecha() }
         detalleLugarFabAccion.setOnClickListener { insertarLugar() }
+        detalleLugarFabCamara.setOnClickListener { initDialogFoto() }
 
     }
 
@@ -115,13 +142,14 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         if (comprobarFormulario()) {
             lugar = Lugar(
                 nombre = detalleLugarInputNombre.text.toString(),
-                fecha =  detalleLugarBotonFecha.text.toString(),
                 tipo = (detalleLugarSpinnerTipo.selectedItem as String),
+                fecha =  detalleLugarBotonFecha.text.toString(),
                 latitud = posicion?.latitude.toString(),
                 longitud = posicion?.latitude.toString(),
-                // imagen = ImageBase64.toBase64(detalleLugarImagen.im)!!
+                imagen = "",
+                favorito = false,
+                votos = 0,
                 usuarioID = USUARIO.id
-
             )
             Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
             Log.i("Insertar", lugar.toString())
@@ -155,6 +183,10 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         }
         return sal
     }
+
+    /**
+     * FUNCIONALIDAD DEL GPS
+     */
 
     /**
      * Leemos la posición actual del GPS
@@ -207,8 +239,7 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
             // VISUALIZAR -> mapaVisualizar()
             // ELIMINAR -> mapaVisualizar()
             // ACTUALIZAR -> mapaActualizar()
-            else -> {
-            }
+            else -> {}
         }
     }
 
@@ -234,7 +265,7 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
             marcadorTouch = mMap.addMarker(
                 MarkerOptions() // Posición
                     .position(point) // Título
-                    .title("Tu posición") // Subtitulo
+                    .title("Posición Actual") // Subtitulo
                     .snippet(detalleLugarInputNombre.text.toString()) // Color o tipo d icono
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
             )
@@ -265,7 +296,7 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(posicion));
                     } else {
                         Snackbar.make(view!!, "No se ha encontrado su posoción actual", Snackbar.LENGTH_LONG).show();
-                        Log.d("GPS", "No se encuetra la última posición.")
+                        Log.i("GPS", "No se encuetra la última posición.")
                         Log.e("GPS", "Exception: %s", task.exception)
                     }
                 }
@@ -289,4 +320,150 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
 //            ).show()
         return false
     }
+
+    /**
+     * FUNCIONALIDAD DE LA CAMARA
+     */
+
+    /**
+     * Muestra el diálogo para tomar foto o elegir de la galería
+     */
+    private fun initDialogFoto() {
+        val fotoDialogoItems = arrayOf(
+            "Seleccionar fotografía de galería",
+            "Capturar fotografía desde la cámara"
+        )
+        // Creamos el dialog con su builder
+        AlertDialog.Builder(context)
+            .setTitle("Seleccionar Acción")
+            .setItems(fotoDialogoItems) { dialog, modo ->
+                when (modo) {
+                    0 -> elegirFotoGaleria()
+                    1 -> tomarFotoCamara()
+                }
+            }
+            .show()
+    }
+
+    /**
+     * Elige una foto de la galeria
+     */
+    private fun elegirFotoGaleria() {
+        val galleryIntent = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+        startActivityForResult(galleryIntent, GALERIA)
+    }
+
+    //Llamamos al intent de la camara
+    // https://developer.android.com/training/camera/photobasics.html#TaskPath
+    private fun tomarFotoCamara() {
+        // Si queremos hacer uso de fotos en alta calidad
+        val builder = StrictMode.VmPolicy.Builder()
+        StrictMode.setVmPolicy(builder.build())
+
+        // Eso para alta o baja
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        // Nombre de la imagen
+        IMAGEN_NOMBRE = Fotos.crearNombreFoto("camara",".jpg")
+        // Salvamos el fichero
+        val fichero = Fotos.salvarFoto(IMAGEN_DIR, IMAGEN_NOMBRE, context!!)
+        IMAGEN_URI = Uri.fromFile(fichero)
+
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, IMAGEN_URI)
+        // Esto para alta y baja
+        startActivityForResult(intent, CAMARA)
+    }
+    /**
+     * Siempre se ejecuta al realizar una acción
+     * @param requestCode Int
+     * @param resultCode Int
+     * @param data Intent?
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.i("FOTO", "Opción::--->$requestCode")
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_CANCELED) {
+            Log.i("FOTO", "Se ha cancelado")
+        }
+        // Procesamos la foto de la galeria
+        if (requestCode == GALERIA) {
+            Log.i("FOTO", "Entramos en Galería")
+            if (data != null) {
+                // Obtenemos su URI con su dirección temporal
+                val contentURI = data.data!!
+                try {
+                    // Obtenemos el bitmap de su almacenamiento externo
+                    // Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
+                    // Dependeindo de la versión del SDK debemos hacerlo de una manera u otra
+                    if (Build.VERSION.SDK_INT < 28) {
+                        this.FOTO = MediaStore.Images.Media.getBitmap(context?.contentResolver, contentURI);
+                    } else {
+                        val source: ImageDecoder.Source = ImageDecoder.createSource(context?.contentResolver!!, contentURI)
+                        this.FOTO = ImageDecoder.decodeBitmap(source)
+                    }
+                    // Para jugar con las proporciones y ahorrar en memoria no cargando toda la foto, solo carga 600px max
+                    val prop = this.IMAGEN_PROPORCION / this.FOTO.width.toFloat()
+                    // Actualizamos el bitmap para ese tamaño, luego podríamos reducir su calidad
+                    this.FOTO = Bitmap.createScaledBitmap(this.FOTO, this.IMAGEN_PROPORCION, (this.FOTO.height * prop).toInt(), false)
+                    Toast.makeText(context, "¡Foto rescatada de la galería!", Toast.LENGTH_SHORT).show()
+                    detalleLugarImagen.setImageBitmap(this.FOTO)
+                    // Vamos a copiar nuestra imagen en nuestro directorio
+                    // Utilidades.copiarImagen(bitmap, IMAGEN_DIR, IMAGEN_COMPRES, applicationContext)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    Toast.makeText(context, "¡Fallo Galeria!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else if (requestCode == CAMARA) {
+            Log.i("FOTO", "Entramos en Camara")
+            // Cogemos la imagen, pero podemos coger la imagen o su modo en baja calidad (thumbnail)
+            try {
+                // Esta línea para baja calidad
+                //thumbnail = (Bitmap) data.getExtras().get("data");
+                // Esto para alta
+                //val source: ImageDecoder.Source = ImageDecoder.createSource(contentResolver, IMAGEN_URI)
+                //val foto: Bitmap = ImageDecoder.decodeBitmap(source)
+
+                if (Build.VERSION.SDK_INT < 28) {
+                    this.FOTO = MediaStore.Images.Media.getBitmap(context?.contentResolver, IMAGEN_URI)
+                } else {
+                    val source: ImageDecoder.Source = ImageDecoder.createSource(context?.contentResolver!!, IMAGEN_URI)
+                    this.FOTO = ImageDecoder.decodeBitmap(source)
+                }
+
+                // Vamos a probar a comprimir
+                Fotos.comprimirImagen(IMAGEN_URI.toFile(), this.FOTO, this.IMAGEN_COMPRES)
+
+                // Si estamos en módo publico la añadimos en la biblioteca
+                // if (PUBLICO) {
+                    // Por su queemos guardar el URI con la que se almacena en la Mediastore
+                IMAGEN_URI = Fotos.añadirFotoGaleria(IMAGEN_URI, IMAGEN_NOMBRE, context!!)!!
+                // }
+
+                // Mostramos
+                detalleLugarImagen.setImageBitmap(this.FOTO)
+                Toast.makeText(context, "¡Foto Salvada!", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "¡Fallo Camara!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+//    private fun eliminarImagen() {
+//        // La borramos de media
+//        // https://developer.android.com/training/data-storage/shared/media
+//        if (PUBLICO) {
+//            Utilidades.eliminarImageGaleria(IMAGEN_NOMBRE, applicationContext)
+//        }
+//        // La borramos del directorio
+//        try {
+//            Utilidades.eliminarImagen(IMAGEN_URI)
+//            Toast.makeText(this, "¡Foto Eliminada!", Toast.LENGTH_SHORT).show()
+//        } catch (e: Exception) {
+//        }
+//    }
+
 }
