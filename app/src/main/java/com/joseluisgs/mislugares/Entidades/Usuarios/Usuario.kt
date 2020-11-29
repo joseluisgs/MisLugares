@@ -5,10 +5,11 @@ import io.realm.annotations.Index
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 import io.realm.annotations.Required
+import java.util.*
 
 /**
  * Clase Modelo de Usuario
- * @property id Long
+ * @property id String
  * @property nombre String
  * @property login String
  * @property password String
@@ -23,7 +24,8 @@ open class Usuario(
     // Es importante iniciar todos los valores de la clases
     // Ponemos los datos que queremos almacenar
     @PrimaryKey
-    var id: Long = 0,
+    // Cambiar a UUID.randomUUID().toString() o long
+    var id: String = "",
     @Required
     var nombre: String ="",
     @Required @Index
@@ -49,7 +51,8 @@ open class Usuario(
      * @constructor
      */
     constructor(nombre: String, login: String, password: String, avatar: String, correo: String, twitter: String, github: String) :
-                this((System.currentTimeMillis() / 1000L), nombre, login, password, avatar, correo, twitter, github)
+            this((UUID.randomUUID().toString()), nombre, login, password, avatar, correo, twitter, github)
+                // this((System.currentTimeMillis() / 1000L), nombre, login, password, avatar, correo, twitter, github)
 
     override fun toString(): String {
         return "Usuario(id=$id, nombre='$nombre', login='$login', password='$password', avatar='$avatar', correo='$correo', twitter='$twitter', github='$github')"

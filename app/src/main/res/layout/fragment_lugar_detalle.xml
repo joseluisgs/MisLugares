@@ -13,7 +13,8 @@
             android:layout_height="145dp"
             android:background="@color/itemListColor"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher_foreground"/>
+            android:src="@mipmap/ic_launcher_foreground" app:srcCompat="@mipmap/ic_launcher_foreground"
+            tools:srcCompat="@mipmap/ic_launcher_foreground"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/detalleLugarFabCamara"
@@ -75,7 +76,7 @@
                 android:id="@+id/linearLayoutDetalleLugar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/spinnerLugarDetalleTipo"
+                android:layout_below="@id/detalleLugarSpinnerTipo"
                 android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
@@ -98,10 +99,13 @@
                     android:layout_width="14dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textAlignment="viewEnd"
+                    android:textAlignment="textStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     app:icon="@drawable/ic_fecha" android:textColor="@color/colorPrimary"
-                    app:iconTint="@color/colorPrimary"/>
+                    app:iconTint="@color/colorPrimary"
+                    android:paddingLeft="10dp"
+                    android:gravity="left|center_vertical" tools:ignore="RtlHardcoded"
+                    android:layout_gravity="left|center_vertical"/>
             <TextView
                     android:text="20 votos"
                     android:layout_width="wrap_content"
@@ -113,7 +117,7 @@
 
 
         <Spinner
-                android:id="@+id/spinnerLugarDetalleTipo"
+                android:id="@+id/detalleLugarSpinnerTipo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/detalleLugarTextTipo"

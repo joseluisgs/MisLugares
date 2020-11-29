@@ -1,5 +1,6 @@
 package com.joseluisgs.mislugares.Entidades.Usuarios
 
+import io.realm.Realm
 import io.realm.Realm.*
 import io.realm.kotlin.where
 
@@ -7,6 +8,15 @@ import io.realm.kotlin.where
  * Controlador de Usuarios
  */
 object UsuarioController {
+    /**
+     * Devuelve todos los usuarios
+     * @return MutableList<Dato>?
+     */
+    fun selectAll(): MutableList<Usuario>? {
+        return Realm.getDefaultInstance().copyFromRealm(
+            Realm.getDefaultInstance().where<Usuario>().findAll()
+        )
+    }
     /**
      * Inserta un usuario
      * @param usuario Usuario
@@ -49,10 +59,10 @@ object UsuarioController {
 
     /**
      * Busca usuarios por ID
-     * @param id Long
+     * @param id String
      * @return Usuario?
      */
-    fun selectById(id: Long): Usuario? {
+    fun selectById(id: String): Usuario? {
         return getDefaultInstance().copyFromRealm(
             getDefaultInstance().where<Usuario>().equalTo("id", id).findFirst()
         )

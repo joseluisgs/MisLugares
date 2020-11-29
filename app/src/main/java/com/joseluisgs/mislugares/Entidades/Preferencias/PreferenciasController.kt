@@ -3,6 +3,7 @@ package com.joseluisgs.mislugares.Entidades.Preferencias
 import Utilidades.Cifrador
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.util.Log
 import com.google.gson.Gson
 import com.joseluisgs.mislugares.R.drawable.user_avatar
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
@@ -13,7 +14,7 @@ import com.joseluisgs.mislugares.Utilidades.ImageBase64
  * Clase para el manejo de preferencias
  */
 object PreferenciasController {
-    private var USER_ID: Long = 0L
+    private var USER_ID: String = ""
     private lateinit var USER: Usuario
 
     /**
@@ -24,8 +25,9 @@ object PreferenciasController {
     fun comprobarSesion(context: Context): Boolean {
         // Abrimos las preferencias en modo lectura
         val prefs = context.getSharedPreferences("MisLugares", Context.MODE_PRIVATE)
-        USER_ID = prefs.getLong("USER_ID", 0L)
-        return USER_ID != 0L
+        USER_ID = prefs.getString("USER_ID", "").toString()
+        Log.i("Config", "Usuario ID: " + USER_ID)
+        return USER_ID.isNotEmpty()
     }
 
     /**
@@ -53,10 +55,10 @@ object PreferenciasController {
         // Abrimos las preferemcias en modo escritura
         val prefs = context.getSharedPreferences("MisLugares", Context.MODE_PRIVATE)
         val editor = prefs.edit()
-        editor.putLong("USER_ID", usuario.id)
+        editor.putString("USER_ID", usuario.id)
         // Escribimos el usuario como JSON
         editor.putString("USER", Gson().toJson(usuario))
-        editor.commit()
+        editor.apply()
         return usuario
     }
 
@@ -67,7 +69,6 @@ object PreferenciasController {
      */
     fun leerSesion(context: Context): Usuario {
         val prefs = context.getSharedPreferences("MisLugares", Context.MODE_PRIVATE)
-        val usuario: Usuario = Gson().fromJson(prefs.getString("USER", ""), Usuario::class.java)
-        return usuario
+        return Gson().fromJson(prefs.getString("USER", ""), Usuario::class.java)
     }
 }
