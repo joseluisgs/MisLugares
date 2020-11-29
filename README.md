@@ -26,16 +26,21 @@ Se destacan las siguientes tecnologías usadas, cuyos enlaces son los mismos que
 
 - [Android](https://developer.android.com/docs)
 - [Kotlin](https://kotlinlang.org/)
+- [Interfaz de Usuario](https://developer.android.com/guide/topics/ui)
+- [Imágenes y gráficos](https://developer.android.com/guide/topics/graphics)
+- [Audio y vídeo](https://developer.android.com/guide/topics/media)
 - [Realm](https://realm.io/docs/kotlin/latest/)
-- Cámara
-- Sistema de almacenamiento
-- [Permisos](https://developer.android.com/training/permissions/requesting?hl=es-419)
+- [Cámara](https://developer.android.com/training/camera)
+- [Almacenamiento](https://developer.android.com/guide/topics/data)
+- [Permisos](https://developer.android.com/guide/topics/permissions/overview)
 - [Intents](https://developer.android.com/guide/components/intents-common?hl=es)
-- Geolocalización
-- Mapas
+- [Geolocalización](https://developer.android.com/training/location)
+- [Mapas](https://developers.google.com/maps/documentation/android-sdk/intro)
 - [Preferencias](https://developer.android.com/training/data-storage/shared-preferences?hl=es)
+- [Segndo plano](https://developer.android.com/guide/background)
 - [Gson](https://github.com/google/gson)
 - [Dexter](https://github.com/Karumi/Dexter)
+- [Picasso](https://square.github.io/picasso/)
 
 #### Herramientas usadas
 Estas son las herramientas que más hemos usado en clase para la realización de este proyecto:
