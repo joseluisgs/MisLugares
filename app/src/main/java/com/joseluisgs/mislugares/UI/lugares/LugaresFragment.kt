@@ -1,6 +1,6 @@
 package com.joseluisgs.mislugares.UI.lugares
 
-import android.graphics.Paint
+import android.graphics.*
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.R
@@ -18,8 +20,8 @@ import kotlinx.android.synthetic.main.fragment_lugares.*
 class LugaresFragment : Fragment() {
     // Propiedades
     private var LUGARES = mutableListOf<Lugar>()
-    private lateinit var adapter: LugaresListAdapter //Adaptador de Noticias de Recycler
-    private lateinit var tarea: TareaCargarLugares // Tarea en segundo plano
+    private lateinit var lugaresAdapter: LugaresListAdapter //Adaptador de Noticias de Recycler
+    private lateinit var tareaLugares: TareaCargarLugares // Tarea en segundo plano
     private var paintSweep = Paint()
 
 
@@ -40,15 +42,21 @@ class LugaresFragment : Fragment() {
 
     }
 
+    /**
+     * Inicia la Interfaz de Usuario
+     */
     private fun initUI() {
         Log.i("Lugares", "Iniciando la IU")
         iniciarSwipeRecarga()
         cargarLugares()
-
+        iniciarSwipeHorizontal()
         lugaresRecycler.layoutManager = LinearLayoutManager(context);
 
     }
 
+    /**
+     * Deslizamiento vertical para recargar
+     */
     private fun iniciarSwipeRecarga() {
         lugaresSwipeRefresh.setColorSchemeResources(R.color.colorPrimaryDark)
         lugaresSwipeRefresh.setProgressBackgroundColorSchemeResource(R.color.colorAccent)
@@ -58,22 +66,164 @@ class LugaresFragment : Fragment() {
     }
 
     /**
+     * Realiza el swipe horizontal si es necesario
+     */
+    private fun iniciarSwipeHorizontal() {
+        val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.LEFT or
+                    ItemTouchHelper.RIGHT
+        ) {
+            // Sobreescribimos los métodos
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            // Analizamos el evento según la dirección
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                // Si pulsamos a la de izquierda o a la derecha
+                // Programamos la accion
+                when (direction) {
+                    ItemTouchHelper.LEFT -> {
+                        // Log.d("Noticias", "Tocado izquierda");
+                        borrarElemento(position)
+                    }
+                    else -> {
+                        //  Log.d("Noticias", "Tocado derecha");
+                        editarElemento(position)
+                    }
+                }
+            }
+
+            // Dibujamos los botones y eveneto. Nos lo creemos :):)
+            // IMPORTANTE
+            // Para que no te explote las imagenes deben ser PNG
+            // Así que añade un IMAGE ASEET bjándtelos de internet
+            // https://material.io/resources/icons/?style=baseline
+            // como PNG y cargas el de mayor calidad
+            // de otra forma Bitmap no funciona bien
+            override fun onChildDraw(
+                canvas: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    val itemView = viewHolder.itemView
+                    val height = itemView.bottom.toFloat() - itemView.top.toFloat()
+                    val width = height / 3
+                    // Si es dirección a la derecha: izquierda->derecta
+                    // Pintamos de azul y ponemos el icono
+                    if (dX > 0) {
+                        // Pintamos el botón izquierdo
+                        botonIzquierdo(canvas, dX, itemView, width)
+                    } else {
+                        // Caso contrario
+                        botonDerecho(canvas, dX, itemView, width)
+                    }
+                }
+                super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+        }
+        // Añadimos los eventos al RV
+        val itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
+        itemTouchHelper.attachToRecyclerView(lugaresRecycler)
+    }
+
+    /**
+     * Mostramos el elemento iquierdo
+     * @param canvas Canvas
+     * @param dX Float
+     * @param itemView View
+     * @param width Float
+     */
+    private fun botonDerecho(canvas: Canvas, dX: Float, itemView: View, width: Float) {
+        // Pintamos de rojo y ponemos el icono
+        paintSweep.color = Color.RED
+        val background = RectF(
+            itemView.right.toFloat() + dX,
+            itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat()
+        )
+        canvas.drawRect(background, paintSweep)
+        val icon: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_seep_eliminar)
+        val iconDest = RectF(
+            itemView.right.toFloat() - 2 * width, itemView.top.toFloat() + width, itemView.right
+                .toFloat() - width, itemView.bottom.toFloat() - width
+        )
+        canvas.drawBitmap(icon, null, iconDest, paintSweep)
+    }
+
+    /**
+     * Mostramos el elemento izquierdo
+     * @param canvas Canvas
+     * @param dX Float
+     * @param itemView View
+     * @param width Float
+     */
+    private fun botonIzquierdo(canvas: Canvas, dX: Float, itemView: View, width: Float) {
+        // Pintamos de azul y ponemos el icono
+        paintSweep.setColor(Color.BLUE)
+        val background = RectF(
+            itemView.left.toFloat(), itemView.top.toFloat(), dX,
+            itemView.bottom.toFloat()
+        )
+        canvas.drawRect(background, paintSweep)
+        val icon: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_sweep_editar)
+        val iconDest = RectF(
+            itemView.left.toFloat() + width, itemView.top.toFloat() + width, itemView.left
+                .toFloat() + 2 * width, itemView.bottom.toFloat() - width
+        )
+        canvas.drawBitmap(icon, null, iconDest, paintSweep)
+    }
+
+    /**
      * Carga los lugares
      */
     private fun cargarLugares() {
-        tarea = TareaCargarLugares()
-        tarea.execute()
+        tareaLugares = TareaCargarLugares()
+        tareaLugares.execute()
     }
 
+    /**
+     * Edita el elemento en la posición seleccionada
+     * @param position Int
+     */
+    private fun editarElemento(position: Int) {
+        Log.i("Lugares", "Editando el elemento pos: " + position)
+    }
+
+    /**
+     * Borra el elemento en la posición seleccionada
+     * @param position Int
+     */
+    private fun borrarElemento(position: Int) {
+        Log.i("Lugares", "Borrando el elemento pos: " + position)
+    }
+
+    /**
+     * Abre el elemento en la posición didicada
+     * @param lugar Lugar
+     */
+    private fun abrirElemento(lugar: Lugar) {
+        Log.i("Lugares", "Abireindo el elemento pos: " + lugar.id)
+    }
 
     /**
      * Evento clic asociado a una fila
      * @param lugar Lugar
      */
     private fun eventoClicFila(lugar: Lugar) {
-        Log.i("Lugares", "Has hecho clic en el Lugar: $lugar")
-        // abrirNoticia(noticia)
+            abrirElemento(lugar)
     }
+
+
 
     /**
      * Tarea asíncrona para la carga de noticias
@@ -97,18 +247,23 @@ class LugaresFragment : Fragment() {
         }
 
         override fun onPostExecute(args: Void?) {
-            adapter = LugaresListAdapter(LUGARES) {
+            lugaresAdapter = LugaresListAdapter(LUGARES) {
                 eventoClicFila(it)
             }
 
-            lugaresRecycler.adapter = adapter
+            lugaresRecycler.adapter = lugaresAdapter
             // Avismos que ha cambiado
-            adapter.notifyDataSetChanged()
+            lugaresAdapter.notifyDataSetChanged()
             lugaresRecycler.setHasFixedSize(true)
             lugaresSwipeRefresh.isRefreshing = false
             Toast.makeText(context, "Lugares cargados", Toast.LENGTH_LONG).show()
         }
 
+    }
+
+    override fun onStop() {
+        super.onStop()
+        tareaLugares.cancel(true)
     }
 }
 
