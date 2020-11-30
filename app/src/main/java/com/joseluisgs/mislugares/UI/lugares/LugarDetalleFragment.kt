@@ -241,9 +241,11 @@ class LugarDetalleFragment(
      */
     private fun eliminar() {
         try {
-            // Eliminamos la imagen
+            // Eliminamos la imagen de los ficheros
+            // Eliminamos la imagen de la bd
+            // Eliminamos el lugar
 
-            LugarController.delete(LUGAR!!)
+            // LugarController.delete(LUGAR!!)
 
         } catch (ex: Exception) {
             Toast.makeText(context, "Error al insertar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
@@ -301,10 +303,10 @@ class LugarDetalleFragment(
             detalleLugarInputNombre.error = "El nombre no puede ser vacío"
             sal = false
         }
-        if(!this::FOTO.isInitialized) {
+        if (!this::FOTO.isInitialized && this::IMAGEN_NOMBRE.isInitialized) {
             this.FOTO = (detalleLugarImagen.drawable as BitmapDrawable).bitmap
-            // Toast.makeText(context, "La imagen no puede estar vacía", Toast.LENGTH_SHORT).show()
-            // sal = false
+            Toast.makeText(context, "La imagen no puede estar vacía", Toast.LENGTH_SHORT).show()
+            sal = false
         }
         return sal
     }
