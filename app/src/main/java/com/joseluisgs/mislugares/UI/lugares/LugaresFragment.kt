@@ -38,6 +38,10 @@ class LugaresFragment : Fragment() {
         // Iniciamos la interfaz
         initUI()
 
+//        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+//           Log.i("Lugares", "Pulsado Atras")
+//        }
+
 
     }
 
@@ -213,6 +217,14 @@ class LugaresFragment : Fragment() {
      */
     private fun abrirElemento(lugar: Lugar) {
         Log.i("Lugares", "Abireindo el elemento pos: " + lugar.id)
+        val lugarDetalle = LugarDetalleFragment(lugar)
+        val transaction = activity!!.supportFragmentManager.beginTransaction()
+        // animaciones
+        // transaction.setCustomAnimations(R.anim.animacion_fragment1, R.anim.animacion_fragment2)
+        //Llamamos al replace
+        transaction.add(R.id.nav_host_fragment, lugarDetalle)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 
     /**
@@ -260,6 +272,7 @@ class LugaresFragment : Fragment() {
         }
 
     }
+
 
     override fun onStop() {
         super.onStop()

@@ -3,7 +3,6 @@ package com.joseluisgs.mislugares.UI.lugares
 import android.app.Activity.RESULT_CANCELED
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -47,10 +46,13 @@ import java.time.format.DateTimeFormatter
  * Clase Detalle
  * @constructor
  */
-class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class LugarDetalleFragment(
+    private val LUGAR: Lugar? = null,
+    private val MODO: Modo = Modo.INSERTAR
+) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+    // Mis Variables
     private lateinit var USUARIO: Usuario
     private var PERMISOS: Boolean = false
-    private val MODO = Modo.INSERTAR
 
     // Variables a usar y permisos del mapa
     private lateinit var mMap: GoogleMap
@@ -97,7 +99,7 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         // Modos de ejecución
         when (this.MODO) {
             Modo.INSERTAR -> initModoInsertar()
-            // VISUALIZAR -> initModoVisualizar
+            Modo.VISUALIZAR -> initModoVisualizar()
             // ELIMINAR ->  initModoEliminar()
             // ACTUALIZAR -> initModoActualizar()
             else -> {
@@ -130,6 +132,21 @@ class LugarDetalleFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerC
         detalleLugarInputTipo.visibility = View.GONE
         detalleLugarEditFecha.visibility = View.GONE
         detalleLugarInputNombre.setText("Tu Lugar Ahora") // Quitar luego!!
+        // Fecha
+        val date = LocalDateTime.now()
+        detalleLugarBotonFecha.text = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(date)
+        detalleLugarBotonFecha.setOnClickListener { escogerFecha() }
+        detalleLugarFabAccion.setOnClickListener { insertarLugar() }
+        detalleLugarFabCamara.setOnClickListener { initDialogFoto() }
+
+    }
+
+    private fun initModoVisualizar() {
+        // Ocultamos o quitamos lo que no queremos ver en este modo
+        detalleLugarTextVotos.visibility = View.GONE // View.INVISIBLE
+        detalleLugarInputTipo.visibility = View.GONE
+        detalleLugarEditFecha.visibility = View.GONE
+        detalleLugarInputNombre.setText(LUGAR?.nombre) // Quitar luego!!
         // Fecha
         val date = LocalDateTime.now()
         detalleLugarBotonFecha.text = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(date)
