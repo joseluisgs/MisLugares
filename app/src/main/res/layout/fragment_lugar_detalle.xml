@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="140dp"
+            android:layout_marginTop="145dp"
             android:layout_marginEnd="10dp"
             android:background="#FFFFFF">
 
@@ -83,7 +83,7 @@
             <EditText
                     android:id="@+id/detalleLugarEditFecha"
                     android:layout_width="177dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_below="@id/detalleLugarTextTipo"
                     android:layout_weight="1"
                     android:ems="10"
@@ -97,7 +97,7 @@
                     android:id="@+id/detalleLugarBotonFecha"
                     style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                     android:layout_width="14dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textAlignment="textStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -109,9 +109,9 @@
             <TextView
                     android:text="20 votos"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/detalleLugarTextVotos"
+                    android:layout_height="match_parent" android:id="@+id/detalleLugarTextVotos"
                     android:layout_weight="1" android:textColor="@color/colorPrimary" android:clickable="false"
-                    android:gravity="right" android:textStyle="bold"/>
+                    android:gravity="right|center_vertical" android:textStyle="bold"/>
 
         </LinearLayout>
 

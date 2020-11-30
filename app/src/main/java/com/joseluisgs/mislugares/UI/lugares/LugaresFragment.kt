@@ -217,7 +217,7 @@ class LugaresFragment : Fragment() {
      */
     private fun abrirElemento(lugar: Lugar) {
         Log.i("Lugares", "Abireindo el elemento pos: " + lugar.id)
-        val lugarDetalle = LugarDetalleFragment(lugar)
+        val lugarDetalle = LugarDetalleFragment(lugar, Modo.VISUALIZAR)
         val transaction = activity!!.supportFragmentManager.beginTransaction()
         // animaciones
         // transaction.setCustomAnimations(R.anim.animacion_fragment1, R.anim.animacion_fragment2)

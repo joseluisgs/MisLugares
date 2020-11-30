@@ -17,6 +17,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
@@ -132,7 +133,6 @@ class LugarDetalleFragment(
         detalleLugarInputTipo.visibility = View.GONE
         detalleLugarEditFecha.visibility = View.GONE
         detalleLugarInputNombre.setText("Tu Lugar Ahora") // Quitar luego!!
-        // Fecha
         val date = LocalDateTime.now()
         detalleLugarBotonFecha.text = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(date)
         detalleLugarBotonFecha.setOnClickListener { escogerFecha() }
@@ -143,16 +143,18 @@ class LugarDetalleFragment(
 
     private fun initModoVisualizar() {
         // Ocultamos o quitamos lo que no queremos ver en este modo
-        detalleLugarTextVotos.visibility = View.GONE // View.INVISIBLE
-        detalleLugarInputTipo.visibility = View.GONE
         detalleLugarEditFecha.visibility = View.GONE
+        detalleLugarFabCamara.visibility = View.GONE
+        detalleLugarFabAccion.visibility = View.GONE
+        detalleLugarInputTipo.visibility = View.GONE
+
         detalleLugarInputNombre.setText(LUGAR?.nombre) // Quitar luego!!
-        // Fecha
-        val date = LocalDateTime.now()
-        detalleLugarBotonFecha.text = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(date)
-        detalleLugarBotonFecha.setOnClickListener { escogerFecha() }
-        detalleLugarFabAccion.setOnClickListener { insertarLugar() }
-        detalleLugarFabCamara.setOnClickListener { initDialogFoto() }
+        detalleLugarBotonFecha.text =LUGAR?.fecha
+        detalleLugarTextVotos.text = LUGAR?.votos.toString() + " voto(s)."
+        // detalleLugarInputTipo.setText(LUGAR?.tipo)
+        detalleLugarSpinnerTipo.setSelection((detalleLugarSpinnerTipo.adapter as ArrayAdapter<String?>).getPosition(LUGAR?.tipo))
+        detalleLugarSpinnerTipo.isEnabled = false
+        detalleLugarImagen.setImageBitmap(ImageBase64.toBitmap(LUGAR?.imagen.toString()))
 
     }
 
