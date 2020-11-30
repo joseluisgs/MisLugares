@@ -22,6 +22,7 @@ object Fotos {
      * Función para obtener el nombre del fichero en base a un prefijo y una extensión
      */
     fun crearNombreFoto(prefijo: String, extension: String): String {
+        // Si no sabemos el nombre
         return prefijo+"-" + UUID.randomUUID().toString() + extension
     }
 
@@ -51,8 +52,7 @@ object Fotos {
     /**
      * Copia un bitmap en un path determinado
      */
-    fun copiarFoto(bitmap: Bitmap, path: String, compresion: Int, context: Context) {
-        val nombre = crearNombreFoto("camara",".jpg")
+    fun copiarFoto(bitmap: Bitmap, nombre: String, path: String, compresion: Int, context: Context): File {
         val fichero =
             context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath + path + File.separator + nombre
         val bytes = ByteArrayOutputStream()
@@ -60,6 +60,7 @@ object Fotos {
         val fo = FileOutputStream(fichero)
         fo.write(bytes.toByteArray())
         fo.close()
+        return File(fichero)
     }
 
     /**

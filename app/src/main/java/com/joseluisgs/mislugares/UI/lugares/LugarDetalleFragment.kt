@@ -31,6 +31,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
+import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
+import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
@@ -68,10 +70,12 @@ class LugarDetalleFragment(
     private val CAMARA = 2
     private lateinit var IMAGEN_NOMBRE: String
     private lateinit var IMAGEN_URI: Uri
-    private val IMAGEN_DIR = "/MisLugares"
+    private val IMAGEN_DIRECTORY = "/MisLugares"
     private val IMAGEN_PROPORCION = 600
     private lateinit var FOTO: Bitmap
-    private var IMAGEN_COMPRES = 80
+    private var IMAGEN_COMPRESION = 80
+    private val IMAGEN_PREFIJO = "lugar"
+    private val IMAGEN_EXTENSION = ".jpg"
 
 
     override fun onCreateView(
@@ -101,7 +105,7 @@ class LugarDetalleFragment(
         when (this.MODO) {
             Modo.INSERTAR -> initModoInsertar()
             Modo.VISUALIZAR -> initModoVisualizar()
-            // ELIMINAR ->  initModoEliminar()
+            Modo.ELIMINAR -> initModoEliminar()
             // ACTUALIZAR -> initModoActualizar()
             else -> {
             }
@@ -128,6 +132,7 @@ class LugarDetalleFragment(
      * Crea todos los elementos en modo insertar
      */
     private fun initModoInsertar() {
+        Log.i("Lugares", "Modo Insertar")
         // Ocultamos o quitamos lo que no queremos ver en este modo
         detalleLugarInputTipo.visibility = View.GONE
         detalleLugarEditFecha.visibility = View.GONE
@@ -143,6 +148,7 @@ class LugarDetalleFragment(
     }
 
     private fun initModoVisualizar() {
+        Log.i("Lugares", "Modo Visualizar")
         // Ocultamos o quitamos lo que no queremos ver en este modo
         detalleLugarEditFecha.visibility = View.GONE
         detalleLugarInputTipo.visibility = View.GONE
@@ -151,8 +157,9 @@ class LugarDetalleFragment(
         detalleLugarFabAccion.visibility = View.GONE
 
 
-        detalleLugarInputNombre.setText(LUGAR?.nombre) // Quitar luego!!
-        detalleLugarBotonFecha.text =LUGAR?.fecha
+        detalleLugarInputNombre.setText(LUGAR?.nombre)
+        detalleLugarInputNombre.isEnabled = false
+        detalleLugarBotonFecha.text = LUGAR?.fecha
         detalleLugarTextVotos.text = LUGAR?.votos.toString() + " voto(s)."
         // detalleLugarInputTipo.setText(LUGAR?.tipo)
         detalleLugarSpinnerTipo.setSelection(
@@ -161,7 +168,17 @@ class LugarDetalleFragment(
             )
         )
         detalleLugarSpinnerTipo.isEnabled = false
-        detalleLugarImagen.setImageBitmap(ImageBase64.toBitmap(LUGAR?.imagen.toString()))
+        // detalleLugarImagen.setImageBitmap(ImageBase64.toBitmap(LUGAR?.imagen.toString()))
+
+    }
+
+    fun initModoEliminar() {
+        Log.i("Lugares", "Modo Eliminar")
+        initModoVisualizar()
+        detalleLugarFabAccion.visibility = View.VISIBLE
+        detalleLugarFabAccion.setImageResource(R.drawable.ic_remove)
+        detalleLugarFabAccion.backgroundTintList = resources.getColorStateList(R.color.removeColor)
+        detalleLugarFabAccion.setOnClickListener { eliminarLugar() }
 
     }
 
@@ -178,21 +195,54 @@ class LugarDetalleFragment(
      * Inserta en el sistema de persistencia o almacenamiento
      */
     private fun insertar() {
-        lugar = Lugar(
-            nombre = detalleLugarInputNombre.text.toString(),
-            tipo = (detalleLugarSpinnerTipo.selectedItem as String),
-            fecha = detalleLugarBotonFecha.text.toString(),
-            latitud = posicion?.latitude.toString(),
-            longitud = posicion?.latitude.toString(),
-            imagen = ImageBase64.toBase64(this.FOTO)!!,
-            favorito = false,
-            votos = 0,
-            usuarioID = USUARIO.id
-        )
         try {
+            // Iderntamos la fotografia
+            val fotografia = Fotografia(
+                nombre = IMAGEN_NOMBRE,
+                imagen = ImageBase64.toBase64(this.FOTO)!!,
+                path = IMAGEN_DIRECTORY,
+                usuarioID = USUARIO.id
+            )
+            FotografiaController.insert(fotografia)
+            Log.i("Insertar", "Fotografía insertada con éxito con: " + fotografia.id)
+            // Insertamos lugar
+            lugar = Lugar(
+                nombre = detalleLugarInputNombre.text.toString(),
+                tipo = (detalleLugarSpinnerTipo.selectedItem as String),
+                fecha = detalleLugarBotonFecha.text.toString(),
+                latitud = posicion?.latitude.toString(),
+                longitud = posicion?.latitude.toString(),
+                imagenID = fotografia.id,
+                favorito = false,
+                votos = 0,
+                usuarioID = USUARIO.id
+            )
             LugarController.insert(lugar!!)
             Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
-            Log.i("Insertar", lugar.toString())
+            Log.i("Insertar", "Lugar insertado con éxito con id" + lugar!!.id)
+        } catch (ex: Exception) {
+            Toast.makeText(context, "Error al insertar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
+            Log.i("Insertar", "Error al insertar: " + ex.localizedMessage)
+        }
+    }
+
+    /**
+     * Precondiciones para eliminar
+     */
+    private fun eliminarLugar() {
+        alertaDialogo("Eliminar Lugar", "¿Desea eliminar este lugar?")
+
+    }
+
+    /**
+     * Elimina un objeto de la base de datos
+     */
+    private fun eliminar() {
+        try {
+            // Eliminamos la imagen
+
+            LugarController.delete(LUGAR!!)
+
         } catch (ex: Exception) {
             Toast.makeText(context, "Error al insertar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
             Log.i("Insertar", "Error al insertar: " + ex.localizedMessage)
@@ -227,7 +277,7 @@ class LugarDetalleFragment(
                 when (MODO) {
                     Modo.INSERTAR -> insertar()
                     // VISUALIZAR -> initModoVisualizar
-                    // ELIMINAR ->  initModoEliminar()
+                    Modo.ELIMINAR -> eliminar()
                     // ACTUALIZAR -> initModoActualizar()
                     else -> {
                     }
@@ -310,7 +360,7 @@ class LugarDetalleFragment(
         when (this.MODO) {
             Modo.INSERTAR -> mapaInsertar()
             Modo.VISUALIZAR -> mapaVisualizar()
-            // ELIMINAR -> mapaVisualizar()
+            Modo.ELIMINAR -> mapaVisualizar()
             // ACTUALIZAR -> mapaActualizar()
             else -> {
             }
@@ -458,9 +508,9 @@ class LugarDetalleFragment(
         // Eso para alta o baja
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         // Nombre de la imagen
-        IMAGEN_NOMBRE = Fotos.crearNombreFoto("camara", ".jpg")
+        IMAGEN_NOMBRE = Fotos.crearNombreFoto(IMAGEN_PREFIJO, IMAGEN_EXTENSION)
         // Salvamos el fichero
-        val fichero = Fotos.salvarFoto(IMAGEN_DIR, IMAGEN_NOMBRE, context!!)
+        val fichero = Fotos.salvarFoto(IMAGEN_DIRECTORY, IMAGEN_NOMBRE, context!!)
         IMAGEN_URI = Uri.fromFile(fichero)
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT, IMAGEN_URI)
@@ -506,10 +556,16 @@ class LugarDetalleFragment(
                         (this.FOTO.height * prop).toInt(),
                         false
                     )
+                    // Vamos a copiar nuestra imagen en nuestro directorio comprimida.
+                    IMAGEN_NOMBRE = Fotos.crearNombreFoto(IMAGEN_PREFIJO, IMAGEN_EXTENSION)
+                    val fichero =
+                        Fotos.copiarFoto(this.FOTO, IMAGEN_NOMBRE, IMAGEN_DIRECTORY, IMAGEN_COMPRESION, context!!)
+                    IMAGEN_URI = Uri.fromFile(fichero)
+                    // Por su queemos guardar el URI con la que se almacena en la Mediastore
+                    IMAGEN_URI = Fotos.añadirFotoGaleria(IMAGEN_URI, IMAGEN_NOMBRE, context!!)!!
                     Toast.makeText(context, "¡Foto rescatada de la galería!", Toast.LENGTH_SHORT).show()
                     detalleLugarImagen.setImageBitmap(this.FOTO)
-                    // Vamos a copiar nuestra imagen en nuestro directorio
-                    // Utilidades.copiarImagen(bitmap, IMAGEN_DIR, IMAGEN_COMPRES, applicationContext)
+
                 } catch (e: IOException) {
                     e.printStackTrace()
                     Toast.makeText(context, "¡Fallo Galeria!", Toast.LENGTH_SHORT).show()
@@ -533,7 +589,7 @@ class LugarDetalleFragment(
                 }
 
                 // Vamos a probar a comprimir
-                Fotos.comprimirImagen(IMAGEN_URI.toFile(), this.FOTO, this.IMAGEN_COMPRES)
+                Fotos.comprimirImagen(IMAGEN_URI.toFile(), this.FOTO, this.IMAGEN_COMPRESION)
 
                 // Si estamos en módo publico la añadimos en la biblioteca
                 // if (PUBLICO) {
@@ -550,19 +606,4 @@ class LugarDetalleFragment(
             }
         }
     }
-
-//    private fun eliminarImagen() {
-//        // La borramos de media
-//        // https://developer.android.com/training/data-storage/shared/media
-//        if (PUBLICO) {
-//            Utilidades.eliminarImageGaleria(IMAGEN_NOMBRE, applicationContext)
-//        }
-//        // La borramos del directorio
-//        try {
-//            Utilidades.eliminarImagen(IMAGEN_URI)
-//            Toast.makeText(this, "¡Foto Eliminada!", Toast.LENGTH_SHORT).show()
-//        } catch (e: Exception) {
-//        }
-//    }
-
 }

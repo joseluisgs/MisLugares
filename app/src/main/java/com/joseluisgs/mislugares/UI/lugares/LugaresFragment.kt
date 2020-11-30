@@ -209,6 +209,7 @@ class LugaresFragment : Fragment() {
      */
     private fun borrarElemento(position: Int) {
         Log.i("Lugares", "Borrando el elemento pos: " + position)
+        abrirDetalle(LUGARES[position], Modo.ELIMINAR)
     }
 
     /**
@@ -216,8 +217,12 @@ class LugaresFragment : Fragment() {
      * @param lugar Lugar
      */
     private fun abrirElemento(lugar: Lugar) {
+        abrirDetalle(lugar, Modo.VISUALIZAR)
+    }
+
+    private fun abrirDetalle(lugar: Lugar, MODO: Modo) {
         Log.i("Lugares", "Abireindo el elemento pos: " + lugar.id)
-        val lugarDetalle = LugarDetalleFragment(lugar, Modo.VISUALIZAR)
+        val lugarDetalle = LugarDetalleFragment(lugar, MODO)
         val transaction = activity!!.supportFragmentManager.beginTransaction()
         // animaciones
         // transaction.setCustomAnimations(R.anim.animacion_fragment1, R.anim.animacion_fragment2)
