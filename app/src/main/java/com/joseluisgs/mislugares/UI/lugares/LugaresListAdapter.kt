@@ -1,12 +1,15 @@
 package com.joseluisgs.mislugares.UI.lugares
 
+import android.graphics.Bitmap
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import kotlinx.android.synthetic.main.item_lugar.view.*
 
 
@@ -30,7 +33,7 @@ class LugaresListAdapter(
      * @param position
      */
     override fun onBindViewHolder(holder: LugarViewHolder, position: Int) {
-        // holder.itemLugarImagen.setImageBitmap(ImageBase64.toBitmap(listaLugares[position].imagen))
+        holder.itemLugarImagen.setImageBitmap(imagenLugar(listaLugares[position]))
         holder.itemLugarNombre.text = listaLugares[position].nombre
         holder.itemLugarFecha.text = listaLugares[position].fecha
         holder.itemLugarTipo.text = listaLugares[position].tipo
@@ -79,6 +82,16 @@ class LugaresListAdapter(
      */
     override fun getItemCount(): Int {
         return listaLugares.size
+    }
+
+    /**
+     * Devuelve la imagen de un lugar
+     * @param lugar Lugar
+     * @return Bitmap?
+     */
+    private fun imagenLugar(lugar: Lugar): Bitmap? {
+        val fotografia = FotografiaController.selectById(lugar.imagenID)!!
+        return ImageBase64.toBitmap(fotografia.imagen)
     }
 
     /**
