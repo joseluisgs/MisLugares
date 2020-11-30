@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import kotlinx.android.synthetic.main.item_lugar.view.*
 
 
@@ -31,7 +30,7 @@ class LugaresListAdapter(
      * @param position
      */
     override fun onBindViewHolder(holder: LugarViewHolder, position: Int) {
-        holder.itemLugarImagen.setImageBitmap(ImageBase64.toBitmap(listaLugares[position].imagen))
+        // holder.itemLugarImagen.setImageBitmap(ImageBase64.toBitmap(listaLugares[position].imagen))
         holder.itemLugarNombre.text = listaLugares[position].nombre
         holder.itemLugarFecha.text = listaLugares[position].fecha
         holder.itemLugarTipo.text = listaLugares[position].tipo
