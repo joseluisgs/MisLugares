@@ -129,9 +129,10 @@ class LugarDetalleFragment(
      */
     private fun initModoInsertar() {
         // Ocultamos o quitamos lo que no queremos ver en este modo
-        detalleLugarTextVotos.visibility = View.GONE // View.INVISIBLE
         detalleLugarInputTipo.visibility = View.GONE
         detalleLugarEditFecha.visibility = View.GONE
+
+        detalleLugarTextVotos.visibility = View.GONE // View.INVISIBLE
         detalleLugarInputNombre.setText("Tu Lugar Ahora") // Quitar luego!!
         val date = LocalDateTime.now()
         detalleLugarBotonFecha.text = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(date)
@@ -144,15 +145,21 @@ class LugarDetalleFragment(
     private fun initModoVisualizar() {
         // Ocultamos o quitamos lo que no queremos ver en este modo
         detalleLugarEditFecha.visibility = View.GONE
+        detalleLugarInputTipo.visibility = View.GONE
+
         detalleLugarFabCamara.visibility = View.GONE
         detalleLugarFabAccion.visibility = View.GONE
-        detalleLugarInputTipo.visibility = View.GONE
+
 
         detalleLugarInputNombre.setText(LUGAR?.nombre) // Quitar luego!!
         detalleLugarBotonFecha.text =LUGAR?.fecha
         detalleLugarTextVotos.text = LUGAR?.votos.toString() + " voto(s)."
         // detalleLugarInputTipo.setText(LUGAR?.tipo)
-        detalleLugarSpinnerTipo.setSelection((detalleLugarSpinnerTipo.adapter as ArrayAdapter<String?>).getPosition(LUGAR?.tipo))
+        detalleLugarSpinnerTipo.setSelection(
+            (detalleLugarSpinnerTipo.adapter as ArrayAdapter<String?>).getPosition(
+                LUGAR?.tipo
+            )
+        )
         detalleLugarSpinnerTipo.isEnabled = false
         detalleLugarImagen.setImageBitmap(ImageBase64.toBitmap(LUGAR?.imagen.toString()))
 
@@ -302,7 +309,7 @@ class LugarDetalleFragment(
         Log.i("Mapa", "Configurando Modo Mapa")
         when (this.MODO) {
             Modo.INSERTAR -> mapaInsertar()
-            // VISUALIZAR -> mapaVisualizar()
+            Modo.VISUALIZAR -> mapaVisualizar()
             // ELIMINAR -> mapaVisualizar()
             // ACTUALIZAR -> mapaActualizar()
             else -> {
@@ -320,6 +327,24 @@ class LugarDetalleFragment(
         }
         activarEventosMarcadores()
         obtenerPosicion()
+    }
+
+    /**
+     * Modo Mapa Visualizar
+     */
+    private fun mapaVisualizar() {
+        // Vamos a dejar que nos deje ir a l lugar obteniendo la psoición actual
+        // mMap.isMyLocationEnabled = true;
+        // procesamos el mapa moviendo la camara allu
+        posicion = LatLng(LUGAR?.latitud?.toDouble()!!, LUGAR.longitud.toDouble())
+        mMap.addMarker(
+            MarkerOptions() // Posición
+                .position(posicion!!) // Título
+                .title(LUGAR?.nombre) // Subtitulo
+                .snippet(LUGAR?.tipo + " del " + LUGAR?.fecha) // Color o tipo d icono
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+        )
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(posicion))
     }
 
     /**
