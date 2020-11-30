@@ -54,7 +54,9 @@ class LugaresFragment : Fragment() {
         cargarLugares()
         iniciarSwipeHorizontal()
         lugaresRecycler.layoutManager = LinearLayoutManager(context)
+        lugaresFabNuevo.setOnClickListener { nuevoElemento() }
         Log.i("Lugares", "Fin la IU")
+
 
     }
 
@@ -196,6 +198,14 @@ class LugaresFragment : Fragment() {
     }
 
     /**
+     * Abre un nuevo elemeneto
+     */
+    private fun nuevoElemento() {
+        Log.i("Lugares", "Nuevo lugar")
+        abrirDetalle(null, null)
+    }
+
+    /**
      * Edita el elemento en la posición seleccionada
      * @param position Int
      */
@@ -217,11 +227,12 @@ class LugaresFragment : Fragment() {
      * @param lugar Lugar
      */
     private fun abrirElemento(lugar: Lugar) {
+        Log.i("Lugares", "Visualizando el elemento: " + lugar.id)
         abrirDetalle(lugar, Modo.VISUALIZAR)
     }
 
-    private fun abrirDetalle(lugar: Lugar, MODO: Modo) {
-        Log.i("Lugares", "Abireindo el elemento pos: " + lugar.id)
+    private fun abrirDetalle(lugar: Lugar?, MODO: Modo?) {
+        Log.i("Lugares", "Abireindo el elemento pos: " + lugar?.id)
         val lugarDetalle = LugarDetalleFragment(lugar, MODO)
         val transaction = activity!!.supportFragmentManager.beginTransaction()
         // animaciones

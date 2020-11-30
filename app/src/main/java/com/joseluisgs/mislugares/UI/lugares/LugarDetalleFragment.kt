@@ -51,7 +51,7 @@ import java.time.format.DateTimeFormatter
  */
 class LugarDetalleFragment(
     private val LUGAR: Lugar? = null,
-    private val MODO: Modo = Modo.INSERTAR
+    private val MODO: Modo? = Modo.INSERTAR
 ) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     // Mis Variables
     private lateinit var USUARIO: Usuario
