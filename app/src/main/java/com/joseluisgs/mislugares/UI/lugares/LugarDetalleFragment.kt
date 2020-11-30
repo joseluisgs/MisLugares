@@ -168,7 +168,9 @@ class LugarDetalleFragment(
             )
         )
         detalleLugarSpinnerTipo.isEnabled = false
-        // detalleLugarImagen.setImageBitmap(ImageBase64.toBitmap(LUGAR?.imagen.toString()))
+        val fotografia = FotografiaController.selectById(LUGAR?.imagenID.toString())
+        detalleLugarImagen.setImageBitmap(ImageBase64.toBitmap(fotografia?.imagen.toString()))
+        //
 
     }
 
@@ -211,7 +213,7 @@ class LugarDetalleFragment(
                 tipo = (detalleLugarSpinnerTipo.selectedItem as String),
                 fecha = detalleLugarBotonFecha.text.toString(),
                 latitud = posicion?.latitude.toString(),
-                longitud = posicion?.latitude.toString(),
+                longitud = posicion?.longitude.toString(),
                 imagenID = fotografia.id,
                 favorito = false,
                 votos = 0,
@@ -386,11 +388,12 @@ class LugarDetalleFragment(
         // Vamos a dejar que nos deje ir a l lugar obteniendo la psoición actual
         // mMap.isMyLocationEnabled = true;
         // procesamos el mapa moviendo la camara allu
+        Log.i("Visualizar", LUGAR?.latitud?.toDouble().toString())
         posicion = LatLng(LUGAR?.latitud?.toDouble()!!, LUGAR.longitud.toDouble())
         mMap.addMarker(
             MarkerOptions() // Posición
                 .position(posicion!!) // Título
-                .title(LUGAR?.nombre) // Subtitulo
+                .title(LUGAR.nombre) // Subtitulo
                 .snippet(LUGAR?.tipo + " del " + LUGAR?.fecha) // Color o tipo d icono
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
         )

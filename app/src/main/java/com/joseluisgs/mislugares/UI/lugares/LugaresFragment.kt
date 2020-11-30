@@ -202,7 +202,7 @@ class LugaresFragment : Fragment() {
      */
     private fun nuevoElemento() {
         Log.i("Lugares", "Nuevo lugar")
-        abrirDetalle(null, null)
+        abrirDetalle(null, Modo.INSERTAR)
     }
 
     /**
@@ -238,7 +238,7 @@ class LugaresFragment : Fragment() {
         // animaciones
         // transaction.setCustomAnimations(R.anim.animacion_fragment1, R.anim.animacion_fragment2)
         //Llamamos al replace
-        transaction.add(R.id.nav_host_fragment, lugarDetalle)
+        transaction.replace(R.id.nav_host_fragment, lugarDetalle)
         transaction.addToBackStack(null)
         transaction.commit()
     }
