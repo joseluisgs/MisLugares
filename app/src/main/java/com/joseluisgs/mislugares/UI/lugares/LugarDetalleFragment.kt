@@ -303,7 +303,7 @@ class LugarDetalleFragment(
             detalleLugarInputNombre.error = "El nombre no puede ser vacío"
             sal = false
         }
-        if (!this::FOTO.isInitialized && this::IMAGEN_NOMBRE.isInitialized) {
+        if (!this::FOTO.isInitialized || !this::IMAGEN_NOMBRE.isInitialized) {
             this.FOTO = (detalleLugarImagen.drawable as BitmapDrawable).bitmap
             Toast.makeText(context, "La imagen no puede estar vacía", Toast.LENGTH_SHORT).show()
             sal = false
