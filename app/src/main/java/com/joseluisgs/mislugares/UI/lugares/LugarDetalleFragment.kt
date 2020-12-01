@@ -53,8 +53,8 @@ class LugarDetalleFragment(
     private val MODO: Modo? = Modo.INSERTAR,
     private val ANTERIOR: LugaresFragment? = null,
     private val LUGAR_INDEX: Int? = null,
-
     ) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+
     // Mis Variables
     private lateinit var USUARIO: Usuario
     private var PERMISOS: Boolean = false
@@ -113,7 +113,7 @@ class LugarDetalleFragment(
             Modo.INSERTAR -> initModoInsertar()
             Modo.VISUALIZAR -> initModoVisualizar()
             Modo.ELIMINAR -> initModoEliminar()
-            // ACTUALIZAR -> initModoActualizar()
+            Modo.ACTUALIZAR -> initModoActualizar()
             else -> {
             }
         }
@@ -154,6 +154,9 @@ class LugarDetalleFragment(
 
     }
 
+    /**
+     * Inicia el modo de Visualizar
+     */
     private fun initModoVisualizar() {
         Log.i("Lugares", "Modo Visualizar")
         // Ocultamos o quitamos lo que no queremos ver en este modo
@@ -183,12 +186,33 @@ class LugarDetalleFragment(
 
     }
 
+    /**
+     * Inicia el Modo de Modificar
+     */
     fun initModoEliminar() {
         Log.i("Lugares", "Modo Eliminar")
         initModoVisualizar()
         detalleLugarFabAccion.visibility = View.VISIBLE
         detalleLugarFabAccion.setImageResource(R.drawable.ic_remove)
         detalleLugarFabAccion.backgroundTintList = resources.getColorStateList(R.color.removeColor)
+        detalleLugarFabAccion.setOnClickListener { eliminarLugar() }
+
+    }
+
+    fun initModoActualizar() {
+        Log.i("Lugares", "Modo Actualizar")
+        initModoVisualizar()
+        // Actualizo la interfaz
+        detalleLugarFabAccion.visibility = View.VISIBLE
+        detalleLugarFabAccion.setImageResource(R.drawable.ic_update)
+        detalleLugarFabAccion.backgroundTintList = resources.getColorStateList(R.color.updateColor)
+        // Actualizo la interfaz
+        detalleLugarBotonFecha.setOnClickListener { escogerFecha() }
+        detalleLugarFabCamara.visibility = View.VISIBLE
+        detalleLugarFabCamara.setOnClickListener { initDialogFoto() }
+        detalleLugarSpinnerTipo.isEnabled = true
+        detalleLugarInputNombre.isEnabled = true
+        // Acción
         detalleLugarFabAccion.setOnClickListener { eliminarLugar() }
 
     }
@@ -404,7 +428,7 @@ class LugarDetalleFragment(
             Modo.INSERTAR -> mapaInsertar()
             Modo.VISUALIZAR -> mapaVisualizar()
             Modo.ELIMINAR -> mapaVisualizar()
-            // ACTUALIZAR -> mapaActualizar()
+            Modo.ACTUALIZAR -> mapaActualizar()
             else -> {
             }
         }
@@ -429,7 +453,7 @@ class LugarDetalleFragment(
         // Vamos a dejar que nos deje ir a l lugar obteniendo la psoición actual
         // mMap.isMyLocationEnabled = true;
         // procesamos el mapa moviendo la camara allu
-        Log.i("Visualizar", LUGAR?.latitud?.toDouble().toString())
+        Log.i("Mapa", "Configurando Modo Visualizar")
         posicion = LatLng(LUGAR?.latitud?.toDouble()!!, LUGAR.longitud.toDouble())
         mMap.addMarker(
             MarkerOptions() // Posición
@@ -439,6 +463,18 @@ class LugarDetalleFragment(
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
         )
         mMap.moveCamera(CameraUpdateFactory.newLatLng(posicion))
+    }
+
+    /**
+     * Modo Mapa Actualizar
+     */
+    private fun mapaActualizar() {
+        Log.i("Mapa", "Configurando Modo Actualizar")
+        if (this.PERMISOS) {
+            mMap.isMyLocationEnabled = true
+        }
+        activarEventosMarcadores()
+        mapaVisualizar()
     }
 
     /**

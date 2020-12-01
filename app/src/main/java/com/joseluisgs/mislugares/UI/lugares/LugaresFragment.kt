@@ -219,6 +219,7 @@ class LugaresFragment : Fragment() {
      */
     private fun editarElemento(position: Int) {
         Log.i("Lugares", "Editando el elemento pos: " + position)
+        abrirDetalle(LUGARES[position], Modo.ACTUALIZAR, this, position)
     }
 
     /**
