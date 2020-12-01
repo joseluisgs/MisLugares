@@ -48,7 +48,7 @@ class LugaresFragment : Fragment() {
     /**
      * Inicia la Interfaz de Usuario
      */
-    private fun initUI() {
+    fun initUI() {
         Log.i("Lugares", "Init IU")
         iniciarSwipeRecarga()
         cargarLugares()
@@ -56,8 +56,6 @@ class LugaresFragment : Fragment() {
         lugaresRecycler.layoutManager = LinearLayoutManager(context)
         lugaresFabNuevo.setOnClickListener { nuevoElemento() }
         Log.i("Lugares", "Fin la IU")
-
-
     }
 
     /**
@@ -192,7 +190,7 @@ class LugaresFragment : Fragment() {
     /**
      * Carga los lugares
      */
-    private fun cargarLugares() {
+    fun cargarLugares() {
         tareaLugares = TareaCargarLugares()
         tareaLugares.execute()
     }
@@ -202,7 +200,8 @@ class LugaresFragment : Fragment() {
      */
     private fun nuevoElemento() {
         Log.i("Lugares", "Nuevo lugar")
-        abrirDetalle(null, Modo.INSERTAR)
+        abrirDetalle(null, Modo.INSERTAR, this)
+        cargarLugares()
     }
 
     /**
@@ -219,7 +218,15 @@ class LugaresFragment : Fragment() {
      */
     private fun borrarElemento(position: Int) {
         Log.i("Lugares", "Borrando el elemento pos: " + position)
-        abrirDetalle(LUGARES[position], Modo.ELIMINAR)
+        abrirDetalle(LUGARES[position], Modo.ELIMINAR, this)
+        cargarLugares()
+    }
+
+    fun actualizarVistaLista() {
+        lugaresRecycler.adapter = lugaresAdapter
+        // Avismos que ha cambiado
+        lugaresAdapter.notifyDataSetChanged()
+        lugaresRecycler.setHasFixedSize(true)
     }
 
     /**
@@ -228,16 +235,16 @@ class LugaresFragment : Fragment() {
      */
     private fun abrirElemento(lugar: Lugar) {
         Log.i("Lugares", "Visualizando el elemento: " + lugar.id)
-        abrirDetalle(lugar, Modo.VISUALIZAR)
+        abrirDetalle(lugar, Modo.VISUALIZAR, this)
     }
 
-    private fun abrirDetalle(lugar: Lugar?, MODO: Modo?) {
-        Log.i("Lugares", "Abireindo el elemento pos: " + lugar?.id)
-        val lugarDetalle = LugarDetalleFragment(lugar, MODO)
+    private fun abrirDetalle(lugar: Lugar?, modo: Modo?, anterior: LugaresFragment?) {
+        Log.i("Lugares", "Abriendo el elemento pos: " + lugar?.id)
+        val lugarDetalle = LugarDetalleFragment(lugar, modo, anterior)
         val transaction = activity!!.supportFragmentManager.beginTransaction()
         // animaciones
         // transaction.setCustomAnimations(R.anim.animacion_fragment1, R.anim.animacion_fragment2)
-        //Llamamos al replace
+        //Llamamos al replace/ add
         transaction.replace(R.id.nav_host_fragment, lugarDetalle)
         transaction.addToBackStack(null)
         transaction.commit()

@@ -44,9 +44,9 @@ object FotografiaController {
     }
 
     /**
-     * Busca lugares por ID
+     * Busca fotografia por ID
      * @param id String
-     * @return Usuario?
+     * @return Fotografia
      */
     fun selectById(id: String): Fotografia? {
         return Realm.getDefaultInstance().copyFromRealm(

@@ -53,6 +53,14 @@ object Fotos {
      * Copia un bitmap en un path determinado
      */
     fun copiarFoto(bitmap: Bitmap, nombre: String, path: String, compresion: Int, context: Context): File {
+        val dirFotos = File((context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath) + path)
+        // Solo si queremos crear un directorio y que todo sea público
+        //val dirFotos = File(Environment.getExternalStorageDirectory().toString() + path)
+        // Si no existe el directorio, lo creamos solo si es publico
+        if (!dirFotos.exists()) {
+            dirFotos.mkdirs()
+        }
+
         val fichero =
             context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath + path + File.separator + nombre
         val bytes = ByteArrayOutputStream()
@@ -66,7 +74,7 @@ object Fotos {
     /**
      * Comprime una imagen
      */
-    fun comprimirImagen(fichero: File, bitmap: Bitmap, compresion: Int) {
+    fun comprimirFoto(fichero: File, bitmap: Bitmap, compresion: Int) {
         // Recuperamos el Bitmap
         val bytes = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, compresion, bytes)
@@ -74,6 +82,15 @@ object Fotos {
         fo.write(bytes.toByteArray())
         fo.close()
     }
+
+    /**
+     * Elimina una imagen
+     */
+    fun eliminarFoto(imagenUri: Uri) {
+        if (imagenUri.toFile().exists())
+            imagenUri.toFile().delete()
+    }
+
 
     /**
      * Añade una imagen a la galería

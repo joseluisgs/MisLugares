@@ -33,11 +33,11 @@ class LugaresListAdapter(
      * @param position
      */
     override fun onBindViewHolder(holder: LugarViewHolder, position: Int) {
-        holder.itemLugarImagen.setImageBitmap(imagenLugar(listaLugares[position]))
         holder.itemLugarNombre.text = listaLugares[position].nombre
         holder.itemLugarFecha.text = listaLugares[position].fecha
         holder.itemLugarTipo.text = listaLugares[position].tipo
         holder.itemLugarVotos.text = listaLugares[position].votos.toString()
+        holder.itemLugarImagen.setImageBitmap(imagenLugar(listaLugares[position]))
 
         // Queda procesar el botón de favoritos...
         holder.itemLugarFavorito.setOnClickListener {
@@ -90,8 +90,12 @@ class LugaresListAdapter(
      * @return Bitmap?
      */
     private fun imagenLugar(lugar: Lugar): Bitmap? {
-        val fotografia = FotografiaController.selectById(lugar.imagenID)!!
-        return ImageBase64.toBitmap(fotografia.imagen)
+        try {
+            val fotografia = FotografiaController.selectById(lugar.imagenID)
+            return ImageBase64.toBitmap(fotografia?.imagen.toString())
+        } catch (ex: Exception) {
+            return null
+        }
     }
 
     /**
