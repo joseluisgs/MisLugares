@@ -12,7 +12,7 @@ import kotlin.experimental.and
  */
 object Cifrador {
     // tipo por ejemplo: "SHA-256"
-    fun toHash(cadena: String, tipo: String): String? {
+    fun toHash(cadena: String, tipo: String = "SHA-256"): String? {
         var md: MessageDigest? = null
         var hash: ByteArray? = null
         // Llamamos a la función de hash

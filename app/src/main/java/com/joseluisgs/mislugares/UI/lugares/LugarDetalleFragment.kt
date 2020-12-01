@@ -1,5 +1,6 @@
 package com.joseluisgs.mislugares.UI.lugares
 
+import Utilidades.Cifrador
 import android.app.Activity.RESULT_CANCELED
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -49,7 +50,7 @@ import java.time.format.DateTimeFormatter
  * Clase Lugar Detalle
  */
 class LugarDetalleFragment(
-    private val LUGAR: Lugar? = null,
+    private var LUGAR: Lugar? = null,
     private val MODO: Modo? = Modo.INSERTAR,
     private val ANTERIOR: LugaresFragment? = null,
     private val LUGAR_INDEX: Int? = null,
@@ -62,7 +63,6 @@ class LugarDetalleFragment(
     // Variables a usar y permisos del mapa
     private lateinit var mMap: GoogleMap
     private var mPosicion: FusedLocationProviderClient? = null
-    private var lugar: Lugar? = null
     private var marcadorTouch: Marker? = null
     private var localizacion: Location? = null
     private var posicion: LatLng? = null
@@ -179,11 +179,11 @@ class LugarDetalleFragment(
         )
         detalleLugarSpinnerTipo.isEnabled = false
         val fotografia = FotografiaController.selectById(LUGAR?.imagenID.toString())
-        detalleLugarImagen.setImageBitmap(ImageBase64.toBitmap(fotografia?.imagen.toString()))
+        val b64 = ImageBase64.toBitmap(fotografia?.imagen.toString())
+        detalleLugarImagen.setImageBitmap(b64)
         IMAGEN_NOMBRE = fotografia?.nombre.toString()
         IMAGEN_URI = Uri.parse(fotografia?.uri.toString())
-        //
-
+        this.FOTO = b64!!
     }
 
     /**
@@ -213,7 +213,7 @@ class LugarDetalleFragment(
         detalleLugarSpinnerTipo.isEnabled = true
         detalleLugarInputNombre.isEnabled = true
         // Acción
-        detalleLugarFabAccion.setOnClickListener { eliminarLugar() }
+        detalleLugarFabAccion.setOnClickListener { actualizarLugar() }
 
     }
 
@@ -232,17 +232,19 @@ class LugarDetalleFragment(
     private fun insertar() {
         try {
             // Iderntamos la fotografia
+            val b64 = ImageBase64.toBase64(this.FOTO)!!
             val fotografia = Fotografia(
                 nombre = IMAGEN_NOMBRE,
-                imagen = ImageBase64.toBase64(this.FOTO)!!,
+                imagen = b64,
                 path = IMAGEN_DIRECTORY,
                 uri = IMAGEN_URI.toString(),
+                hash = Cifrador.toHash(b64).toString(),
                 usuarioID = USUARIO.id
             )
             FotografiaController.insert(fotografia)
             Log.i("Insertar", "Fotografía insertada con éxito con: " + fotografia.id)
             // Insertamos lugar
-            lugar = Lugar(
+            LUGAR = Lugar(
                 nombre = detalleLugarInputNombre.text.toString(),
                 tipo = (detalleLugarSpinnerTipo.selectedItem as String),
                 fecha = detalleLugarBotonFecha.text.toString(),
@@ -253,11 +255,11 @@ class LugarDetalleFragment(
                 votos = 0,
                 usuarioID = USUARIO.id
             )
-            LugarController.insert(lugar!!)
+            LugarController.insert(LUGAR!!)
             // Actualizamos el adapter
-            ANTERIOR?.insertarItemLista(lugar!!)
+            ANTERIOR?.insertarItemLista(LUGAR!!)
             Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
-            Log.i("Insertar", "Lugar insertado con éxito con id" + lugar!!.id)
+            Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR!!.id)
             // Forzamos a cargar la lista de lugares
             // ANTERIOR?.cargarLugares()
             // Volvemos
@@ -312,6 +314,22 @@ class LugarDetalleFragment(
         volver()
     }
 
+    private fun actualizarLugar() {
+        if (comprobarFormulario()) {
+            alertaDialogo("Modificar Lugar", "¿Desea modificar este lugar?")
+        }
+    }
+
+    private fun actualizar() {
+        try {
+
+        } catch (ex: Exception) {
+            Toast.makeText(context, "Error al actualizar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
+            Log.i("Actualizar", "Error al actualizar: " + ex.localizedMessage)
+        }
+
+    }
+
     private fun volver() {
         activity?.onBackPressed();
     }
@@ -345,7 +363,7 @@ class LugarDetalleFragment(
                     Modo.INSERTAR -> insertar()
                     // VISUALIZAR -> initModoVisualizar
                     Modo.ELIMINAR -> eliminar()
-                    // ACTUALIZAR -> initModoActualizar()
+                    Modo.ACTUALIZAR -> actualizar()
                     else -> {
                     }
                 }
@@ -454,12 +472,12 @@ class LugarDetalleFragment(
         // mMap.isMyLocationEnabled = true;
         // procesamos el mapa moviendo la camara allu
         Log.i("Mapa", "Configurando Modo Visualizar")
-        posicion = LatLng(LUGAR?.latitud?.toDouble()!!, LUGAR.longitud.toDouble())
+        posicion = LatLng(LUGAR!!.latitud.toDouble(), LUGAR!!.longitud.toDouble())
         mMap.addMarker(
             MarkerOptions() // Posición
                 .position(posicion!!) // Título
-                .title(LUGAR.nombre) // Subtitulo
-                .snippet(LUGAR.tipo + " del " + LUGAR.fecha) // Color o tipo d icono
+                .title(LUGAR!!.nombre) // Subtitulo
+                .snippet(LUGAR!!.tipo + " del " + LUGAR!!.fecha) // Color o tipo d icono
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
         )
         mMap.moveCamera(CameraUpdateFactory.newLatLng(posicion))
