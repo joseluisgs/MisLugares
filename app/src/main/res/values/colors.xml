@@ -13,6 +13,7 @@
     <color name="favOffColor">#FFFFDFDF</color>
     <color name="favOnColor">#FFFF7A7A</color>
     <color name="removeColor">#FF5151</color>
+    <color name="updateColor">#52B0EC</color>
     <color name="recyclerListColor">#FBFFFD</color>
     <color name="addLocationButtonColor">#52B0EC</color>
     <color name="vozButtonColor">#DC71EE</color>
