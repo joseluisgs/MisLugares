@@ -222,6 +222,13 @@ class LugaresFragment : Fragment() {
         abrirDetalle(LUGARES[position], Modo.ACTUALIZAR, this, position)
     }
 
+    fun actualizarItemLista(item: Lugar, position: Int) {
+        this.lugaresAdapter.updateItem(item,position)
+        lugaresAdapter.notifyDataSetChanged()
+        // Si queremos forzar la recarga
+        // cargarLugares()
+    }
+
     /**
      * Borra el elemento en la posición seleccionada
      * @param position Int
