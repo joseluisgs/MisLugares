@@ -82,6 +82,7 @@ class LugarDetalleFragment(
     // Para actualizar
     private lateinit var IMAGEN_NOMBRE_OLD: String
     private lateinit var IMAGEN_URI_OLD: Uri
+    private lateinit var FOTO_OLD: Bitmap
 
 
     override fun onCreateView(
@@ -192,6 +193,7 @@ class LugarDetalleFragment(
         // Variables para actualizar
         this.IMAGEN_NOMBRE_OLD = fotografia?.nombre.toString()
         this.IMAGEN_URI_OLD = Uri.parse(fotografia?.uri.toString())
+        this.FOTO_OLD = b64
 
     }
 
@@ -254,7 +256,7 @@ class LugarDetalleFragment(
             Log.i("Insertar", "Fotografía insertada con éxito con: " + fotografia.id)
             // Insertamos lugar
             LUGAR = Lugar(
-                nombre = detalleLugarInputNombre.text.toString(),
+                nombre = detalleLugarInputNombre.text.toString().trim(),
                 tipo = (detalleLugarSpinnerTipo.selectedItem as String),
                 fecha = detalleLugarBotonFecha.text.toString(),
                 latitud = posicion?.latitude.toString(),
@@ -334,8 +336,9 @@ class LugarDetalleFragment(
             val fotografiaID = LUGAR?.imagenID.toString()
             val fotografia = FotografiaController.selectById(fotografiaID)
             val b64 = ImageBase64.toBase64(this.FOTO)!!
-            val hash64 = Cifrador.toHash(b64).toString()
-            if (fotografia?.hash != hash64) {
+            val hashB64New = Cifrador.toHash(b64)
+            val hashB64Old = Cifrador.toHash(ImageBase64.toBase64(this.FOTO_OLD)!!)
+            if (hashB64New != hashB64Old) {
                 Log.i("Actualizar", "Imagenes Distintas")
                 // Si son distintas actualizamos
                 with(fotografia!!) {
@@ -343,7 +346,7 @@ class LugarDetalleFragment(
                     imagen = b64
                     path = IMAGEN_DIRECTORY
                     uri = IMAGEN_URI.toString()
-                    hash = hash64
+                    hash = hashB64New.toString()
                     usuarioID = USUARIO.id
                 }
                 FotografiaController.update(fotografia)
@@ -351,19 +354,19 @@ class LugarDetalleFragment(
             }
             Log.i("Actualizar", "Actualizamos los lugares")
             with(LUGAR!!) {
-                nombre = detalleLugarInputNombre.text.toString()
+                nombre = detalleLugarInputNombre.text.toString().trim()
                 tipo = (detalleLugarSpinnerTipo.selectedItem as String)
                 fecha = detalleLugarBotonFecha.text.toString()
                 latitud = posicion?.latitude.toString()
                 longitud = posicion?.longitude.toString()
-                imagenID = fotografia.id
+                imagenID = fotografia!!.id
                 // usuarioID = USUARIO.id
             }
             LugarController.update(LUGAR!!)
             // Actualizamos el adapter
             ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
             Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show();
-            Log.i("Insertar", "Lugar actualizado con éxito con id" + LUGAR!!.id)
+            Log.i("Actualizar", "Lugar actualizado con éxito con id" + LUGAR!!.id)
             // Volvemos
             volver()
 
@@ -524,7 +527,8 @@ class LugarDetalleFragment(
         // procesamos el mapa moviendo la camara allu
         Log.i("Mapa", "Configurando Modo Visualizar")
         posicion = LatLng(LUGAR!!.latitud.toDouble(), LUGAR!!.longitud.toDouble())
-        mMap.addMarker(
+        // marcadorTouch?.remove()
+         mMap.addMarker(
             MarkerOptions() // Posición
                 .position(posicion!!) // Título
                 .title(LUGAR!!.nombre) // Subtitulo
@@ -558,7 +562,7 @@ class LugarDetalleFragment(
                     .position(point) // Título
                     .title("Posición Actual") // Subtitulo
                     .snippet(detalleLugarInputNombre.text.toString()) // Color o tipo d icono
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
             )
             mMap.moveCamera(CameraUpdateFactory.newLatLng(point))
             posicion = point
