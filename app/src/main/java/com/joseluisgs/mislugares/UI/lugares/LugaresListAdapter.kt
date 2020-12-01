@@ -70,7 +70,7 @@ class LugaresListAdapter(
      * @param position
      */
     fun updateItem(item: Lugar, position: Int) {
-        listaLugares.add(position, item)
+        listaLugares[position] = item
         notifyItemInserted(position)
         notifyItemRangeChanged(position, listaLugares.size)
     }

@@ -322,6 +322,42 @@ class LugarDetalleFragment(
 
     private fun actualizar() {
         try {
+            // Primero comprobamos que debemos cambiar la imagen, para ello usamos el hash
+            val fotografiaID = LUGAR?.imagenID.toString()
+            val fotografia = FotografiaController.selectById(fotografiaID)
+            val b64 = ImageBase64.toBase64(this.FOTO)!!
+            val hash64 = Cifrador.toHash(b64).toString()
+            if (fotografia?.hash != hash64) {
+                Log.i("Actualizar", "Imagenes Distintas")
+                // Si son distintas actualizamos
+                with(fotografia!!) {
+                    nombre = IMAGEN_NOMBRE
+                    imagen = b64
+                    path = IMAGEN_DIRECTORY
+                    uri = IMAGEN_URI.toString()
+                    hash = hash64
+                    usuarioID = USUARIO.id
+                }
+                FotografiaController.update(fotografia)
+                Log.i("Actualizar", "Fotografía actualizada")
+            }
+            Log.i("Actualizar", "Actualizamos los lugares")
+            with(LUGAR!!) {
+                nombre = detalleLugarInputNombre.text.toString()
+                tipo = (detalleLugarSpinnerTipo.selectedItem as String)
+                fecha = detalleLugarBotonFecha.text.toString()
+                latitud = posicion?.latitude.toString()
+                longitud = posicion?.longitude.toString()
+                imagenID = fotografia.id
+                // usuarioID = USUARIO.id
+            }
+            LugarController.update(LUGAR!!)
+            // Actualizamos el adapter
+            ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
+            Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show();
+            Log.i("Insertar", "Lugar actualizado con éxito con id" + LUGAR!!.id)
+            // Volvemos
+            volver()
 
         } catch (ex: Exception) {
             Toast.makeText(context, "Error al actualizar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
