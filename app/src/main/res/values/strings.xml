@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mis Luguares</string>
+    <string name="app_name">Mis Lugares</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -10,4 +10,32 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="acerca_de">Acerca de</string>
+    <string name="autor">José Luis González</string>
+    <string name="curso">Programación Multimedia y Dispositivos Móviles</string>
+    <string name="instituto">CIFP Virgen de Gracia</string>
+    <string name="lugar">Puertollano (Ciudad Real)</string>
+    <string name="mis_lugares">Mis Lugares</string>
+    <string name="mi_mapa">Mi Mapa</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="cancelar">Cancelar</string>
+
+    <!-- Tipos de lugares para insertar -->
+    <string-array name="tipos_lugares">
+        <item>Ciudad</item>
+        <item>Pueblo</item>
+        <item>Monumento</item>
+        <item>Paisaje</item>
+        <item>Bar</item>
+        <item>Comida</item>
+    </string-array>
+
+    <!-- Tipos de busqueda -->
+    <string-array name="tipos_busqueda">
+        <item>Ordenar por nombre</item>
+        <item>Ordenar por fecha</item>
+        <item>Ordenar por tipo</item>
+        <item>Ordenar por favoritos</item>
+        <item>Ordenar por votos</item>
+    </string-array>
 </resources>

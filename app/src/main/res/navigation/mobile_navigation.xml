@@ -3,23 +3,29 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/mobile_navigation"
-            app:startDestination="@+id/nav_home">
+            app:startDestination="@+id/nav_lugares">
 
     <fragment
-            android:id="@+id/nav_home"
-            android:name="com.joseluisgs.misluguares.ui.home.HomeFragment"
-            android:label="@string/menu_home"
-            tools:layout="@layout/fragment_home"/>
+            android:id="@+id/nav_lugares"
+            android:name="com.joseluisgs.mislugares.UI.lugares.LugaresFragment"
+            android:label="@string/mis_lugares"
+            tools:layout="@layout/fragment_lugares"/>
 
     <fragment
-            android:id="@+id/nav_gallery"
-            android:name="com.joseluisgs.misluguares.ui.gallery.GalleryFragment"
-            android:label="@string/menu_gallery"
-            tools:layout="@layout/fragment_gallery"/>
+            android:id="@+id/nav_mapa"
+            android:name="com.joseluisgs.mislugares.UI.mapa.MapaFragment"
+            android:label="@string/mi_mapa"
+            tools:layout="@layout/fragment_mapa"/>
 
     <fragment
-            android:id="@+id/nav_slideshow"
-            android:name="com.joseluisgs.misluguares.ui.slideshow.SlideshowFragment"
-            android:label="@string/menu_slideshow"
-            tools:layout="@layout/fragment_slideshow"/>
+            android:id="@+id/nav_lugar_detalle"
+            android:name="com.joseluisgs.mislugares.UI.lugares.LugarDetalleFragment"
+            android:label="@string/app_name"
+            tools:layout="@layout/fragment_lugar_detalle"/>
+
+    <fragment
+            android:id="@+id/nav_acerca_de"
+            android:name="com.joseluisgs.mislugares.UI.acerca_de.AcercaDeFragment"
+            android:label="@string/acerca_de"
+            tools:layout="@layout/fragment_acerca_de"/>
 </navigation>
