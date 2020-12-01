@@ -79,6 +79,10 @@ class LugarDetalleFragment(
     private val IMAGEN_PREFIJO = "lugar"
     private val IMAGEN_EXTENSION = ".jpg"
 
+    // Para actualizar
+    private lateinit var IMAGEN_NOMBRE_OLD: String
+    private lateinit var IMAGEN_URI_OLD: Uri
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -181,9 +185,14 @@ class LugarDetalleFragment(
         val fotografia = FotografiaController.selectById(LUGAR?.imagenID.toString())
         val b64 = ImageBase64.toBitmap(fotografia?.imagen.toString())
         detalleLugarImagen.setImageBitmap(b64)
-        IMAGEN_NOMBRE = fotografia?.nombre.toString()
-        IMAGEN_URI = Uri.parse(fotografia?.uri.toString())
+        this.IMAGEN_NOMBRE = fotografia?.nombre.toString()
+        this.IMAGEN_URI = Uri.parse(fotografia?.uri.toString())
         this.FOTO = b64!!
+
+        // Variables para actualizar
+        this.IMAGEN_NOMBRE_OLD = fotografia?.nombre.toString()
+        this.IMAGEN_URI_OLD = Uri.parse(fotografia?.uri.toString())
+
     }
 
     /**
@@ -307,7 +316,6 @@ class LugarDetalleFragment(
                 Fotos.eliminarFoto(IMAGEN_URI)
             } catch (ex: Exception) {
             }
-            // Forzamos a cargar la lista de lugares
         }
 
         // Volvemos
@@ -362,6 +370,13 @@ class LugarDetalleFragment(
         } catch (ex: Exception) {
             Toast.makeText(context, "Error al actualizar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
             Log.i("Actualizar", "Error al actualizar: " + ex.localizedMessage)
+        } finally {
+            try {
+                Fotos.eliminarFotoGaleria(IMAGEN_NOMBRE_OLD, context!!)
+                // Eliminamos de nuestro espacio
+                Fotos.eliminarFoto(IMAGEN_URI_OLD)
+            } catch (ex: Exception) {
+            }
         }
 
     }
