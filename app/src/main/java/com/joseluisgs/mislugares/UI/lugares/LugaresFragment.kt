@@ -48,7 +48,7 @@ class LugaresFragment : Fragment() {
     /**
      * Inicia la Interfaz de Usuario
      */
-    fun initUI() {
+    private fun initUI() {
         Log.i("Lugares", "Init IU")
         iniciarSwipeRecarga()
         cargarLugares()
@@ -200,8 +200,17 @@ class LugaresFragment : Fragment() {
      */
     private fun nuevoElemento() {
         Log.i("Lugares", "Nuevo lugar")
-        abrirDetalle(null, Modo.INSERTAR, this)
-        cargarLugares()
+        abrirDetalle(null, Modo.INSERTAR, this, null)
+    }
+
+    /**
+     * Inserta un elemento en la lista
+     */
+    fun insertarItemLista(item: Lugar) {
+        this.lugaresAdapter.addItem(item)
+        lugaresAdapter.notifyDataSetChanged()
+        // Si queremos forzar la recarga
+        // cargarLugares()
     }
 
     /**
@@ -218,15 +227,22 @@ class LugaresFragment : Fragment() {
      */
     private fun borrarElemento(position: Int) {
         Log.i("Lugares", "Borrando el elemento pos: " + position)
-        abrirDetalle(LUGARES[position], Modo.ELIMINAR, this)
-        cargarLugares()
+        abrirDetalle(LUGARES[position], Modo.ELIMINAR, this, position)
+    }
+
+    /**
+     * Elimina un elemento de la vista
+     * @param position Int
+     */
+    fun eliminarItemLista(position: Int) {
+        this.lugaresAdapter.removeItem(position)
+        lugaresAdapter.notifyDataSetChanged()
+        // Si queremos forzar la recarga
+        // cargarLugares()
     }
 
     fun actualizarVistaLista() {
         lugaresRecycler.adapter = lugaresAdapter
-        // Avismos que ha cambiado
-        lugaresAdapter.notifyDataSetChanged()
-        lugaresRecycler.setHasFixedSize(true)
     }
 
     /**
@@ -235,12 +251,12 @@ class LugaresFragment : Fragment() {
      */
     private fun abrirElemento(lugar: Lugar) {
         Log.i("Lugares", "Visualizando el elemento: " + lugar.id)
-        abrirDetalle(lugar, Modo.VISUALIZAR, this)
+        abrirDetalle(lugar, Modo.VISUALIZAR, this, null)
     }
 
-    private fun abrirDetalle(lugar: Lugar?, modo: Modo?, anterior: LugaresFragment?) {
+    private fun abrirDetalle(lugar: Lugar?, modo: Modo?, anterior: LugaresFragment?, position: Int?) {
         Log.i("Lugares", "Abriendo el elemento pos: " + lugar?.id)
-        val lugarDetalle = LugarDetalleFragment(lugar, modo, anterior)
+        val lugarDetalle = LugarDetalleFragment(lugar, modo, anterior, position)
         val transaction = activity!!.supportFragmentManager.beginTransaction()
         // animaciones
         // transaction.setCustomAnimations(R.anim.animacion_fragment1, R.anim.animacion_fragment2)

@@ -76,6 +76,16 @@ class LugaresListAdapter(
     }
 
     /**
+     * Para añadir un elemento
+     * @param item
+     */
+    fun addItem(item: Lugar) {
+        listaLugares.add(item)
+        notifyDataSetChanged()
+    }
+
+
+    /**
      * Devuelve el número de items de la lista
      *
      * @return

@@ -46,34 +46,13 @@ import java.time.format.DateTimeFormatter
 
 
 /**
- * Clase Detalle
- * @property LUGAR Lugar?
- * @property MODO Modo?
- * @property ANTERIOR LugaresFragment?
- * @property USUARIO Usuario
- * @property PERMISOS Boolean
- * @property mMap GoogleMap
- * @property mPosicion FusedLocationProviderClient?
- * @property lugar Lugar?
- * @property marcadorTouch Marker?
- * @property localizacion Location?
- * @property posicion LatLng?
- * @property GALERIA Int
- * @property CAMARA Int
- * @property IMAGEN_NOMBRE String
- * @property IMAGEN_URI Uri
- * @property IMAGEN_DIRECTORY String
- * @property IMAGEN_PROPORCION Int
- * @property FOTO Bitmap
- * @property IMAGEN_COMPRESION Int
- * @property IMAGEN_PREFIJO String
- * @property IMAGEN_EXTENSION String
- * @constructor
+ * Clase Lugar Detalle
  */
 class LugarDetalleFragment(
     private val LUGAR: Lugar? = null,
     private val MODO: Modo? = Modo.INSERTAR,
     private val ANTERIOR: LugaresFragment? = null,
+    private val LUGAR_INDEX: Int? = null,
 
     ) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     // Mis Variables
@@ -251,6 +230,8 @@ class LugarDetalleFragment(
                 usuarioID = USUARIO.id
             )
             LugarController.insert(lugar!!)
+            // Actualizamos el adapter
+            ANTERIOR?.insertarItemLista(lugar!!)
             Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
             Log.i("Insertar", "Lugar insertado con éxito con id" + lugar!!.id)
             // Forzamos a cargar la lista de lugares
@@ -284,6 +265,9 @@ class LugarDetalleFragment(
             // De la base de datos
             FotografiaController.delete(fotografia!!)
 
+            // Actualizamos el adapter
+            ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
+
             // Eliminamos la fotografías
             Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show();
             Log.i("Eliminar", "Lugar eliminado con éxito")
@@ -305,13 +289,7 @@ class LugarDetalleFragment(
     }
 
     private fun volver() {
-        ANTERIOR?.cargarLugares()
-        ANTERIOR?.actualizarVistaLista()
         activity?.onBackPressed();
-//        val transaction = activity!!.supportFragmentManager.beginTransaction()
-//        transaction.replace(R.id.nav_host_fragment, (ANTERIOR as Fragment))
-//        transaction.addToBackStack(null)
-//        transaction.commit()
     }
 
     /**
@@ -457,7 +435,7 @@ class LugarDetalleFragment(
             MarkerOptions() // Posición
                 .position(posicion!!) // Título
                 .title(LUGAR.nombre) // Subtitulo
-                .snippet(LUGAR?.tipo + " del " + LUGAR?.fecha) // Color o tipo d icono
+                .snippet(LUGAR.tipo + " del " + LUGAR.fecha) // Color o tipo d icono
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
         )
         mMap.moveCamera(CameraUpdateFactory.newLatLng(posicion))
@@ -496,20 +474,28 @@ class LugarDetalleFragment(
                 ) { task ->
                     if (task.isSuccessful) {
                         // Actualizamos la última posición conocida
+                        //try {
                         localizacion = task.result
                         posicion = LatLng(
                             localizacion!!.latitude,
                             localizacion!!.longitude
                         )
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(posicion));
+                        //}catch (ex: Exception) {
+                        //   Snackbar.make(view!!, "GPS Inactivo o sin posición actual", Snackbar.LENGTH_LONG).show();
+                        //}
                     } else {
-                        Snackbar.make(view!!, "No se ha encontrado su posoción actual", Snackbar.LENGTH_LONG).show();
                         Log.i("GPS", "No se encuetra la última posición.")
                         Log.e("GPS", "Exception: %s", task.exception)
                     }
                 }
             }
         } catch (e: SecurityException) {
+            Snackbar.make(
+                view!!,
+                "No se ha encontrado su posoción actual o el GPS está desactivado",
+                Snackbar.LENGTH_LONG
+            ).show();
             Log.e("Exception: %s", e.message.toString())
         }
     }
