@@ -148,4 +148,21 @@ object Fotos {
             }
         }
     }
+
+    fun salvarFotoTemp(context: Context): File? {
+        // Almacenamos en nuestro directorio de almacenamiento externo asignado en Pictures
+        try {
+            val f = File.createTempFile("img_", ".jpg",context.cacheDir)
+            f.createNewFile()
+            return f
+        } catch (e1: Exception) {
+            e1.printStackTrace()
+        }
+        return null
+    }
+
+    fun deleteFotoDir(context: Context) {
+        val dirFotos = File((context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath) + "MisLugares")
+        dirFotos.deleteRecursively()
+    }
 }

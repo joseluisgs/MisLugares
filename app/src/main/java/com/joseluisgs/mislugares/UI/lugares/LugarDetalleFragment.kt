@@ -20,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -42,8 +43,10 @@ import com.joseluisgs.mislugares.Utilidades.Fotos
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import java.io.IOException
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 /**
@@ -54,7 +57,7 @@ class LugarDetalleFragment(
     private val MODO: Modo? = Modo.INSERTAR,
     private val ANTERIOR: LugaresFragment? = null,
     private val LUGAR_INDEX: Int? = null,
-    ) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     // Mis Variables
     private lateinit var USUARIO: Usuario
@@ -70,20 +73,13 @@ class LugarDetalleFragment(
     // Variables para la camara
     private val GALERIA = 1
     private val CAMARA = 2
-    private lateinit var IMAGEN_NOMBRE: String
     private lateinit var IMAGEN_URI: Uri
     private val IMAGEN_DIRECTORY = "/MisLugares"
     private val IMAGEN_PROPORCION = 600
     private lateinit var FOTO: Bitmap
-    private var IMAGEN_COMPRESION = 80
+    private var IMAGEN_COMPRESION = 60
     private val IMAGEN_PREFIJO = "lugar"
     private val IMAGEN_EXTENSION = ".jpg"
-
-    // Para actualizar
-    private lateinit var IMAGEN_NOMBRE_OLD: String
-    private lateinit var IMAGEN_URI_OLD: Uri
-    private lateinit var FOTO_OLD: Bitmap
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,7 +92,8 @@ class LugarDetalleFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.i("Lugares", "Creando Lugar Detalle")
-        // Y esto que parece una tonteria es para que no se propagen los eventos entre fragments
+        // Y esto que parece una tonteria es para que no se propagen los eventos
+        // entre fragments y no disparar eventos de otros fragments
         view.setOnTouchListener { view, motionEvent ->
             return@setOnTouchListener true
         }
@@ -107,10 +104,8 @@ class LugarDetalleFragment(
      * Iniciamos los elementos de la interfaz
      */
     private fun initIU() {
-        // Inicializamos las cosas comunes y las específicass
         // Actualizo la vista anterior para que no se quede el swipe marcado
         ANTERIOR?.actualizarVistaLista()
-
         initPermisos()
         initUsuario()
         // Modos de ejecución
@@ -146,9 +141,6 @@ class LugarDetalleFragment(
     private fun initModoInsertar() {
         Log.i("Lugares", "Modo Insertar")
         // Ocultamos o quitamos lo que no queremos ver en este modo
-        detalleLugarInputTipo.visibility = View.GONE
-        detalleLugarEditFecha.visibility = View.GONE
-
         detalleLugarTextVotos.visibility = View.GONE // View.INVISIBLE
         detalleLugarInputNombre.setText("Tu Lugar Ahora") // Quitar luego!!
         val date = LocalDateTime.now()
@@ -165,18 +157,12 @@ class LugarDetalleFragment(
     private fun initModoVisualizar() {
         Log.i("Lugares", "Modo Visualizar")
         // Ocultamos o quitamos lo que no queremos ver en este modo
-        detalleLugarEditFecha.visibility = View.GONE
-        detalleLugarInputTipo.visibility = View.GONE
-
         detalleLugarFabCamara.visibility = View.GONE
         detalleLugarFabAccion.visibility = View.GONE
-
-
         detalleLugarInputNombre.setText(LUGAR?.nombre)
         detalleLugarInputNombre.isEnabled = false
         detalleLugarBotonFecha.text = LUGAR?.fecha
         detalleLugarTextVotos.text = LUGAR?.votos.toString() + " voto(s)."
-        // detalleLugarInputTipo.setText(LUGAR?.tipo)
         detalleLugarSpinnerTipo.setSelection(
             (detalleLugarSpinnerTipo.adapter as ArrayAdapter<String?>).getPosition(
                 LUGAR?.tipo
@@ -184,17 +170,9 @@ class LugarDetalleFragment(
         )
         detalleLugarSpinnerTipo.isEnabled = false
         val fotografia = FotografiaController.selectById(LUGAR?.imagenID.toString())
-        val b64 = ImageBase64.toBitmap(fotografia?.imagen.toString())
-        detalleLugarImagen.setImageBitmap(b64)
-        this.IMAGEN_NOMBRE = fotografia?.nombre.toString()
-        this.IMAGEN_URI = Uri.parse(fotografia?.uri.toString())
-        this.FOTO = b64!!
-
-        // Variables para actualizar
-        this.IMAGEN_NOMBRE_OLD = fotografia?.nombre.toString()
-        this.IMAGEN_URI_OLD = Uri.parse(fotografia?.uri.toString())
-        this.FOTO_OLD = b64
-
+        this.FOTO = ImageBase64.toBitmap(fotografia?.imagen.toString())!!
+        IMAGEN_URI = Uri.parse(fotografia?.uri)
+        detalleLugarImagen.setImageBitmap(this.FOTO)
     }
 
     /**
@@ -205,7 +183,7 @@ class LugarDetalleFragment(
         initModoVisualizar()
         detalleLugarFabAccion.visibility = View.VISIBLE
         detalleLugarFabAccion.setImageResource(R.drawable.ic_remove)
-        detalleLugarFabAccion.backgroundTintList = resources.getColorStateList(R.color.removeColor)
+        detalleLugarFabAccion.backgroundTintList = AppCompatResources.getColorStateList(context!!, R.color.removeColor)
         detalleLugarFabAccion.setOnClickListener { eliminarLugar() }
 
     }
@@ -213,11 +191,9 @@ class LugarDetalleFragment(
     fun initModoActualizar() {
         Log.i("Lugares", "Modo Actualizar")
         initModoVisualizar()
-        // Actualizo la interfaz
         detalleLugarFabAccion.visibility = View.VISIBLE
         detalleLugarFabAccion.setImageResource(R.drawable.ic_update)
-        detalleLugarFabAccion.backgroundTintList = resources.getColorStateList(R.color.updateColor)
-        // Actualizo la interfaz
+        detalleLugarFabAccion.backgroundTintList = AppCompatResources.getColorStateList(context!!, R.color.updateColor)
         detalleLugarBotonFecha.setOnClickListener { escogerFecha() }
         detalleLugarFabCamara.visibility = View.VISIBLE
         detalleLugarFabCamara.setOnClickListener { initDialogFoto() }
@@ -245,11 +221,10 @@ class LugarDetalleFragment(
             // Iderntamos la fotografia
             val b64 = ImageBase64.toBase64(this.FOTO)!!
             val fotografia = Fotografia(
-                nombre = IMAGEN_NOMBRE,
                 imagen = b64,
-                path = IMAGEN_DIRECTORY,
                 uri = IMAGEN_URI.toString(),
                 hash = Cifrador.toHash(b64).toString(),
+                time = Instant.now().toString(),
                 usuarioID = USUARIO.id
             )
             FotografiaController.insert(fotografia)
@@ -264,20 +239,23 @@ class LugarDetalleFragment(
                 imagenID = fotografia.id,
                 favorito = false,
                 votos = 0,
+                time = Instant.now().toString(),
                 usuarioID = USUARIO.id
             )
             LugarController.insert(LUGAR!!)
             // Actualizamos el adapter
             ANTERIOR?.insertarItemLista(LUGAR!!)
             Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
-            Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR!!.id)
-            // Forzamos a cargar la lista de lugares
-            // ANTERIOR?.cargarLugares()
-            // Volvemos
+            Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR)
             volver()
         } catch (ex: Exception) {
             Toast.makeText(context, "Error al insertar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
             Log.i("Insertar", "Error al insertar: " + ex.localizedMessage)
+        }
+        try {
+            IMAGEN_URI.toFile().delete()
+            Log.i("Insertar", "Borrada la imagen tempral asociada")
+        } catch (ex: Exception) {
         }
     }
 
@@ -286,7 +264,6 @@ class LugarDetalleFragment(
      */
     private fun eliminarLugar() {
         alertaDialogo("Eliminar Lugar", "¿Desea eliminar este lugar?")
-
     }
 
     /**
@@ -296,30 +273,17 @@ class LugarDetalleFragment(
         try {
             //Eliminamos lógicamente // Eliminamos el lugar
             val fotografiaID = LUGAR?.imagenID.toString()
-            LugarController.delete(LUGAR!!)
             val fotografia = FotografiaController.selectById(fotografiaID)
-
-            // De la base de datos
             FotografiaController.delete(fotografia!!)
-
+            LugarController.delete(LUGAR!!)
             // Actualizamos el adapter
             ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
-
-            // Eliminamos la fotografías
             Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show();
             Log.i("Eliminar", "Lugar eliminado con éxito")
         } catch (ex: Exception) {
             Toast.makeText(context, "Error al eliminar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
             Log.i("Eliminar", "Error al eliminar: " + ex.localizedMessage)
-        } finally {
-            try {
-                Fotos.eliminarFotoGaleria(IMAGEN_NOMBRE, context!!)
-                // Eliminamos de nuestro espacio
-                Fotos.eliminarFoto(IMAGEN_URI)
-            } catch (ex: Exception) {
-            }
         }
-
         // Volvemos
         volver()
     }
@@ -332,26 +296,20 @@ class LugarDetalleFragment(
 
     private fun actualizar() {
         try {
-            // Primero comprobamos que debemos cambiar la imagen, para ello usamos el hash
+            // Actualizamos la fotografía por si hay cambios
             val fotografiaID = LUGAR?.imagenID.toString()
             val fotografia = FotografiaController.selectById(fotografiaID)
             val b64 = ImageBase64.toBase64(this.FOTO)!!
-            val hashB64New = Cifrador.toHash(b64)
-            val hashB64Old = Cifrador.toHash(ImageBase64.toBase64(this.FOTO_OLD)!!)
-            if (hashB64New != hashB64Old) {
-                Log.i("Actualizar", "Imagenes Distintas")
-                // Si son distintas actualizamos
-                with(fotografia!!) {
-                    nombre = IMAGEN_NOMBRE
-                    imagen = b64
-                    path = IMAGEN_DIRECTORY
-                    uri = IMAGEN_URI.toString()
-                    hash = hashB64New.toString()
-                    usuarioID = USUARIO.id
-                }
-                FotografiaController.update(fotografia)
-                Log.i("Actualizar", "Fotografía actualizada")
+            Log.i("Actualizar", "Imagenes Distintas")
+            with(fotografia!!) {
+                imagen = b64
+                uri = IMAGEN_URI.toString()
+                hash = Cifrador.toHash(b64).toString()
+                time = Instant.now().toString() // Fecha de la ultima actualización
+                usuarioID = USUARIO.id
             }
+            FotografiaController.update(fotografia)
+            Log.i("Actualizar", "Fotografía actualizada")
             Log.i("Actualizar", "Actualizamos los lugares")
             with(LUGAR!!) {
                 nombre = detalleLugarInputNombre.text.toString().trim()
@@ -359,8 +317,7 @@ class LugarDetalleFragment(
                 fecha = detalleLugarBotonFecha.text.toString()
                 latitud = posicion?.latitude.toString()
                 longitud = posicion?.longitude.toString()
-                imagenID = fotografia!!.id
-                // usuarioID = USUARIO.id
+                time = Instant.now().toString()
             }
             LugarController.update(LUGAR!!)
             // Actualizamos el adapter
@@ -373,17 +330,17 @@ class LugarDetalleFragment(
         } catch (ex: Exception) {
             Toast.makeText(context, "Error al actualizar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
             Log.i("Actualizar", "Error al actualizar: " + ex.localizedMessage)
-        } finally {
-            try {
-                Fotos.eliminarFotoGaleria(IMAGEN_NOMBRE_OLD, context!!)
-                // Eliminamos de nuestro espacio
-                Fotos.eliminarFoto(IMAGEN_URI_OLD)
-            } catch (ex: Exception) {
-            }
         }
-
+        try {
+            IMAGEN_URI.toFile().delete()
+            Log.i("Modificar", "Borrada la imagen temporal asociada")
+        } catch (ex: Exception) {
+        }
     }
 
+    /**
+     * Vuelve
+     */
     private fun volver() {
         activity?.onBackPressed();
     }
@@ -406,7 +363,7 @@ class LugarDetalleFragment(
     /**
      * Dialogo de opciones
      */
-    private fun alertaDialogo(titulo: String, texto: String){
+    private fun alertaDialogo(titulo: String, texto: String) {
         val builder = AlertDialog.Builder(context)
         with(builder)
         {
@@ -438,7 +395,7 @@ class LugarDetalleFragment(
             detalleLugarInputNombre.error = "El nombre no puede ser vacío"
             sal = false
         }
-        if (!this::FOTO.isInitialized || !this::IMAGEN_NOMBRE.isInitialized) {
+        if (!this::FOTO.isInitialized) {
             this.FOTO = (detalleLugarImagen.drawable as BitmapDrawable).bitmap
             Toast.makeText(context, "La imagen no puede estar vacía", Toast.LENGTH_SHORT).show()
             sal = false
@@ -528,7 +485,7 @@ class LugarDetalleFragment(
         Log.i("Mapa", "Configurando Modo Visualizar")
         posicion = LatLng(LUGAR!!.latitud.toDouble(), LUGAR!!.longitud.toDouble())
         // marcadorTouch?.remove()
-         mMap.addMarker(
+        mMap.addMarker(
             MarkerOptions() // Posición
                 .position(posicion!!) // Título
                 .title(LUGAR!!.nombre) // Subtitulo
@@ -616,6 +573,7 @@ class LugarDetalleFragment(
      */
     override fun onMarkerClick(marker: Marker): Boolean {
         Log.i("Mapa", marker.toString())
+        // Si quiero sacar un mensaje es así
 //        Toast.makeText(
 //                context, marker.title.toString() +
 //                        " Mal sitio para ir.",
@@ -665,17 +623,12 @@ class LugarDetalleFragment(
         // Si queremos hacer uso de fotos en alta calidad
         val builder = StrictMode.VmPolicy.Builder()
         StrictMode.setVmPolicy(builder.build())
-
-        // Eso para alta o baja
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        // Nombre de la imagen
-        IMAGEN_NOMBRE = Fotos.crearNombreFoto(IMAGEN_PREFIJO, IMAGEN_EXTENSION)
-        // Salvamos el fichero
-        val fichero = Fotos.salvarFoto(IMAGEN_DIRECTORY, IMAGEN_NOMBRE, context!!)
+        val nombre = Fotos.crearNombreFoto(IMAGEN_PREFIJO, IMAGEN_EXTENSION)
+        val fichero = Fotos.salvarFoto(IMAGEN_DIRECTORY, nombre, context!!)
         IMAGEN_URI = Uri.fromFile(fichero)
-
         intent.putExtra(MediaStore.EXTRA_OUTPUT, IMAGEN_URI)
-        // Esto para alta y baja
+        Log.i("Camara", IMAGEN_URI.path.toString())
         startActivityForResult(intent, CAMARA)
     }
 
@@ -700,7 +653,6 @@ class LugarDetalleFragment(
                 try {
                     // Obtenemos el bitmap de su almacenamiento externo
                     // Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                    // Dependeindo de la versión del SDK debemos hacerlo de una manera u otra
                     if (Build.VERSION.SDK_INT < 28) {
                         this.FOTO = MediaStore.Images.Media.getBitmap(context?.contentResolver, contentURI);
                     } else {
@@ -717,13 +669,11 @@ class LugarDetalleFragment(
                         (this.FOTO.height * prop).toInt(),
                         false
                     )
-                    // Vamos a copiar nuestra imagen en nuestro directorio comprimida.
-                    IMAGEN_NOMBRE = Fotos.crearNombreFoto(IMAGEN_PREFIJO, IMAGEN_EXTENSION)
+                    // Vamos a copiar nuestra imagen en nuestro directorio comprimida por si acaso.
+                    val nombre = Fotos.crearNombreFoto(IMAGEN_PREFIJO, IMAGEN_EXTENSION)
                     val fichero =
-                        Fotos.copiarFoto(this.FOTO, IMAGEN_NOMBRE, IMAGEN_DIRECTORY, IMAGEN_COMPRESION, context!!)
+                        Fotos.copiarFoto(this.FOTO, nombre, IMAGEN_DIRECTORY, IMAGEN_COMPRESION, context!!)
                     IMAGEN_URI = Uri.fromFile(fichero)
-                    // Por su queemos guardar el URI con la que se almacena en la Mediastore
-                    IMAGEN_URI = Fotos.añadirFotoGaleria(IMAGEN_URI, IMAGEN_NOMBRE, context!!)!!
                     Toast.makeText(context, "¡Foto rescatada de la galería!", Toast.LENGTH_SHORT).show()
                     detalleLugarImagen.setImageBitmap(this.FOTO)
 
@@ -736,29 +686,15 @@ class LugarDetalleFragment(
             Log.i("FOTO", "Entramos en Camara")
             // Cogemos la imagen, pero podemos coger la imagen o su modo en baja calidad (thumbnail)
             try {
-                // Esta línea para baja calidad
-                //thumbnail = (Bitmap) data.getExtras().get("data");
-                // Esto para alta
-                //val source: ImageDecoder.Source = ImageDecoder.createSource(contentResolver, IMAGEN_URI)
-                //val foto: Bitmap = ImageDecoder.decodeBitmap(source)
-
                 if (Build.VERSION.SDK_INT < 28) {
                     this.FOTO = MediaStore.Images.Media.getBitmap(context?.contentResolver, IMAGEN_URI)
                 } else {
                     val source: ImageDecoder.Source = ImageDecoder.createSource(context?.contentResolver!!, IMAGEN_URI)
                     this.FOTO = ImageDecoder.decodeBitmap(source)
                 }
-
-                // Vamos a probar a comprimir
+                // Comprimimos la foto
+                Log.i("Camara", IMAGEN_URI.path.toString())
                 Fotos.comprimirFoto(IMAGEN_URI.toFile(), this.FOTO, this.IMAGEN_COMPRESION)
-
-                // Si estamos en módo publico la añadimos en la biblioteca
-                // if (PUBLICO) {
-                // Por su queemos guardar el URI con la que se almacena en la Mediastore
-                // No guardo su uri, porque no la necesito en este caso
-                Fotos.añadirFotoGaleria(IMAGEN_URI, IMAGEN_NOMBRE, context!!)!!
-                // }
-
                 // Mostramos
                 detalleLugarImagen.setImageBitmap(this.FOTO)
                 Toast.makeText(context, "¡Foto Salvada!", Toast.LENGTH_SHORT).show()

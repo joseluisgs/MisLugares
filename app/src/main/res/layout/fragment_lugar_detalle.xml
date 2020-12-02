@@ -62,14 +62,7 @@
                 android:layout_below="@id/detalleLugarTextNombre"
                 android:layout_marginTop="20dp"
                 android:background="#FFFFFF"
-                android:hint="Tipo">
-
-            <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:enabled="false" android:id="@+id/detalleLugarInputTipo"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Tipo"/>
 
 
         <LinearLayout
@@ -79,18 +72,6 @@
                 android:layout_below="@id/detalleLugarSpinnerTipo"
                 android:layout_marginTop="20dp"
                 android:orientation="horizontal">
-
-            <EditText
-                    android:id="@+id/detalleLugarEditFecha"
-                    android:layout_width="177dp"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/detalleLugarTextTipo"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:textAlignment="center"
-                    android:enabled="false"
-                    android:hint="Fecha Visita"
-                    android:inputType="date"/>
 
 
             <com.google.android.material.button.MaterialButton

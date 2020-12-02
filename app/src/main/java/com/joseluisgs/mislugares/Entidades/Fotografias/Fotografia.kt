@@ -11,24 +11,20 @@ open class Fotografia(
     @PrimaryKey
     var id: String = "",
     @Required
-    var nombre: String = "",
-    @Required
     var imagen: String = "",
-    @Required
-    var path: String = "",
     @Required
     var uri: String = "",
     @Required
     var hash: String = "",
     @Required
+    var time: String = "",
+    @Required
     var usuarioID: String = ""
 ) : RealmObject() {
-    constructor(nombre: String, imagen: String, path: String, uri: String, hash: String, usuarioID: String) :
-            this((UUID.randomUUID().toString()), nombre, imagen, path, uri, hash, usuarioID)
+    constructor(imagen: String, uri: String, hash: String, time: String, usuarioID: String) :
+            this((UUID.randomUUID().toString()), imagen, uri, hash, time, usuarioID)
 
-    override fun toString(): String {
-        return "Fotografia(id='$id', nombre='$nombre', imagen='$imagen', path='$path', uri='$uri', hash='$hash', usuarioID='$usuarioID')"
-    }
+
 
 
 }

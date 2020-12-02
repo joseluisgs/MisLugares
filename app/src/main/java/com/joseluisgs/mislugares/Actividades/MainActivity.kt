@@ -19,12 +19,15 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
-import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
+import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
+import com.joseluisgs.mislugares.Utilidades.Fotos
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.Utils
 import com.squareup.picasso.Picasso
+import io.realm.Realm
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -93,17 +96,22 @@ class MainActivity : AppCompatActivity() {
         val navUserImage: ImageView = headerView.findViewById(R.id.navHeaderUserImage)
         navUsername.text = USER.login
         navUserEmail.text = USER.correo
+        // Cargo la imagen como temporal
+        val avatar = File(
+            ImageBase64.fromTempUri(
+                ImageBase64.toBitmap(USER.avatar)!!,
+                applicationContext,
+            ).path!!
+        )
         Picasso.get()
             // .load(R.drawable.user_avatar)
-            .load(
-                ImageBase64.fromTempUri(
-                    ImageBase64.toBitmap(USER.avatar)!!,
-                    applicationContext
-                )
-            )
+            .load(avatar)
             .transform(CirculoTransformacion())
             .resize(130, 130)
             .into(navUserImage)
+        // Elimino la imagen temporal
+        // ImageBase64.removeTempFile(avatar)
+
     }
 
     /**
@@ -169,5 +177,17 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    /**
+     * Al destruirse nuestra actividad o APP
+     */
+    override fun onDestroy() {
+        super.onDestroy()
+        // Cerramos REALM
+        Realm.getDefaultInstance().close()
+        // limpiamos cache
+        Utils.deleteCache(this)
+        Fotos.deleteFotoDir(this)
     }
 }

@@ -11,6 +11,7 @@ import java.io.OutputStream
 
 
 object ImageBase64 {
+    private val temp_img = "/imgages-cache"
     /**
      * Convierte una cadena Base64 a Bitmap
      *
@@ -43,10 +44,14 @@ object ImageBase64 {
      * @return Uri
      */
      fun fromTempUri(bitmap: Bitmap, context: Context): Uri {
-         val uri = Uri.fromFile(File.createTempFile("temp_file_name", ".jpg", context.cacheDir))
+         val uri = Uri.fromFile(File.createTempFile("img_", ".jpg",context.cacheDir))
          val outputStream: OutputStream? = context.contentResolver.openOutputStream(uri)
          bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
          outputStream?.close()
          return uri
      }
+
+    fun getTempUri(context: Context): Uri{
+        return Uri.fromFile(File.createTempFile("img_", ".jpg",context.cacheDir))
+    }
 }
