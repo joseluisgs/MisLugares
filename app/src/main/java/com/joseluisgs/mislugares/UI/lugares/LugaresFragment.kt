@@ -1,12 +1,18 @@
 package com.joseluisgs.mislugares.UI.lugares
 
+import android.app.Activity.RESULT_CANCELED
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.graphics.*
 import android.os.AsyncTask
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -17,6 +23,9 @@ import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.R
 import kotlinx.android.synthetic.main.fragment_lugares.*
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class LugaresFragment : Fragment() {
     // Propiedades
@@ -24,6 +33,10 @@ class LugaresFragment : Fragment() {
     private lateinit var lugaresAdapter: LugaresListAdapter //Adaptador de Noticias de Recycler
     private lateinit var tareaLugares: TareaCargarLugares // Tarea en segundo plano
     private var paintSweep = Paint()
+
+    // Búsquedas
+    private var FILTRO = Filtro.NADA
+    private val VOZ = 10
 
 
     override fun onCreateView(
@@ -47,10 +60,48 @@ class LugaresFragment : Fragment() {
         Log.i("Lugares", "Init IU")
         iniciarSwipeRecarga()
         cargarLugares()
+        iniciarSpinner()
         iniciarSwipeHorizontal()
         lugaresRecycler.layoutManager = LinearLayoutManager(context)
         lugaresFabNuevo.setOnClickListener { nuevoElemento() }
+        lugaresFabVoz.setOnClickListener { controlPorVoz() }
+
         Log.i("Lugares", "Fin la IU")
+    }
+
+    private fun iniciarSpinner() {
+        val tipoBusqueda = resources.getStringArray(R.array.tipos_busqueda)
+        val adapter = ArrayAdapter(context!!,
+            android.R.layout.simple_spinner_item, tipoBusqueda)
+        lugaresSpinnerFiltro.adapter = adapter
+        lugaresSpinnerFiltro.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>,
+                                        view: View, position: Int, id: Long) {
+                when (position) {
+                    0 -> FILTRO = Filtro.NADA
+                    1 -> FILTRO = Filtro.NOMBRE_ASC
+                    2 -> FILTRO = Filtro.NOMBRE_DESC
+                    3 -> FILTRO = Filtro.FECHA_ASC
+                    4 -> FILTRO = Filtro.FECHA_DESC
+                    5 -> FILTRO = Filtro.TIPO_ASC
+                    6 -> FILTRO = Filtro.TIPO_DESC
+                    7 -> FILTRO = Filtro.FAVORITO_ASC
+                    8 -> FILTRO = Filtro.FAVORITO_DESC
+                    9 -> FILTRO = Filtro.VOTOS_ASC
+                    10 -> FILTRO = Filtro.VOTOS_DESC
+                    else ->FILTRO = Filtro.NADA
+                }
+                // Listamos los lugares y cargamos el recycler
+                Log.i("Filtro", position.toString())
+                Toast.makeText(context!!, "Ordenando por: " + tipoBusqueda[position], Toast.LENGTH_SHORT).show()
+                visualizarListaItems()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // write code to perform some action
+            }
+        }
     }
 
     /**
@@ -214,7 +265,7 @@ class LugaresFragment : Fragment() {
     }
 
     fun actualizarItemLista(item: Lugar, position: Int) {
-        this.lugaresAdapter.updateItem(item,position)
+        this.lugaresAdapter.updateItem(item, position)
         lugaresAdapter.notifyDataSetChanged()
     }
 
@@ -249,11 +300,18 @@ class LugaresFragment : Fragment() {
         abrirDetalle(lugar, Modo.VISUALIZAR, this, null)
     }
 
+    /**
+     * Abre el detalle del item
+     * @param lugar Lugar?
+     * @param modo Modo?
+     * @param anterior LugaresFragment?
+     * @param position Int?
+     */
     private fun abrirDetalle(lugar: Lugar?, modo: Modo?, anterior: LugaresFragment?, position: Int?) {
         Log.i("Lugares", "Abriendo el elemento pos: " + lugar?.id)
         val lugarDetalle = LugarDetalleFragment(lugar, modo, anterior, position)
         val transaction = activity!!.supportFragmentManager.beginTransaction()
-        transaction.setTransition( FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.add(R.id.nav_host_fragment, lugarDetalle)
         transaction.addToBackStack(null)
         transaction.commit()
@@ -267,7 +325,165 @@ class LugaresFragment : Fragment() {
             abrirElemento(lugar)
     }
 
+    /**
+     * Dispara el control por voz
+     */
+    private fun controlPorVoz() {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.texto_ordenacion_voz))
+        try {
+            startActivityForResult(intent, VOZ)
+        } catch (e: java.lang.Exception) {
+        }
+    }
 
+    /**
+     * Resultadp de las acciones
+     * @param requestCode Int
+     * @param resultCode Int
+     * @param data Intent?
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_CANCELED) {
+            return
+        }
+        if (requestCode == VOZ) {
+            if (resultCode == RESULT_OK && data != null) {
+                val voz = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                // Analizamos los que nos puede llegar
+                var secuencia = ""
+                // Concatenamos todo lo que tiene la cadena encontrada para buscar palabras clave
+                for (v in voz!!) {
+                    secuencia += " $v"
+                }
+                // A partir de aquí podemos crear el if todo lo complejo que queramos o irnos a otro fichero
+                if (secuencia.isNotEmpty()) {
+                    analizarFiltroVoz(secuencia)
+                    visualizarListaItems()
+                }
+            }
+        }
+    }
+
+    /**
+     * Analiza el resultado de procesar la voz
+     *
+     * @param secuencia Sencuencia de entrada
+     * @return filtro de salida
+     */
+    private fun analizarFiltroVoz(secuencia: String) {
+        // Nombre
+        if (secuencia.contains("nombre") &&
+            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO= Filtro.NOMBRE_ASC
+        }
+        else if (secuencia.contains("nombre") &&
+            (secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO= Filtro.NOMBRE_DESC
+
+        }
+
+        // Fecha
+        else if (secuencia.contains("fecha") &&
+            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO= Filtro.FECHA_ASC
+        } else if (secuencia.contains("fecha") &&
+            (secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO = Filtro.FECHA_DESC
+        }
+
+        // Tipo
+        else if (secuencia.contains("tipo") &&
+            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO= Filtro.TIPO_ASC
+        } else if (secuencia.contains("tipo") &&
+            (secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO = Filtro.TIPO_DESC
+        }
+
+        // Favorito
+        else if (secuencia.contains("favorito") &&
+            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO= Filtro.FAVORITO_ASC
+        } else if (secuencia.contains("favorito") &&
+            (secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO= Filtro.FAVORITO_DESC
+        }
+
+        // Votos
+        else if (secuencia.contains("votos") &&
+            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO= Filtro.VOTOS_ASC
+        } else if (secuencia.contains("votos") &&
+            (secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO= Filtro.VOTOS_DESC
+        }
+
+        // Lugar
+        else if (secuencia.contains("lugar") &&
+            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO= Filtro.NOMBRE_ASC
+        }
+        else if (secuencia.contains("lugar") &&
+            (secuencia.contains("descendente") || secuencia.contains("inverso"))
+        ) {
+            FILTRO= Filtro.NOMBRE_DESC
+        }
+        // Por defecto
+        else {
+            FILTRO= Filtro.NADA
+        }
+    }
+
+    /**
+     * función para ordenar la lista como mayores y menores
+     */
+    private fun ordenarLugares() {
+        Log.i("Filtro", FILTRO.toString())
+        when (FILTRO) {
+            Filtro.NADA -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.id.compareTo(l2.id) }
+            // Nombre
+            Filtro.NOMBRE_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.nombre.compareTo(l2.nombre) }
+            Filtro.NOMBRE_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l2.nombre.compareTo(l1.nombre) }
+
+            // Tipo
+            Filtro.TIPO_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.tipo.compareTo(l2.tipo) }
+            Filtro.TIPO_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l2.tipo.compareTo(l1.tipo) }
+
+            // Fecha
+            Filtro.FECHA_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar ->
+                SimpleDateFormat("dd/MM/yyyy").parse(l1.fecha).compareTo(SimpleDateFormat("dd/MM/yyyy").parse(l2.fecha))
+            }
+            Filtro.FECHA_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar ->
+                SimpleDateFormat("dd/MM/yyyy").parse(l2.fecha).compareTo(SimpleDateFormat("dd/MM/yyyy").parse(l1.fecha))
+            }
+
+            // Favoritos
+            Filtro.FAVORITO_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.favorito.compareTo(l2.favorito) }
+            Filtro.FAVORITO_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l2.favorito.compareTo(l1.favorito) }
+
+            // Votos
+            Filtro.VOTOS_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.votos.compareTo(l2.votos) }
+            Filtro.VOTOS_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l2.votos.compareTo(l1.votos) }
+
+            else -> {
+            }
+        }
+    }
 
     /**
      * Tarea asíncrona para la carga de noticias
@@ -292,6 +508,7 @@ class LugaresFragment : Fragment() {
         }
         //Post-Tarea
         override fun onPostExecute(args: Void?) {
+           ordenarLugares()
             lugaresAdapter = LugaresListAdapter(LUGARES) {
                 eventoClicFila(it)
             }
@@ -303,6 +520,16 @@ class LugaresFragment : Fragment() {
             Toast.makeText(context, "Lugares cargados", Toast.LENGTH_LONG).show()
         }
 
+    }
+
+    /**
+     * Visualiza la lista de items
+     */
+    private fun visualizarListaItems() {
+        ordenarLugares()
+        lugaresRecycler.adapter = lugaresAdapter
+        // lugaresAdapter.notifyDataSetChanged()
+        // lugaresRecycler.setHasFixedSize(true)
     }
 
     /**

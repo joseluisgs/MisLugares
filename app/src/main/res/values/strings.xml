@@ -19,6 +19,7 @@
     <string name="mi_mapa">Mi Mapa</string>
     <string name="aceptar">Aceptar</string>
     <string name="cancelar">Cancelar</string>
+    <string name="texto_ordenacion_voz">¿Cómo quieres ordenar la lista?</string>
 
     <!-- Tipos de lugares para insertar -->
     <string-array name="tipos_lugares">
@@ -32,10 +33,16 @@
 
     <!-- Tipos de busqueda -->
     <string-array name="tipos_busqueda">
-        <item>Ordenar por nombre</item>
-        <item>Ordenar por fecha</item>
-        <item>Ordenar por tipo</item>
-        <item>Ordenar por favoritos</item>
-        <item>Ordenar por votos</item>
+        <item>Filtro y ordenación</item>
+        <item>Ordenar por nombre ascendente</item>
+        <item>Ordenar por nombre descendente</item>
+        <item>Ordenar por fecha ascendente</item>
+        <item>Ordenar por fecha descendente</item>
+        <item>Ordenar por tipo ascendente</item>
+        <item>Ordenar por tipo descendente</item>
+        <item>Ordenar por favoritos ascendente</item>
+        <item>Ordenar por favoritos descendente</item>
+        <item>Ordenar por votos ascendente</item>
+        <item>Ordenar por votos descendente</item>
     </string-array>
 </resources>
