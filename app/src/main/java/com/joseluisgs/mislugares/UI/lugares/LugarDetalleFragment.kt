@@ -690,7 +690,6 @@ class LugarDetalleFragment(
                 try {
                     // Obtenemos el bitmap de su almacenamiento externo
                     // Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                    // Dependeindo de la versión del SDK debemos hacerlo de una manera u otra
                     if (Build.VERSION.SDK_INT < 28) {
                         this.FOTO = MediaStore.Images.Media.getBitmap(context?.contentResolver, contentURI);
                     } else {
@@ -707,7 +706,7 @@ class LugarDetalleFragment(
                         (this.FOTO.height * prop).toInt(),
                         false
                     )
-                    // Vamos a copiar nuestra imagen en nuestro directorio comprimida.
+                    // Vamos a copiar nuestra imagen en nuestro directorio comprimida por si acaso.
                     val nombre = Fotos.crearNombreFoto(IMAGEN_PREFIJO, IMAGEN_EXTENSION)
                     val fichero =
                         Fotos.copiarFoto(this.FOTO, nombre, IMAGEN_DIRECTORY, IMAGEN_COMPRESION, context!!)
