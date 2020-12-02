@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,12 +38,6 @@ class LugaresFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Iniciamos la interfaz
         initUI()
-
-//        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-//           Log.i("Lugares", "Pulsado Atras")
-//        }
-
-
     }
 
     /**
@@ -93,11 +88,9 @@ class LugaresFragment : Fragment() {
                 // Programamos la accion
                 when (direction) {
                     ItemTouchHelper.LEFT -> {
-                        // Log.d("Noticias", "Tocado izquierda");
                         borrarElemento(position)
                     }
                     else -> {
-                        //  Log.d("Noticias", "Tocado derecha");
                         editarElemento(position)
                     }
                 }
@@ -190,7 +183,7 @@ class LugaresFragment : Fragment() {
     /**
      * Carga los lugares
      */
-    fun cargarLugares() {
+    private fun cargarLugares() {
         tareaLugares = TareaCargarLugares()
         tareaLugares.execute()
     }
@@ -209,8 +202,6 @@ class LugaresFragment : Fragment() {
     fun insertarItemLista(item: Lugar) {
         this.lugaresAdapter.addItem(item)
         lugaresAdapter.notifyDataSetChanged()
-        // Si queremos forzar la recarga
-        // cargarLugares()
     }
 
     /**
@@ -225,8 +216,6 @@ class LugaresFragment : Fragment() {
     fun actualizarItemLista(item: Lugar, position: Int) {
         this.lugaresAdapter.updateItem(item,position)
         lugaresAdapter.notifyDataSetChanged()
-        // Si queremos forzar la recarga
-        // cargarLugares()
     }
 
     /**
@@ -245,8 +234,6 @@ class LugaresFragment : Fragment() {
     fun eliminarItemLista(position: Int) {
         this.lugaresAdapter.removeItem(position)
         lugaresAdapter.notifyDataSetChanged()
-        // Si queremos forzar la recarga
-        // cargarLugares()
     }
 
     fun actualizarVistaLista() {
@@ -266,10 +253,8 @@ class LugaresFragment : Fragment() {
         Log.i("Lugares", "Abriendo el elemento pos: " + lugar?.id)
         val lugarDetalle = LugarDetalleFragment(lugar, modo, anterior, position)
         val transaction = activity!!.supportFragmentManager.beginTransaction()
-        // animaciones
-        // transaction.setCustomAnimations(R.anim.animacion_fragment1, R.anim.animacion_fragment2)
-        //Llamamos al replace/ add
-        transaction.replace(R.id.nav_host_fragment, lugarDetalle)
+        transaction.setTransition( FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        transaction.add(R.id.nav_host_fragment, lugarDetalle)
         transaction.addToBackStack(null)
         transaction.commit()
     }
@@ -288,13 +273,14 @@ class LugaresFragment : Fragment() {
      * Tarea asíncrona para la carga de noticias
      */
     inner class TareaCargarLugares : AsyncTask<Void?, Void?, Void?>() {
+        // Pre-Tarea
         override fun onPreExecute() {
             if (lugaresSwipeRefresh.isRefreshing) {
                 lugaresSwipeRefresh.isRefreshing = false
             }
             Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
         }
-
+        // Tarea
         override fun doInBackground(vararg args: Void?): Void? {
             try {
                 LUGARES = LugarController.selectAll()!!
@@ -304,12 +290,11 @@ class LugaresFragment : Fragment() {
             }
             return null
         }
-
+        //Post-Tarea
         override fun onPostExecute(args: Void?) {
             lugaresAdapter = LugaresListAdapter(LUGARES) {
                 eventoClicFila(it)
             }
-
             lugaresRecycler.adapter = lugaresAdapter
             // Avismos que ha cambiado
             lugaresAdapter.notifyDataSetChanged()
@@ -320,7 +305,9 @@ class LugaresFragment : Fragment() {
 
     }
 
-
+    /**
+     * Si paramos cancelamos la tarea
+     */
     override fun onStop() {
         super.onStop()
         tareaLugares.cancel(true)

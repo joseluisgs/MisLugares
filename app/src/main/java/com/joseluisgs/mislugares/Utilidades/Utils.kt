@@ -7,11 +7,11 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
-import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
+import java.io.File
 import java.util.*
 
 object Utils {
@@ -96,7 +96,7 @@ object Utils {
      * @param context Context?
      * @return Boolean
      */
-    fun isGPSAvaliable (context: Context?): Boolean {
+    fun isGPSAvaliable(context: Context?): Boolean {
         val locationManager = context?.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
         val gpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         return if (gpsStatus) {
@@ -106,5 +106,17 @@ object Utils {
             Log.i("GPS", "GPS Desactivado")
             false
         }
+    }
+
+    /**
+     * Elimina los ficheros de cache que hayamos creado al cerrar la apliación
+     * @param context Context
+     */
+    fun deleteCache(context: Context) {
+        val cacheDir: File = context.cacheDir
+        val files: Array<File> = cacheDir.listFiles()!!
+        for (file in files)
+            if (file.isFile)
+                file.delete()
     }
 }
