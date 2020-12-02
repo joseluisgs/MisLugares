@@ -5,9 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import kotlinx.android.synthetic.main.item_lugar.view.*
@@ -39,9 +41,13 @@ class LugaresListAdapter(
         holder.itemLugarVotos.text = listaLugares[position].votos.toString()
         holder.itemLugarImagen.setImageBitmap(imagenLugar(listaLugares[position]))
 
+        // procesamos el ffavorito
+        // color
+        colorBotonFavorito(position, holder)
         // Queda procesar el botón de favoritos...
         holder.itemLugarFavorito.setOnClickListener {
-            Log.i("Lugares", "Has pinchado el favorito de: " + listaLugares[position].id)
+            eventoBotonFavorito(position, holder)
+
         }
 
         // Programamos el clic de cada fila (itemView)
@@ -51,6 +57,7 @@ class LugaresListAdapter(
                 accionPrincipal(listaLugares[position])
             }
     }
+
 
     /**
      * Elimina un item de la lista
@@ -109,6 +116,44 @@ class LugaresListAdapter(
     }
 
     /**
+     * Procesa el favorito
+     * @param position Int
+     */
+    private fun eventoBotonFavorito(position: Int, holder: LugarViewHolder) {
+        // Cambiamos el favorito
+        listaLugares[position].favorito = !listaLugares[position].favorito
+        // Procesamos el color
+        colorBotonFavorito(position, holder)
+        // Procesamos el número de votos
+        if(listaLugares[position].favorito)
+            listaLugares[position].votos ++
+        else
+            listaLugares[position].votos --
+
+        LugarController.update(listaLugares[position])
+        holder.itemLugarVotos.text = listaLugares[position].votos.toString()
+        Log.i("Favorito", listaLugares[position].favorito.toString())
+        Log.i("Favorito", listaLugares[position].votos.toString())
+    }
+
+    /**
+     * Pone el color del fondo del botom de favoritos
+     * @param position Int
+     * @param holder LugarViewHolder
+     */
+    private fun colorBotonFavorito(
+        position: Int,
+        holder: LugarViewHolder
+    ) {
+        if (listaLugares[position].favorito)
+            holder.itemLugarFavorito.backgroundTintList =
+                AppCompatResources.getColorStateList(holder.context, R.color.favOnColor)
+        else
+            holder.itemLugarFavorito.backgroundTintList =
+                AppCompatResources.getColorStateList(holder.context, R.color.favOffColor)
+    }
+
+    /**
      * Holder que encapsula los objetos a mostrar en la lista
      */
     class LugarViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -119,6 +164,7 @@ class LugaresListAdapter(
         var itemLugarTipo = itemView.itemLugarTipo
         var itemLugarVotos = itemView.itemLugarVotos
         var itemLugarFavorito = itemView.itemLugarFavorito
+        var context = itemView.context
 
     }
 }
