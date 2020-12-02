@@ -20,11 +20,11 @@ un proyecto integrador que resume lo trabajado este año
 
 ### Versiones y revisiones
 Las versiones no están pensadas para que el alumnado maneje distintas técnicas, no buscando la ideal que dependerá de siempre del problema y la tecnología.s 
-- v0.4.0: Esta versión trabajamos conjuntamente con imágenes en base de datos y en ficheros usando en path.
+- **v0.4.0**: Esta versión trabajamos conjuntamente con imágenes en base de datos y en ficheros usando en path.
 A partir de esta versión cambiaremos esta forma y solo trabajaremos con las imágenes dentro de la base de Datos Realm
-- v0.5.0: Igual que la anterior, pero sin ficheros, todo en Realm.
+- **v0.5.0**: Igual que la anterior, pero sin ficheros, todo en Realm.
 con el objetivo de unificar sistemas para las próximas versiones.
-- v1.0.0: Versión donde el almacenamiento de todos los datos se hace de manera local usando una base de datos Realm. 
+- **v1.0.0**: Versión donde el almacenamiento de todos los datos se hace de manera local usando una base de datos Realm. 
 Las imágenes se usan usando el sistema de codificación en Base64. Esta manera no es muy correcta, pero puede ser útil si
 nos enfrentamos a servicios remotos donde desconocemos como subir la imagen. Este sistema tiene el problema de que sobre carga 
 la base de datos y no es muy recomendado salvo excepciones como esta.
@@ -37,7 +37,7 @@ Se destacan las siguientes tecnologías usadas, cuyos enlaces son los mismos que
 - [Interfaz de Usuario](https://developer.android.com/guide/topics/ui)
 - [Imágenes y gráficos](https://developer.android.com/guide/topics/graphics)
 - [Audio y vídeo](https://developer.android.com/guide/topics/media)
-- [Realm](https://realm.io/docs/kotlin/latest/)
+- [Bases de Datos Realm.io](https://realm.io/docs/kotlin/latest/)
 - [Cámara](https://developer.android.com/training/camera)
 - [Almacenamiento](https://developer.android.com/guide/topics/data)
 - [Permisos](https://developer.android.com/guide/topics/permissions/overview)
@@ -45,10 +45,26 @@ Se destacan las siguientes tecnologías usadas, cuyos enlaces son los mismos que
 - [Geolocalización](https://developer.android.com/training/location)
 - [Mapas](https://developers.google.com/maps/documentation/android-sdk/intro)
 - [Preferencias](https://developer.android.com/training/data-storage/shared-preferences?hl=es)
-- [Segndo plano](https://developer.android.com/guide/background)
+- [Segundo plano](https://developer.android.com/guide/background)
+- [Funciones de Voz](https://developer.android.com/training/wearables/apps/voice)
 - [Gson](https://github.com/google/gson)
 - [Dexter](https://github.com/Karumi/Dexter)
 - [Picasso](https://square.github.io/picasso/)
+
+#### Cosideraciones para ver los mapas
+Los mapas hace uso de Google Map Api Key, es por ello que debes activar la clave de la API y activarla para tu proyecto, 
+pues puede que varíe a la huella del mio, o que simplemente yo haya desactivado la mía (te recuerdo que es un proyecto para finn docente y lo activo y desactivo sobre la marcha).
+Por favor sigue [este tutorial](https://developers.google.com/maps/documentation/android-sdk/get-api-key?hl=es-419) para que puedas ver tus mapas con tu clave.
+
+Recuerda cambiar el fichero Manifest y añadir:
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<meta-data android:name="com.google.android.geo.API_KEY"
+android:value="@string/google_maps_key" />
+ ```      
+Te recomiendo que mires la pestaña Run, pues si falla el mapa te dirá si no se ha podido identificar correctamente con la clave de tu API generada.. En el modo debug se hace en ese fichero con la huella SHA-1 y se pone, en el Modo Release,
+se debe generar con keytool la huella SHA-1 con los datos del paquete Release, crear un proyecto y subirla
+https://developers.google.com/maps/documentation/android-sdk/get-api-key  
 
 #### Herramientas usadas
 Estas son las herramientas que más hemos usado en clase para la realización de este proyecto:
