@@ -21,9 +21,10 @@ un proyecto integrador que resume lo trabajado este año
 ### Versiones y revisiones
 Las versiones no están pensadas para que el alumnado maneje distintas técnicas, no buscando la ideal que dependerá de siempre del problema y la tecnología.s 
 - v0.4.0: Esta versión trabajamos conjuntamente con imágenes en base de datos y en ficheros usando en path.
-A partir de esta versión cambiaremos esta forma y solo trabajaremos con las imágenes dentro de la base de Datos Real 
+A partir de esta versión cambiaremos esta forma y solo trabajaremos con las imágenes dentro de la base de Datos Realm
+- v0.5.0: Igual que la anterior, pero sin ficheros, todo en Realm.
 con el objetivo de unificar sistemas para las próximas versiones.
-- v1.0.0.0: Versión donde el almacenamiento de todos los datos se hace de manera local usando una base de datos Realm. 
+- v1.0.0: Versión donde el almacenamiento de todos los datos se hace de manera local usando una base de datos Realm. 
 Las imágenes se usan usando el sistema de codificación en Base64. Esta manera no es muy correcta, pero puede ser útil si
 nos enfrentamos a servicios remotos donde desconocemos como subir la imagen. Este sistema tiene el problema de que sobre carga 
 la base de datos y no es muy recomendado salvo excepciones como esta.
