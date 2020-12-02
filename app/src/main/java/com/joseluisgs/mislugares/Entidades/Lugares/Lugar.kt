@@ -35,9 +35,13 @@ open class Lugar(
     var latitud: String = "",
     @Required
     var longitud: String = "",
+    @Required
     var imagenID: String = "",
     var favorito: Boolean = false,
     var votos: Int = 0,
+    @Required
+    var time: String = "",
+    @Required
     var usuarioID: String = ""
 ): RealmObject() {
     constructor(
@@ -49,6 +53,7 @@ open class Lugar(
         imagenID: String,
         favorito: Boolean,
         votos: Int,
+        time: String,
         usuarioID: String
     ) :
             this(
@@ -61,12 +66,12 @@ open class Lugar(
                 imagenID,
                 favorito,
                 votos,
+                time,
                 usuarioID
             )
-    // this((System.currentTimeMillis() / 1000L), nombre, tipo, fecha, latitud, longitud, imagen, favorito, votos, usuarioID)
 
     override fun toString(): String {
-        return "Lugar(id=$id, nombre='$nombre', tipo='$tipo', fecha='$fecha', latitud='$latitud', longitud='$longitud', imagenID='$imagenID', favorito=$favorito, votos=$votos, usuarioID=$usuarioID)"
+        return "Lugar(id='$id', nombre='$nombre', tipo='$tipo', fecha='$fecha', latitud='$latitud', longitud='$longitud', imagenID='$imagenID', favorito=$favorito, votos=$votos, time='$time', usuarioID='$usuarioID')"
     }
 
 

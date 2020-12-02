@@ -178,6 +178,9 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
+    /**
+     * Al destruirse nuestra actividad o APP
+     */
     override fun onDestroy() {
         super.onDestroy()
         // Cerramos REALM

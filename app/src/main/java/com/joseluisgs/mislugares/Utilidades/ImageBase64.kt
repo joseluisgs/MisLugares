@@ -50,4 +50,8 @@ object ImageBase64 {
          outputStream?.close()
          return uri
      }
+
+    fun getTempUri(context: Context): Uri{
+        return Uri.fromFile(File.createTempFile("img_", ".jpg",context.cacheDir))
+    }
 }
