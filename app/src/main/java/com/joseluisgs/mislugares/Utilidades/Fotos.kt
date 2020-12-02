@@ -160,4 +160,9 @@ object Fotos {
         }
         return null
     }
+
+    fun deleteFotoDir(context: Context) {
+        val dirFotos = File((context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath) + "MisLugares")
+        dirFotos.deleteRecursively()
+    }
 }

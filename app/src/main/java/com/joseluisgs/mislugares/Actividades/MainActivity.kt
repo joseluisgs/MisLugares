@@ -22,6 +22,7 @@ import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
+import com.joseluisgs.mislugares.Utilidades.Fotos
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.Utils
 import com.squareup.picasso.Picasso
@@ -187,5 +188,6 @@ class MainActivity : AppCompatActivity() {
         Realm.getDefaultInstance().close()
         // limpiamos cache
         Utils.deleteCache(this)
+        Fotos.deleteFotoDir(this)
     }
 }
