@@ -20,6 +20,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.net.toFile
@@ -42,6 +43,7 @@ import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.Fotos
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
+import com.joseluisgs.mislugares.Utilidades.QRCode
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import java.io.IOException
 import java.time.Instant
@@ -293,12 +295,18 @@ class LugarDetalleFragment(
         volver()
     }
 
+    /**
+     * Pre condición de actualizar
+     */
     private fun actualizarLugar() {
         if (comprobarFormulario()) {
             alertaDialogo("Modificar Lugar", "¿Desea modificar este lugar?")
         }
     }
 
+    /**
+    * Actualiza un lugar
+     */
     private fun actualizar() {
         try {
             // Actualizamos la fotografía por si hay cambios
@@ -414,16 +422,22 @@ class LugarDetalleFragment(
     private fun compartirLugar() {
         val builder = AlertDialog.Builder(context)
         val inflater = requireActivity().layoutInflater
-        with(builder) {
-            setTitle("¿Compartir mediante QR?")
-            setView(inflater.inflate(R.layout.compartir_qr_code_layout, null))
-            setPositiveButton(R.string.aceptar) { _, _ ->
+        // https://stackoverflow.com/questions/40189734/bitmap-not-showing-in-dialog
+        // https://stackoverflow.com/questions/40189734/bitmap-not-showing-in-dialog
+        val vista = inflater.inflate(R.layout.compartir_qr_code_layout, null)
+        val code = QRCode.generateQRCode("Maria Jose")
+        val qrCodeImageView = vista.findViewById(R.id.imagenCodigoQR) as ImageView
+        qrCodeImageView.setImageBitmap(code)
+        builder
+            .setView(vista)
+            .setTitle("¿Compartir lugar mediante QR?")
+            // Add action buttons
+            .setPositiveButton(R.string.aceptar) { _, _ ->
                 Log.i("QR", "Aceptar QR")
             }
-            setNegativeButton(R.string.cancelar, null)
+            .setNegativeButton(R.string.cancelar, null)
             // setNeutralButton("Maybe", neutralButtonClick)
-            show()
-        }
+        builder.show()
     }
 
 

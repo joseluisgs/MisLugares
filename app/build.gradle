@@ -60,5 +60,6 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     // Localización
     implementation 'com.google.android.gms:play-services-location:17.1.0'
-
+    // QR Generador
+    implementation 'com.google.zxing:core:3.4.1'
 }
