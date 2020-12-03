@@ -4,6 +4,7 @@ import Utilidades.Cifrador
 import android.app.Activity.RESULT_CANCELED
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -158,7 +159,6 @@ class LugarDetalleFragment(
         Log.i("Lugares", "Modo Visualizar")
         // Ocultamos o quitamos lo que no queremos ver en este modo
         detalleLugarFabCamara.visibility = View.GONE
-        detalleLugarFabAccion.visibility = View.GONE
         detalleLugarInputNombre.setText(LUGAR?.nombre)
         detalleLugarInputNombre.isEnabled = false
         detalleLugarBotonFecha.text = LUGAR?.fecha
@@ -173,6 +173,11 @@ class LugarDetalleFragment(
         this.FOTO = ImageBase64.toBitmap(fotografia?.imagen.toString())!!
         IMAGEN_URI = Uri.parse(fotografia?.uri)
         detalleLugarImagen.setImageBitmap(this.FOTO)
+
+        detalleLugarFabAccion.visibility = View.VISIBLE
+        detalleLugarFabAccion.setImageResource(R.drawable.ic_qr_code)
+        detalleLugarFabAccion.backgroundTintList = AppCompatResources.getColorStateList(context!!, R.color.qrCodeColor)
+        detalleLugarFabAccion.setOnClickListener { compartirLugar() }
     }
 
     /**
@@ -402,6 +407,25 @@ class LugarDetalleFragment(
         }
         return sal
     }
+
+    /**
+     * Comparte un lugar con QR
+     */
+    private fun compartirLugar() {
+        val builder = AlertDialog.Builder(context)
+        val inflater = requireActivity().layoutInflater
+        with(builder) {
+            setTitle("¿Compartir mediante QR?")
+            setView(inflater.inflate(R.layout.compartir_qr_code_layout, null))
+            setPositiveButton(R.string.aceptar) { _, _ ->
+                Log.i("QR", "Aceptar QR")
+            }
+            setNegativeButton(R.string.cancelar, null)
+            // setNeutralButton("Maybe", neutralButtonClick)
+            show()
+        }
+    }
+
 
     /**
      * FUNCIONALIDAD DEL GPS

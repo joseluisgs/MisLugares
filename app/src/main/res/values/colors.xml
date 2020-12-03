@@ -17,4 +17,5 @@
     <color name="recyclerListColor">#FBFFFD</color>
     <color name="addLocationButtonColor">#52B0EC</color>
     <color name="vozButtonColor">#DC71EE</color>
+    <color name="qrCodeColor">#C5A1FF</color>
 </resources>
