@@ -30,7 +30,8 @@ nos enfrentamos a servicios remotos donde desconocemos como subir la imagen. Est
 la base de datos y no es muy recomendado salvo excepciones como esta.
 
 #### Referencias
-Se destacan las siguientes tecnologías usadas, cuyos enlaces son los mismos que hemos utilizado como apuntes en clase y
+Se destacan las siguientes tecnologías usadas, cuyos enlaces son los mismos que hemos utilizado como apuntes en clase y 
+están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 
 - [Android](https://developer.android.com/docs)
 - [Kotlin](https://kotlinlang.org/)
@@ -38,18 +39,19 @@ Se destacan las siguientes tecnologías usadas, cuyos enlaces son los mismos que
 - [Imágenes y gráficos](https://developer.android.com/guide/topics/graphics)
 - [Audio y vídeo](https://developer.android.com/guide/topics/media)
 - [Bases de Datos Realm.io](https://realm.io/docs/kotlin/latest/)
-- [Cámara](https://developer.android.com/training/camera)
-- [Almacenamiento](https://developer.android.com/guide/topics/data)
-- [Permisos](https://developer.android.com/guide/topics/permissions/overview)
-- [Intents](https://developer.android.com/guide/components/intents-common?hl=es)
+- [Uso de cámara](https://developer.android.com/training/camera)
+- [Sistemas de almacenamiento](https://developer.android.com/guide/topics/data)
+- [Manejo de permisos](https://developer.android.com/guide/topics/permissions/overview)
+- [Uso de Intents](https://developer.android.com/guide/components/intents-common?hl=es)
 - [Geolocalización](https://developer.android.com/training/location)
-- [Mapas](https://developers.google.com/maps/documentation/android-sdk/intro)
-- [Preferencias](https://developer.android.com/training/data-storage/shared-preferences?hl=es)
-- [Segundo plano](https://developer.android.com/guide/background)
+- [APi de Mapas](https://developers.google.com/maps/documentation/android-sdk/intro)
+- [Uso de preferencias](https://developer.android.com/training/data-storage/shared-preferences?hl=es)
+- [Tareas en segundo plano](https://developer.android.com/guide/background)
 - [Funciones de Voz](https://developer.android.com/training/wearables/apps/voice)
-- [Gson](https://github.com/google/gson)
-- [Dexter](https://github.com/Karumi/Dexter)
-- [Picasso](https://square.github.io/picasso/)
+- [Json con Gson](https://github.com/google/gson)
+- [Códigos QR](https://github.com/zxing/zxing)
+- [Permisos con Dexter](https://github.com/Karumi/Dexter)
+- [Imágenes con Picasso](https://square.github.io/picasso/)
 
 #### Cosideraciones para ver los mapas
 Los mapas hace uso de Google Map Api Key, es por ello que debes activar la clave de la API y activarla para tu proyecto, 
