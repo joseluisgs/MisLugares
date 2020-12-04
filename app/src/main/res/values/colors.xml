@@ -14,7 +14,9 @@
     <color name="favOnColor">#F65A5A</color>
     <color name="removeColor">#FF5151</color>
     <color name="updateColor">#52B0EC</color>
+    <color name="importColor">#DCE775</color>
     <color name="recyclerListColor">#FBFFFD</color>
     <color name="addLocationButtonColor">#52B0EC</color>
     <color name="vozButtonColor">#DC71EE</color>
+    <color name="qrCodeColor">#C5A1FF</color>
 </resources>

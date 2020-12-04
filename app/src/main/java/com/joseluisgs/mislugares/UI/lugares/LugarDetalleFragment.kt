@@ -19,6 +19,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.net.toFile
@@ -32,6 +33,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
@@ -41,6 +43,7 @@ import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.Fotos
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
+import com.joseluisgs.mislugares.Utilidades.QRCode
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import java.io.IOException
 import java.time.Instant
@@ -158,7 +161,6 @@ class LugarDetalleFragment(
         Log.i("Lugares", "Modo Visualizar")
         // Ocultamos o quitamos lo que no queremos ver en este modo
         detalleLugarFabCamara.visibility = View.GONE
-        detalleLugarFabAccion.visibility = View.GONE
         detalleLugarInputNombre.setText(LUGAR?.nombre)
         detalleLugarInputNombre.isEnabled = false
         detalleLugarBotonFecha.text = LUGAR?.fecha
@@ -173,6 +175,11 @@ class LugarDetalleFragment(
         this.FOTO = ImageBase64.toBitmap(fotografia?.imagen.toString())!!
         IMAGEN_URI = Uri.parse(fotografia?.uri)
         detalleLugarImagen.setImageBitmap(this.FOTO)
+
+        detalleLugarFabAccion.visibility = View.VISIBLE
+        detalleLugarFabAccion.setImageResource(R.drawable.ic_qr_code)
+        detalleLugarFabAccion.backgroundTintList = AppCompatResources.getColorStateList(context!!, R.color.qrCodeColor)
+        detalleLugarFabAccion.setOnClickListener { compartirLugar() }
     }
 
     /**
@@ -221,6 +228,7 @@ class LugarDetalleFragment(
             // Iderntamos la fotografia
             val b64 = ImageBase64.toBase64(this.FOTO)!!
             val fotografia = Fotografia(
+                id = UUID.randomUUID().toString(),
                 imagen = b64,
                 uri = IMAGEN_URI.toString(),
                 hash = Cifrador.toHash(b64).toString(),
@@ -231,6 +239,7 @@ class LugarDetalleFragment(
             Log.i("Insertar", "Fotografía insertada con éxito con: " + fotografia.id)
             // Insertamos lugar
             LUGAR = Lugar(
+                id = UUID.randomUUID().toString(),
                 nombre = detalleLugarInputNombre.text.toString().trim(),
                 tipo = (detalleLugarSpinnerTipo.selectedItem as String),
                 fecha = detalleLugarBotonFecha.text.toString(),
@@ -288,12 +297,18 @@ class LugarDetalleFragment(
         volver()
     }
 
+    /**
+     * Pre condición de actualizar
+     */
     private fun actualizarLugar() {
         if (comprobarFormulario()) {
             alertaDialogo("Modificar Lugar", "¿Desea modificar este lugar?")
         }
     }
 
+    /**
+    * Actualiza un lugar
+     */
     private fun actualizar() {
         try {
             // Actualizamos la fotografía por si hay cambios
@@ -402,6 +417,52 @@ class LugarDetalleFragment(
         }
         return sal
     }
+
+    /**
+     * Comparte un lugar con QR
+     */
+    private fun compartirLugar() {
+        val builder = AlertDialog.Builder(context)
+        val inflater = requireActivity().layoutInflater
+        // https://stackoverflow.com/questions/40189734/bitmap-not-showing-in-dialog
+        // https://stackoverflow.com/questions/40189734/bitmap-not-showing-in-dialog
+        val vista = inflater.inflate(R.layout.compartir_qr_code_layout, null)
+        val code = QRCode.generateQRCode(Gson().toJson(LUGAR))
+        val qrCodeImageView = vista.findViewById(R.id.imagenCodigoQR) as ImageView
+        qrCodeImageView.setImageBitmap(code)
+        builder
+            .setView(vista)
+            .setTitle("¿Compartir lugar mediante QR?")
+            // Add action buttons
+            .setPositiveButton(R.string.aceptar) { _, _ ->
+                compartirQRCode(code)
+            }
+            .setNegativeButton(R.string.cancelar, null)
+            // setNeutralButton("Maybe", neutralButtonClick)
+        builder.show()
+    }
+
+    /**
+     * Comparte un código QR
+     * @param code Bitmap
+     */
+    private fun compartirQRCode(qrCode: Bitmap) {
+        Log.i("QR", "Aceptar QR")
+        // Politicas de seguridad
+        val builder = StrictMode.VmPolicy.Builder()
+        StrictMode.setVmPolicy(builder.build())
+        val nombre = Fotos.crearNombreFoto(IMAGEN_PREFIJO, IMAGEN_EXTENSION)
+        val fichero =
+            Fotos.copiarFoto(qrCode, nombre, IMAGEN_DIRECTORY, 100, context!!)
+        Log.i("QR", "Foto salvada: " + fichero.absolutePath)
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fichero))
+        }
+        context?.startActivity(Intent.createChooser(shareIntent, null))
+        Log.i("QR", "Foto salvada")
+    }
+
 
     /**
      * FUNCIONALIDAD DEL GPS

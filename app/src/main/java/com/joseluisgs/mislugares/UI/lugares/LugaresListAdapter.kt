@@ -1,6 +1,7 @@
 package com.joseluisgs.mislugares.UI.lugares
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +40,7 @@ class LugaresListAdapter(
         holder.itemLugarFecha.text = listaLugares[position].fecha
         holder.itemLugarTipo.text = listaLugares[position].tipo
         holder.itemLugarVotos.text = listaLugares[position].votos.toString()
-        holder.itemLugarImagen.setImageBitmap(imagenLugar(listaLugares[position]))
+        holder.itemLugarImagen.setImageBitmap(imagenLugar(listaLugares[position], holder))
 
         // procesamos el ffavorito
         // color
@@ -106,12 +107,12 @@ class LugaresListAdapter(
      * @param lugar Lugar
      * @return Bitmap?
      */
-    private fun imagenLugar(lugar: Lugar): Bitmap? {
+    private fun imagenLugar(lugar: Lugar, holder: LugarViewHolder): Bitmap? {
         try {
             val fotografia = FotografiaController.selectById(lugar.imagenID)
             return ImageBase64.toBitmap(fotografia?.imagen.toString())
         } catch (ex: Exception) {
-            return null
+            return BitmapFactory.decodeResource(holder.context?.resources, R.drawable.ic_mapa);
         }
     }
 

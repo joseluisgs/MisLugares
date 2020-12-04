@@ -12,9 +12,9 @@
                 android:icon="@drawable/ic_menu_mapa"
                 android:title="@string/mi_mapa"/>
         <item
-                android:id="@+id/nav_lugar_detalle"
-                android:icon="@drawable/ic_menu_slideshow"
-                android:title="@string/menu_slideshow"/>
+                android:id="@+id/nav_importar_lugar"
+                android:icon="@drawable/ic_qr_code"
+                android:title="@string/escanear_lugar"/>
     </group>
     <item android:title="Contacto">
         <menu>
