@@ -4,7 +4,6 @@ import Utilidades.Cifrador
 import android.app.Activity.RESULT_CANCELED
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -34,6 +33,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
@@ -425,7 +425,7 @@ class LugarDetalleFragment(
         // https://stackoverflow.com/questions/40189734/bitmap-not-showing-in-dialog
         // https://stackoverflow.com/questions/40189734/bitmap-not-showing-in-dialog
         val vista = inflater.inflate(R.layout.compartir_qr_code_layout, null)
-        val code = QRCode.generateQRCode("Maria Jose")
+        val code = QRCode.generateQRCode(Gson().toJson(LUGAR))
         val qrCodeImageView = vista.findViewById(R.id.imagenCodigoQR) as ImageView
         qrCodeImageView.setImageBitmap(code)
         builder
@@ -433,11 +433,32 @@ class LugarDetalleFragment(
             .setTitle("¿Compartir lugar mediante QR?")
             // Add action buttons
             .setPositiveButton(R.string.aceptar) { _, _ ->
-                Log.i("QR", "Aceptar QR")
+                compartirQRCode(code)
             }
             .setNegativeButton(R.string.cancelar, null)
             // setNeutralButton("Maybe", neutralButtonClick)
         builder.show()
+    }
+
+    /**
+     * Comparte un código QR
+     * @param code Bitmap
+     */
+    private fun compartirQRCode(qrCode: Bitmap) {
+        Log.i("QR", "Aceptar QR")
+        // Politicas de seguridad
+        val builder = StrictMode.VmPolicy.Builder()
+        StrictMode.setVmPolicy(builder.build())
+        val nombre = Fotos.crearNombreFoto(IMAGEN_PREFIJO, IMAGEN_EXTENSION)
+        val fichero =
+            Fotos.copiarFoto(qrCode, nombre, IMAGEN_DIRECTORY, 100, context!!)
+        Log.i("QR", "Foto salvada: " + fichero.absolutePath)
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fichero))
+        }
+        context?.startActivity(Intent.createChooser(shareIntent, null))
+        Log.i("QR", "Foto salvada")
     }
 
 
