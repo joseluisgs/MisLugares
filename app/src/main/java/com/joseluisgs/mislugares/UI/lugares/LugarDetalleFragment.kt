@@ -228,6 +228,7 @@ class LugarDetalleFragment(
             // Iderntamos la fotografia
             val b64 = ImageBase64.toBase64(this.FOTO)!!
             val fotografia = Fotografia(
+                id = UUID.randomUUID().toString(),
                 imagen = b64,
                 uri = IMAGEN_URI.toString(),
                 hash = Cifrador.toHash(b64).toString(),
@@ -238,6 +239,7 @@ class LugarDetalleFragment(
             Log.i("Insertar", "Fotografía insertada con éxito con: " + fotografia.id)
             // Insertamos lugar
             LUGAR = Lugar(
+                id = UUID.randomUUID().toString(),
                 nombre = detalleLugarInputNombre.text.toString().trim(),
                 tipo = (detalleLugarSpinnerTipo.selectedItem as String),
                 fecha = detalleLugarBotonFecha.text.toString(),

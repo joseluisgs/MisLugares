@@ -1,7 +1,6 @@
 package com.joseluisgs.mislugares.Actividades
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -205,9 +204,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Muestra un mensaje al salir
+     * Quitamos fragment apilados, y si no hay salimos
      */
     override fun onBackPressed() {
+        try {
+            if (supportFragmentManager.backStackEntryCount > 0)
+                    supportFragmentManager.popBackStackImmediate()
+            else
+                confirmarSalir()
+        } catch (ex: Exception) {
+            confirmarSalir()
+        }
+    }
+
+    /**
+     * Mensaje para confirmar para salir
+     */
+    fun confirmarSalir() {
         AlertDialog.Builder(this)
             .setIcon(R.drawable.ic_exit_app)
             .setTitle(getString(R.string.cerrar_app))

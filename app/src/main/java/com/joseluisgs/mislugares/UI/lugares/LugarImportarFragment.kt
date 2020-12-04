@@ -26,13 +26,16 @@ import com.google.gson.Gson
 import com.google.zxing.integration.android.IntentIntegrator
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
+import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.CaptureActivity
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import kotlinx.android.synthetic.main.fragment_importar_lugar.*
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import java.time.Instant
+import java.util.*
 
 class LugarImportarFragment: Fragment(), OnMapReadyCallback {
     private lateinit var LUGAR: Lugar
@@ -95,7 +98,6 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
         if (result != null) {
             if (result.contents == null) {
                 Toast.makeText(context, "Cancelado", Toast.LENGTH_LONG).show()
-                volver()
             }
             else {
                 try {
@@ -104,7 +106,7 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
                     initUI()
                     initRespuesta()
                 } catch (ex: Exception) {
-                    // Toast.makeText(context, "Error: El QR no es de un lugar válido", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Error: El QR no es de un lugar válido", Toast.LENGTH_LONG).show()
                     // volver()
                 }
             }
@@ -152,43 +154,40 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
      */
     private fun importar() {
         // Como sabemos que no tiene imagen le creamos una
-        val imagen = AppCompatResources.getDrawable(context!!, R.drawable.ic_mapa)?.toBitmap()
+        val imagen = AppCompatResources.getDrawable(context!!, R.drawable.ic_mapa_item_lista)?.toBitmap()
         val b64 = ImageBase64.toBase64(imagen!!)
         val fotografia = Fotografia(
+            id = UUID.randomUUID().toString(),
             imagen = b64!!,
-            uri = "",
             hash = Cifrador.toHash(b64).toString(),
             time = Instant.now().toString(),
-            usuarioID = LUGAR.usuarioID
+            usuarioID = (activity?.application as MyApp).SESION_USUARIO.toString()
         )
-        // FotografiaController.insert(fotografia)
+        FotografiaController.insert(fotografia)
         Log.i("Insertar", "Fotografía insertada con éxito con: " + fotografia.id)
         // Insertamos lugar
-        LUGAR.imagenID = fotografia.id
-        LUGAR.time = Instant.now().toString()
-        LUGAR.usuarioID = (activity?.application as MyApp).SESION_USUARIO.toString()
-        // LugarController.insert(LUGAR)
-        // Actualizamos el adapter
+        val lugar = Lugar(
+            id= UUID.randomUUID().toString(),
+            nombre = LUGAR.nombre,
+            tipo = LUGAR.tipo,
+            fecha = LUGAR.fecha,
+            latitud = LUGAR.latitud,
+            longitud = LUGAR.longitud,
+            imagenID = fotografia.id,
+            favorito = false,
+            votos = 0,
+            time = Instant.now().toString(),
+            usuarioID = (activity?.application as MyApp).SESION_USUARIO.toString()
+        )
+        LugarController.insert(lugar)
         Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
         Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR)
         initUI()
     }
 
     /**
-    * Vuelve
-    */
-    private fun volver() {
-        val listaLugares = LugaresFragment()
-        val transaction = activity!!.supportFragmentManager.beginTransaction()
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        transaction.replace(R.id.nav_host_fragment, listaLugares)
-        transaction.addToBackStack(null)
-        transaction.commit()
-        view?.visibility = View.GONE
-       // transaction.remove(this)
-
-    }
-
+     * Inicia el Mapa
+     */
     private fun initMapa() {
         Log.i("Mapa", "Iniciando Mapa")
         mapFragment = (childFragmentManager
@@ -196,6 +195,10 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
+    /**
+     * EL mapa está listo
+     * @param googleMap GoogleMap
+     */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         configurarIUMapa()
