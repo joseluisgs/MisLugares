@@ -22,6 +22,10 @@
     <string name="texto_ordenacion_voz">¿Cómo quieres ordenar la lista?</string>
     <string name="escanear_lugar">Escanear Lugar</string>
     <string name="escaneando_codigo">Escaneando QR de Lugar</string>
+    <string name="cerrar_app">Cerrar Mis Lugares</string>
+    <string name="mensaje_cerrar">¿De verdad quieres salir?</string>
+    <string name="si">Sí</string>
+    <string name="no">No</string>
 
     <!-- Tipos de lugares para insertar -->
     <string-array name="tipos_lugares">

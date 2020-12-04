@@ -1,5 +1,7 @@
 package com.joseluisgs.mislugares.Actividades
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -202,4 +204,16 @@ class MainActivity : AppCompatActivity() {
         Log.i("Basura", "Limpiando Basura")
     }
 
+    /**
+     * Muestra un mensaje al salir
+     */
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setIcon(R.drawable.ic_exit_app)
+            .setTitle(getString(R.string.cerrar_app))
+            .setMessage(getString(R.string.mensaje_cerrar))
+            .setPositiveButton(getString(R.string.si)) { dialog, which -> finish() }
+            .setNegativeButton(getString(R.string.no), null)
+            .show()
+    }
 }
