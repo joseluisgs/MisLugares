@@ -3,6 +3,7 @@ package com.joseluisgs.mislugares.Actividades
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.ImageView
@@ -38,6 +39,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Limpiamos la cache y temporales.
+        limpiarBasura()
         // elementos de la interfaz propios
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -185,9 +188,18 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         // Cerramos REALM
-        Realm.getDefaultInstance().close()
-        // limpiamos cache
+        Realm.getDefaultInstance().close() // limpiamos realm
+        limpiarBasura() // Por si acaso
+        Log.i("Destroy", "Ejecutando OnDestroy")
+    }
+
+    /**
+     * Limpia nuestros ficheros temporales 
+     */
+    fun limpiarBasura() {
         Utils.deleteCache(this)
         Fotos.deleteFotoDir(this)
+        Log.i("Basura", "Limpiando Basura")
     }
+
 }
