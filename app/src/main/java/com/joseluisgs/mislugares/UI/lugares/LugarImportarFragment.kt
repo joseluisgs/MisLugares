@@ -7,9 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import com.google.gson.Gson
 import com.google.zxing.integration.android.IntentIntegrator
+import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
+import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
-import com.journeyapps.barcodescanner.CaptureActivity
+import com.joseluisgs.mislugares.Utilidades.CaptureActivity
 import kotlinx.android.synthetic.main.fragment_importar_lugar.*
 
 class LugarImportarFragment: Fragment() {
@@ -23,6 +27,8 @@ class LugarImportarFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        view.visibility = View.INVISIBLE
+        scanQRCode()
         // Iniciamos la interfaz
         initUI()
     }
@@ -31,9 +37,7 @@ class LugarImportarFragment: Fragment() {
      * Inicia la UI
      */
     private fun initUI() {
-        //escanearBtnQR.setOnClickListener {
-            scanQRCode()
-        //}
+
     }
 
     /**
@@ -44,7 +48,7 @@ class LugarImportarFragment: Fragment() {
             captureActivity = CaptureActivity::class.java
             setOrientationLocked(false)
             setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
-            setPrompt("Escaneando Código")
+            setPrompt(getString(R.string.escaneando_codigo))
         }
         integrator.initiateScan()
     }
@@ -58,10 +62,44 @@ class LugarImportarFragment: Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
-            if (result.contents == null) Toast.makeText(context, "Cancelled", Toast.LENGTH_LONG).show()
-            else Toast.makeText(context, "Escaneado: " + result.contents, Toast.LENGTH_LONG).show()
+            if (result.contents == null) {
+                Toast.makeText(context, "Cancelado", Toast.LENGTH_LONG).show()
+                volver()
+            }
+            else {
+                try {
+                    val lugar = Gson().fromJson(result.contents, Lugar::class.java)
+                    Toast.makeText(context, "Recuperado: $lugar", Toast.LENGTH_LONG).show()
+                    view?.visibility = View.VISIBLE
+                    //abrirDetalle(lugar)
+                } catch (ex: Exception) {
+                    Toast.makeText(context, "Error: El QR no es de un lugar válido", Toast.LENGTH_LONG).show()
+                    volver()
+                }
+                Toast.makeText(context, "Recuperado: " + result.contents, Toast.LENGTH_LONG).show()
+
+            }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
+
+    /**
+    * Vuelve
+    */
+    private fun volver() {
+        val listaLugares = LugaresFragment()
+        val transaction = activity!!.supportFragmentManager.beginTransaction()
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        transaction.add(R.id.nav_host_fragment, listaLugares)
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
+    private fun abrirDetalle(lugar: Lugar) {
+
+    }
+
+
+
 }

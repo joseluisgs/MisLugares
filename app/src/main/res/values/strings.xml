@@ -21,6 +21,7 @@
     <string name="cancelar">Cancelar</string>
     <string name="texto_ordenacion_voz">¿Cómo quieres ordenar la lista?</string>
     <string name="escanear_lugar">Escanear Lugar</string>
+    <string name="escaneando_codigo">Escaneando QR de Lugar</string>
 
     <!-- Tipos de lugares para insertar -->
     <string-array name="tipos_lugares">

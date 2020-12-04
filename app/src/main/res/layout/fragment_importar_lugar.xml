@@ -1,18 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".UI.lugares.LugarImportarFragment">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@color/recyclerListColor" android:id="@+id/importarLugarLayout">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:src="?attr/actionModeSelectAllDrawable"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true" android:id="@+id/escanearBtnQR"
-            android:backgroundTint="@color/colorPrimary"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="24dp" android:layout_marginBottom="24dp"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+            android:id="@+id/importarLugarImagen"
+            android:layout_width="match_parent"
+            android:layout_height="145dp"
+            android:background="@color/itemListColor"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_launcher_foreground" app:srcCompat="@mipmap/ic_launcher_foreground"
+            tools:srcCompat="@mipmap/ic_launcher_foreground"/>
+
+    <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="145dp"
+            android:layout_marginEnd="10dp"
+            android:background="#FFFFFF">
+
+
+        <TextView
+                android:text="Lugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/importarLugarTextNombre"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold" tools:text="Lugar" android:textSize="24sp"
+                android:textColor="@color/letter_color_splash"
+                android:gravity="center|center_horizontal|center_vertical"/>
+
+
+        <TextView
+                android:text="Lugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/importarLugarTextNombre2"
+                android:layout_marginTop="50dp"
+                android:textStyle="bold" tools:text="Lugar" android:layout_alignParentEnd="true"
+                android:layout_marginEnd="0dp" android:textSize="18sp"
+                android:gravity="center|center_horizontal|center_vertical"/>
+        <fragment
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/importarLugarMapa"
+                tools:context="com.example.mislugares.UI.noticias.NoticiasFragment"
+                android:name="com.google.android.gms.maps.SupportMapFragment" android:layout_marginTop="80dp"
+                android:layout_marginStart="0dp" android:layout_marginEnd="0dp"
+                android:layout_below="@+id/linearLayoutImportarLugar"/>
+
+
+    </RelativeLayout>
+</FrameLayout>

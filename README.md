@@ -44,7 +44,7 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 - [Manejo de permisos](https://developer.android.com/guide/topics/permissions/overview)
 - [Uso de Intents](https://developer.android.com/guide/components/intents-common?hl=es)
 - [Geolocalización](https://developer.android.com/training/location)
-- [APi de Mapas](https://developers.google.com/maps/documentation/android-sdk/intro)
+- [Google Maps](https://developers.google.com/maps/documentation/android-sdk/intro)
 - [Uso de preferencias](https://developer.android.com/training/data-storage/shared-preferences?hl=es)
 - [Tareas en segundo plano](https://developer.android.com/guide/background)
 - [Funciones de Voz](https://developer.android.com/training/wearables/apps/voice)
