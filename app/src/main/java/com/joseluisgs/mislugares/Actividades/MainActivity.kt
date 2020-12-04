@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         // Identificamos los elementos para navegar
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_lugares, R.id.nav_mapa, R.id.nav_lugar_detalle, R.id.nav_acerca_de
+                R.id.nav_lugares, R.id.nav_mapa, R.id.nav_importar_lugar, R.id.nav_acerca_de
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Limpia nuestros ficheros temporales 
+     * Limpia nuestros ficheros temporales
      */
     fun limpiarBasura() {
         Utils.deleteCache(this)

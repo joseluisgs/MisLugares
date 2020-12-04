@@ -20,6 +20,7 @@
     <string name="aceptar">Aceptar</string>
     <string name="cancelar">Cancelar</string>
     <string name="texto_ordenacion_voz">¿Cómo quieres ordenar la lista?</string>
+    <string name="escanear_lugar">Escanear Lugar</string>
 
     <!-- Tipos de lugares para insertar -->
     <string-array name="tipos_lugares">
