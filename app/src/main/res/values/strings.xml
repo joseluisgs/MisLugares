@@ -26,6 +26,7 @@
     <string name="mensaje_cerrar">¿De verdad quieres salir?</string>
     <string name="si">Sí</string>
     <string name="no">No</string>
+    <string name="brujula">Brújula</string>
 
     <!-- Tipos de lugares para insertar -->
     <string-array name="tipos_lugares">
