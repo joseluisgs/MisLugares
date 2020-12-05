@@ -1,12 +1,14 @@
 package com.joseluisgs.mislugares.UI.mapa
 
+import android.app.AlertDialog
 import android.graphics.*
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.*
@@ -133,15 +135,40 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
      * @return Boolean
      */
     override fun onMarkerClick(marker: Marker): Boolean {
-        var lugar = marker.tag as Lugar
+        val lugar = marker.tag as Lugar
         Log.i("Mapa", lugar.toString())
-        // Si quiero sacar un mensaje es así
-        Toast.makeText(
-            context, marker.title.toString() +
-                    " Mal sitio para ir.",
-            Toast.LENGTH_SHORT
-        ).show()
+        mostrarDialogo(lugar)
         return false
+    }
+
+    /**
+     * Muestra un dialogo del lugar
+     * @param lugar Lugar
+     */
+    private fun mostrarDialogo(lugar: Lugar) {
+        val builder = AlertDialog.Builder(context)
+        val inflater = requireActivity().layoutInflater
+        val vista = inflater.inflate(R.layout.intem_visualizacion_mapa, null)
+        // Le ponemos las cosas
+        val imagen = vista.findViewById(R.id.mapaLugarImagen) as ImageView
+        imagen.setImageBitmap(ImageBase64.toBitmap(FotografiaController.selectById(lugar.imagenID)!!.imagen))
+        val nombre = vista.findViewById(R.id.mapaLugarTextNombre) as TextView
+        nombre.text = lugar.nombre
+        val tipo = vista.findViewById(R.id.mapaLugarTextTipo) as TextView
+        tipo.text = lugar.tipo
+        val fecha = vista.findViewById(R.id.mapaLugarTextFecha) as TextView
+        fecha.text = lugar.fecha
+        builder
+            .setView(vista)
+            .setIcon(R.drawable.ic_location)
+            .setTitle("Lugar")
+            // Add action buttons
+            .setPositiveButton(R.string.aceptar) { _, _ ->
+                null
+            }
+            //.setNegativeButton(R.string.cancelar, null)
+        // setNeutralButton("Maybe", neutralButtonClick)
+        builder.show()
     }
 
     /**
