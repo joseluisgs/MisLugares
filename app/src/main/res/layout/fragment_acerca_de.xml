@@ -4,7 +4,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical" android:background="@color/colorAccent">
+              android:orientation="vertical" android:background="@color/color_navigation_list_background">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -93,7 +93,7 @@
                     app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     tools:srcCompat="@drawable/ic_email" style="@android:style/Widget.Material.ImageButton"
-                    android:scaleType="fitXY" android:background="@color/colorAccent"
+                    android:scaleType="fitXY" android:background="@color/color_navigation_list_background"
                     app:layout_constraintVertical_bias="0.495" android:layout_marginStart="46dp"/>
             <ImageButton
                     android:layout_width="75dp"
@@ -102,7 +102,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     tools:srcCompat="@drawable/ic_twitter" style="@android:style/Widget.Material.ImageButton"
-                    android:scaleType="fitXY" android:background="@color/colorAccent"
+                    android:scaleType="fitXY" android:background="@color/color_navigation_list_background"
                     app:layout_constraintVertical_bias="0.495"
                     app:layout_constraintStart_toEndOf="@+id/acercaDeMail" app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintEnd_toStartOf="@+id/acercaDeGithub"/>
@@ -111,7 +111,7 @@
                     android:layout_height="75dp" app:srcCompat="@drawable/ic_github"
                     android:id="@+id/acercaDeGithub"
                     tools:srcCompat="@drawable/ic_github" style="@android:style/Widget.Material.ImageButton"
-                    android:scaleType="fitXY" android:background="@color/colorAccent"
+                    android:scaleType="fitXY" android:background="@color/color_navigation_list_background"
                     app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintVertical_bias="0.495" android:layout_marginEnd="46dp"/>
