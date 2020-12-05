@@ -3,24 +3,42 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
-        <item
-                android:id="@+id/nav_lugares"
-                android:icon="@drawable/ic_menu_lugar"
-                android:title="@string/mis_lugares"/>
-        <item
-                android:id="@+id/nav_mapa"
-                android:icon="@drawable/ic_menu_mapa"
-                android:title="@string/mi_mapa"/>
-        <item
-                android:id="@+id/nav_importar_lugar"
-                android:icon="@drawable/ic_qr_code"
-                android:title="@string/escanear_lugar"/>
-        <item
-                android:id="@+id/nav_brujula"
-                android:icon="@drawable/ic_brujula"
-                android:title="@string/brujula"/>
+        <item android:title="Lugares">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                            android:id="@+id/nav_lugares"
+                            android:icon="@drawable/ic_menu_lugar"
+                            android:title="@string/mis_lugares"/>
+                    <item
+                            android:id="@+id/nav_mapa"
+                            android:icon="@drawable/ic_menu_mapa"
+                            android:title="@string/mi_mapa"/>
+                    <item
+                            android:id="@+id/nav_importar_lugar"
+                            android:icon="@drawable/ic_qr_code"
+                            android:title="@string/escanear_lugar"/>
+                </group>
+            </menu>
+        </item>
+
+        <item android:title="@string/utilidades">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                            android:id="@+id/nav_brujula"
+                            android:icon="@drawable/ic_brujula"
+                            android:title="@string/brujula"/>
+                    <item
+                            android:id="@+id/nav_linterna"
+                            android:icon="@drawable/ic_linterna"
+                            android:title="@string/linterna"/>
+                </group>
+            </menu>
+        </item>
     </group>
-    <item android:title="Contacto">
+
+    <item android:title="@string/contacto">
         <menu>
             <group android:checkableBehavior="single">
             <item
