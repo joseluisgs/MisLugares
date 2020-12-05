@@ -48,6 +48,7 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 - [Uso de preferencias](https://developer.android.com/training/data-storage/shared-preferences?hl=es)
 - [Tareas en segundo plano](https://developer.android.com/guide/background)
 - [Funciones de Voz](https://developer.android.com/training/wearables/apps/voice)
+- [Animaciones](https://developer.android.com/training/animation/overview)
 - [Json con Gson](https://github.com/google/gson)
 - [Códigos QR](https://github.com/zxing/zxing)
 - [Permisos con Dexter](https://github.com/Karumi/Dexter)
