@@ -27,6 +27,7 @@
     <string name="si">Sí</string>
     <string name="no">No</string>
     <string name="brujula">Brújula</string>
+    <string name="linterna">Linterna</string>
 
     <!-- Tipos de lugares para insertar -->
     <string-array name="tipos_lugares">
