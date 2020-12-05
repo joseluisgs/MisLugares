@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_splash_screen.*
  * @property TIME Long
  */
 class SplashActivityActivity : AppCompatActivity() {
-    private val TIME: Long = 2000
+    private val TIME: Long = 2200
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Pantalla completa

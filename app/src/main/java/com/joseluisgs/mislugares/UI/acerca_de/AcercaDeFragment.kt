@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.Utils
+import kotlinx.android.synthetic.main.activity_splash_screen.*
 import kotlinx.android.synthetic.main.fragment_acerca_de.*
 
 class AcercaDeFragment : Fragment() {
@@ -33,7 +35,23 @@ class AcercaDeFragment : Fragment() {
      * Inicializamos los elementos de la IU
      */
     private fun initUI() {
+        iniciarAnimaciones()
         initBotonesEventos()
+    }
+
+    private fun iniciarAnimaciones() {
+        val animacion1 = AnimationUtils.loadAnimation(context, R.anim.desplazamiento_arriba)
+        val animacion2 = AnimationUtils.loadAnimation(context, R.anim.desplazamiento_abajo)
+        val animacion3 = AnimationUtils.loadAnimation(context, R.anim.desplazamiento_lateral)
+
+        acercaDeImage.animation = animacion1
+        acercaDeAutor.animation = animacion2
+        acercaDeCurso.animation = animacion2
+        acercaDeInstituto.animation = animacion2
+        acercaDeLugar.animation = animacion2
+        acercaDeMail.animation = animacion3
+        acercaDeTwitter.animation = animacion3
+        acercaDeGithub.animation = animacion3
     }
 
     /**
