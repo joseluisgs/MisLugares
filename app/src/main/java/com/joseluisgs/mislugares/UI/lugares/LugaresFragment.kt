@@ -313,7 +313,7 @@ class LugaresFragment : Fragment() {
         val transaction = activity!!.supportFragmentManager.beginTransaction()
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.add(R.id.nav_host_fragment, lugarDetalle)
-        //transaction.addToBackStack(null)
+        transaction.addToBackStack(null)
         transaction.commit()
     }
 
