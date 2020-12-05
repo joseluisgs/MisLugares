@@ -10,8 +10,7 @@
     <fragment
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:id="@+id/detalleLugarMapa"
-            tools:context="com.example.mislugares.UI.noticias.NoticiasFragment"
+            android:id="@+id/miMapa"
             android:name="com.google.android.gms.maps.SupportMapFragment"
     />
 </FrameLayout>
