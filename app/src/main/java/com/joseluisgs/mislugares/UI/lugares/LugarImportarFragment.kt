@@ -141,7 +141,7 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
      */
     private fun importarLugar() {
         AlertDialog.Builder(context)
-            .setIcon(R.drawable.ic_exit_app)
+            .setIcon(R.drawable.ic_importar)
             .setTitle("¿Importar Lugar?")
             .setMessage("¿Desea importar este lugar?")
             .setPositiveButton(getString(R.string.aceptar)) { dialog, which -> importar() }

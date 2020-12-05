@@ -30,19 +30,13 @@
             android:id="@+id/nav_brujula"
             android:name="com.joseluisgs.mislugares.UI.brujula.BrujulaFragment"
             android:label="@string/brujula"
-            tools:layout="@layout/fragment_brujula">
-        <action android:id="@+id/action_nav_brujula_to_nav_lugares" app:destination="@id/nav_lugares"
-                app:exitAnim="@anim/nav_default_exit_anim"/>
-    </fragment>
+            tools:layout="@layout/fragment_brujula"/>
 
     <fragment
             android:id="@+id/nav_linterna"
             android:name="com.joseluisgs.mislugares.UI.linterna.LinternaFragment"
             android:label="@string/linterna"
-            tools:layout="@layout/fragment_linterna">
-        <action android:id="@+id/action_nav_linterna_to_nav_lugares" app:destination="@id/nav_lugares"
-                app:exitAnim="@anim/nav_default_exit_anim"/>
-    </fragment>
+            tools:layout="@layout/fragment_linterna"/>
 
     <fragment
             android:id="@+id/nav_acerca_de"

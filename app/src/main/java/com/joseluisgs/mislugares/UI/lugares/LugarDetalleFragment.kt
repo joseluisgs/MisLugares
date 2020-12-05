@@ -382,6 +382,7 @@ class LugarDetalleFragment(
         val builder = AlertDialog.Builder(context)
         with(builder)
         {
+           setIcon(R.drawable.ic_lugar_dialog)
             setTitle(titulo)
             setMessage(texto)
             setPositiveButton(R.string.aceptar) { _, _ ->
@@ -432,7 +433,8 @@ class LugarDetalleFragment(
         qrCodeImageView.setImageBitmap(code)
         builder
             .setView(vista)
-            .setTitle("¿Compartir lugar mediante QR?")
+            .setIcon(R.drawable.ic_qr_code)
+            .setTitle("¿Compartir mediante QR?")
             // Add action buttons
             .setPositiveButton(R.string.aceptar) { _, _ ->
                 compartirQRCode(code)
