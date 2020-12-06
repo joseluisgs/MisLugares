@@ -1,6 +1,7 @@
 package com.joseluisgs.mislugares.UI.backup
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,7 +42,7 @@ class BackupFragment: Fragment() {
             .setIcon(R.drawable.ic_exportar)
             .setTitle("Exportar datos")
             .setMessage("¿Desea exportar los datos? Se sobreeescribirá el último fichero de copia de seguridad")
-            .setPositiveButton(getString(R.string.aceptar)) { dialog, which -> exportarDatos() }
+            .setPositiveButton(getString(R.string.aceptar)) { dialog, which -> exportarDatos(context!!) }
             .setNegativeButton(getString(R.string.cancelar), null)
             .show()
     }
@@ -62,9 +63,19 @@ class BackupFragment: Fragment() {
     /**
      * Exportar los datos
      */
-    private fun exportarDatos() {
+    private fun exportarDatos(context: Context) {
         // Se archiva y si todo va bien se da un mensaje y cambia la fecha
-        BackupController.exportarDatos()
+        val res = BackupController.exportarDatos(context)
+        if(res) {
+            AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_exportar)
+                .setTitle("Exportar datos")
+                .setMessage("Copia de Seguridad guardada con éxito")
+                .setPositiveButton(getString(R.string.aceptar), null)
+                // .setNegativeButton(getString(R.string.cancelar), null)
+                .show()
+        }
+        // BackupController.test(context)
     }
 
     /**
