@@ -83,26 +83,13 @@ class BackupFragment: Fragment() {
      */
     private fun importarDatos() {
         // Se importar y si todo va bien se da un mensaje
-        val res = BackupController.importarDatos(context!!)
-        if(res) {
-            AlertDialog.Builder(context)
-                .setIcon(R.drawable.ic_desarchivar)
-                .setTitle("Importar datos")
-                .setMessage("Copia de Seguridad importada con éxito")
-                .setPositiveButton(getString(R.string.aceptar), null)
-                // .setNegativeButton(getString(R.string.cancelar), null)
-                .show()
-        } else {
-            AlertDialog.Builder(context)
-                .setIcon(R.drawable.ic_desarchivar)
-                .setTitle("Error Importar datos")
-                .setMessage("Ha habido un error al importar los datos")
-                .setPositiveButton(getString(R.string.aceptar), null)
-                // .setNegativeButton(getString(R.string.cancelar), null)
-                .show()
-        }
+        val tareaImportar = TareaImportar()
+        tareaImportar.execute()
     }
 
+    /**
+     * Tarea asíncrona para exportar
+     */
     inner class TareaExportar : AsyncTask<Void?, Void?, Void?>() {
         // Pre-Tarea
         override fun onPreExecute() {
@@ -111,7 +98,7 @@ class BackupFragment: Fragment() {
         // Tarea
         override fun doInBackground(vararg args: Void?): Void? {
             try {
-                RES = BackupController.importarDatos(context!!)
+                RES = BackupController.exportarDatos(context!!)
             } catch (e: Exception) {
                 RES = false
             }
@@ -134,6 +121,47 @@ class BackupFragment: Fragment() {
                     .setIcon(R.drawable.ic_exportar)
                     .setTitle("Error Exportar datos")
                     .setMessage("Ha habido un error al exportar los datos")
+                    .setPositiveButton(getString(R.string.aceptar), null)
+                    // .setNegativeButton(getString(R.string.cancelar), null)
+                    .show()
+            }
+            RES = false
+        }
+    }
+
+    /**
+     * Tarea asíncrona para importar
+     */
+    inner class TareaImportar : AsyncTask<Void?, Void?, Void?>() {
+        // Pre-Tarea
+        override fun onPreExecute() {
+            backupProgressBar.visibility = View.VISIBLE
+        }
+        // Tarea
+        override fun doInBackground(vararg args: Void?): Void? {
+            try {
+                RES = BackupController.importarDatos(context!!)
+            } catch (e: Exception) {
+                RES = false
+            }
+            return null
+        }
+        //Post-Tarea
+        override fun onPostExecute(args: Void?) {
+            backupProgressBar.visibility = View.GONE
+            if(RES) {
+                AlertDialog.Builder(context)
+                    .setIcon(R.drawable.ic_desarchivar)
+                    .setTitle("Importar datos")
+                    .setMessage("Copia de Seguridad importada con éxito")
+                    .setPositiveButton(getString(R.string.aceptar), null)
+                    // .setNegativeButton(getString(R.string.cancelar), null)
+                    .show()
+            } else {
+                AlertDialog.Builder(context)
+                    .setIcon(R.drawable.ic_desarchivar)
+                    .setTitle("Error Importar datos")
+                    .setMessage("Ha habido un error al importar los datos")
                     .setPositiveButton(getString(R.string.aceptar), null)
                     // .setNegativeButton(getString(R.string.cancelar), null)
                     .show()
