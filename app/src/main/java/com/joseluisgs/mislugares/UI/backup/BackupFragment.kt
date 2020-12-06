@@ -1,14 +1,14 @@
 package com.joseluisgs.mislugares.UI.backup
 
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorManager
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.joseluisgs.mislugares.Entidades.Backup.BackupController
 import com.joseluisgs.mislugares.R
+import kotlinx.android.synthetic.main.fragment_backup.*
 
 class BackupFragment: Fragment() {
     override fun onCreateView(
@@ -21,6 +21,58 @@ class BackupFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initUI()
+    }
+
+    /**
+     * Inicia la IU
+     */
+    private fun initUI() {
+        backupUltimaText.text = BackupController.fechaUltimoBackup()
+        backupArchivarImage.setOnClickListener { exportar() }
+        backupImportarImage.setOnClickListener { importar() }
+    }
+
+    /**
+     * Exportar la información
+     */
+    private fun exportar() {
+        AlertDialog.Builder(context)
+            .setIcon(R.drawable.ic_exportar)
+            .setTitle("Exportar datos")
+            .setMessage("¿Desea exportar los datos? Se sobreeescribirá el último fichero de copia de seguridad")
+            .setPositiveButton(getString(R.string.aceptar)) { dialog, which -> exportarDatos() }
+            .setNegativeButton(getString(R.string.cancelar), null)
+            .show()
+    }
+
+    /**
+     * importa la información
+     */
+    private fun importar() {
+        AlertDialog.Builder(context)
+            .setIcon(R.drawable.ic_desarchivar)
+            .setTitle("Importar datos")
+            .setMessage("¿Desea importar los datos? Sus datos actuales se sobreeescribirán por los del archivo de copia de seguridad")
+            .setPositiveButton(getString(R.string.aceptar)) { dialog, which -> importarDatos() }
+            .setNegativeButton(getString(R.string.cancelar), null)
+            .show()
+    }
+
+    /**
+     * Exportar los datos
+     */
+    private fun exportarDatos() {
+        // Se archiva y si todo va bien se da un mensaje y cambia la fecha
+        BackupController.exportarDatos()
+    }
+
+    /**
+     * Importar los datos
+     */
+    private fun importarDatos() {
+        // Se importar y si todo va bien se da un mensaje
+        BackupController.importarDatos()
     }
 
 }
