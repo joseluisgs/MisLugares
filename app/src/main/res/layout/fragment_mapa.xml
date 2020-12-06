@@ -16,6 +16,6 @@
     <ProgressBar
             style="?android:attr/progressBarStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/miMapaProgressBar"/>
+            android:layout_height="152dp"
+            android:id="@+id/miMapaProgressBar" android:layout_marginTop="200dp"/>
 </FrameLayout>
