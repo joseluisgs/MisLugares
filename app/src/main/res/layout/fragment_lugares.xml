@@ -5,42 +5,32 @@
                 android:id="@+id/lugaresRelative"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" android:background="@color/itemListColor"
->
+                android:backgroundTint="@color/itemListColor">
 
     <Spinner
             android:id="@+id/lugaresSpinnerFiltro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_width="352dp"
+            android:layout_height="36dp"
+            android:layout_centerHorizontal="false"
             android:layout_marginTop="5dp"
             android:gravity="right" android:entries="@array/tipos_busqueda" android:spinnerMode="dropdown"
-    />
+            android:layout_alignParentRight="false" android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" android:layout_alignParentStart="true"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/lugaresFabNuevo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="19dp"
+            android:layout_alignParentEnd="false"
+            android:layout_marginBottom="15dp"
             android:clickable="true"
             android:focusable="true"
             app:backgroundTint="@color/colorAccent"
-            app:srcCompat="@drawable/ic_add"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/lugaresFabVoz"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="20dp"
-            android:layout_marginStart="10dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:backgroundTint="@color/addLocationButtonColor"
-            app:srcCompat="@drawable/ic_mic"/>
+            app:srcCompat="@drawable/ic_add" android:layout_marginLeft="15dp"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentTop="false" android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true" android:layout_alignParentBottom="true"
+            android:layout_marginStart="15dp"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/lugaresSwipeRefresh"
@@ -52,7 +42,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true" android:layout_marginBottom="0dp">
+            android:layout_marginBottom="0dp">
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -72,6 +62,11 @@
                 tools:layout_editor_absoluteY="250dp"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <ImageButton
+            android:layout_width="62dp"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/ic_mic"
+            android:layout_alignParentTop="true" android:id="@+id/lugaresButtonVoz" android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true" android:backgroundTint="@color/color_navigation_list_background"/>
 
 
 </RelativeLayout>
