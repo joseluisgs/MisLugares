@@ -30,6 +30,10 @@
     <string name="linterna">Linterna</string>
     <string name="contacto">Contacto</string>
     <string name="utilidades">Utilidades</string>
+    <string name="contactar_email">Contactar por E-Mail</string>
+    <string name="cantactar_email_mensaje">¿Desea mandar un mail al desarrolldor?</string>
+    <string name="dialogo_abrir_web_titulo">Visitar URL</string>
+    <string name="dialogo_abrir_web_mensaje">¿Quiere visitar esta dirección web?</string>
 
     <!-- Tipos de lugares para insertar -->
     <string-array name="tipos_lugares">
