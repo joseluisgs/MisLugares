@@ -75,8 +75,15 @@ class BackupFragment: Fragment() {
                 // .setNegativeButton(getString(R.string.cancelar), null)
                 .show()
             backupUltimaText.text = BackupController.fechaUltimoBackup(context!!)
+        } else {
+            AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_exportar)
+                .setTitle("Error Exportar datos")
+                .setMessage("Ha habido un error al exportar los datos")
+                .setPositiveButton(getString(R.string.aceptar), null)
+                // .setNegativeButton(getString(R.string.cancelar), null)
+                .show()
         }
-        // BackupController.test(context)
     }
 
     /**
@@ -84,7 +91,23 @@ class BackupFragment: Fragment() {
      */
     private fun importarDatos() {
         // Se importar y si todo va bien se da un mensaje
-        BackupController.importarDatos()
+        val res = BackupController.importarDatos(context!!)
+        if(res) {
+            AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_desarchivar)
+                .setTitle("Importar datos")
+                .setMessage("Copia de Seguridad importada con éxito")
+                .setPositiveButton(getString(R.string.aceptar), null)
+                // .setNegativeButton(getString(R.string.cancelar), null)
+                .show()
+        } else {
+            AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_desarchivar)
+                .setTitle("Error Importar datos")
+                .setMessage("Ha habido un error al importar los datos")
+                .setPositiveButton(getString(R.string.aceptar), null)
+                // .setNegativeButton(getString(R.string.cancelar), null)
+                .show()
+        }
     }
-
 }

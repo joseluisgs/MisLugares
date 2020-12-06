@@ -8,6 +8,7 @@ import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.Entidades.Preferencias.PreferenciasController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
+import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioController
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.LinkOption
@@ -25,12 +26,21 @@ import java.time.format.DateTimeFormatter
  */
 object BackupController {
 
+    /**
+     * Obtiene la fecha del fichero
+     * @param context Context
+     * @return String
+     */
     fun fechaUltimoBackup(context: Context): String {
         val cad = leerPropiedades(context)
-        Log.i("Backup", cad)
-        return cad;
+        return cad
     }
 
+    /**
+     * Exporta los datos
+     * @param context Context
+     * @return Boolean
+     */
     fun exportarDatos(context: Context): Boolean {
         // Recojo los datos
         val usuarios =  mutableListOf<Usuario>()
@@ -48,46 +58,50 @@ object BackupController {
         return archivar(context, backupJSON.toString())
     }
 
-    fun importarDatos() {
-        TODO("Not yet implemented")
-    }
-
-    fun test(context: Context) {
-        Log.i("Backup", "Test")
-        val user = PreferenciasController.leerSesion(context)
-        val usuarios =  mutableListOf<Usuario>()
-        usuarios.add(user)
-        val lugares = LugarController.selectAll()!!
-        val fotografias = FotografiaController.selectAll()!!
-
-        val backup = Backup(
-            usuarios = usuarios,
-            lugares = lugares,
-            fotografias = fotografias
-        )
-
-        val backupJSON = Gson().toJson(backup)
-        Log.i("Backup", "Creado el objeto JSON Backup")
-        val backupRec = Gson().fromJson(backupJSON, Backup::class.java)
-        Log.i("Backup", "Recuperado el objeto JSON Backup")
-        Log.i("Backup", backupRec.usuarios.size.toString())
-        Log.i("Backup", backupRec.lugares.size.toString())
-        Log.i("Backup", backupRec.fotografias.size.toString())
-
-        Log.i("Backup", "Creado el fichero Backup")
-        archivar(context, backupJSON.toString())
+    /**
+     * Importa os datos
+     * @param context Context
+     * @return Boolean
+     */
+    fun importarDatos(context: Context): Boolean {
         val input = importar(context)
-        Log.i("Backup", "Recuperado el fichero de Backup")
-        // Log.i("Backup", input)
-        val backupFile = Gson().fromJson(input, Backup::class.java)
-        Log.i("Backup", "Recuperado el objeto JSON de Fichero")
-        Log.i("Backup", "Recuperado el objeto JSON Backup")
-        Log.i("Backup", backupRec.usuarios.size.toString())
-        Log.i("Backup", backupRec.lugares.size.toString())
-        Log.i("Backup", backupRec.fotografias.size.toString())
-
+        val backup = Gson().fromJson(input, Backup::class.java)
+        return procesarImportar(backup)
     }
 
+    /**
+     * Procesa el exportar los datos
+     * @param backup Backup
+     * @return Boolean
+     */
+    private fun procesarImportar(backup: Backup): Boolean {
+        // Vamos a insertar el usuario,
+        try {
+            eliminarDatos()
+            backup.usuarios.forEach { UsuarioController.insert(it) }
+            backup.lugares.forEach { LugarController.insert(it) }
+            backup.fotografias.forEach { FotografiaController.insert(it) }
+            return true
+        }catch(ex: Exception) {
+            return false
+        }
+    }
+
+    /**
+     * Elimina los datos existentes
+     */
+    private fun eliminarDatos() {
+        UsuarioController.removeAll()
+        LugarController.removeAll()
+        FotografiaController.removeAll()
+    }
+
+    /**
+     * Archiva los datos
+     * @param context Context
+     * @param datos String
+     * @return Boolean
+     */
     fun archivar(context: Context, datos: String): Boolean {
         val dirBackup = File((context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath) + "/MisLugaresBack")
         if(!dirBackup.exists())
@@ -105,6 +119,11 @@ object BackupController {
         }
     }
 
+    /**
+     * Importa los datos o desarchiva
+     * @param context Context
+     * @return String
+     */
     fun importar(context: Context): String {
         val dirBackup =
             File((context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath) + "/MisLugaresBack")
@@ -118,6 +137,11 @@ object BackupController {
         return datos
     }
 
+    /**
+     * Lee las propiedades de un fichero
+     * @param context Context
+     * @return String
+     */
     fun leerPropiedades(context: Context): String {
         val dirBackup =
             File((context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath) + "/MisLugaresBack")
