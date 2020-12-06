@@ -43,15 +43,15 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     }
 
     private fun initUI() {
-        miMapaProgressBar.visibility = View.VISIBLE
-        initMapa()
         miMapaProgressBar.visibility = View.GONE
+        initMapa()
     }
 
     /**
      * Inicia el Mapa
      */
     private fun initMapa() {
+        miMapaProgressBar.visibility = View.VISIBLE
         Log.i("Mapa", "Iniciando Mapa")
         val mapFragment = (childFragmentManager
             .findFragmentById(R.id.miMapa) as SupportMapFragment?)!!
@@ -95,6 +95,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         actualizarCamara(listaLugares)
         // Añadimos los eventos
         mMap.setOnMarkerClickListener(this)
+        miMapaProgressBar.visibility = View.GONE
 
     }
 
