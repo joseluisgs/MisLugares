@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.UI.lugares.filtro.Filtro
+import com.joseluisgs.mislugares.UI.lugares.filtro.FiltroController
 import kotlinx.android.synthetic.main.fragment_lugares.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -78,20 +80,7 @@ class LugaresFragment : Fragment() {
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>,
                                         view: View, position: Int, id: Long) {
-                when (position) {
-                    0 -> FILTRO = Filtro.NADA
-                    1 -> FILTRO = Filtro.NOMBRE_ASC
-                    2 -> FILTRO = Filtro.NOMBRE_DESC
-                    3 -> FILTRO = Filtro.FECHA_ASC
-                    4 -> FILTRO = Filtro.FECHA_DESC
-                    5 -> FILTRO = Filtro.TIPO_ASC
-                    6 -> FILTRO = Filtro.TIPO_DESC
-                    7 -> FILTRO = Filtro.FAVORITO_ASC
-                    8 -> FILTRO = Filtro.FAVORITO_DESC
-                    9 -> FILTRO = Filtro.VOTOS_ASC
-                    10 -> FILTRO = Filtro.VOTOS_DESC
-                    else ->FILTRO = Filtro.NADA
-                }
+                FILTRO = FiltroController.analizarFiltroSpinner(position)
                 // Listamos los lugares y cargamos el recycler
                 Log.i("Filtro", position.toString())
                 Toast.makeText(context!!, "Ordenando por: " + tipoBusqueda[position], Toast.LENGTH_SHORT).show()
@@ -376,78 +365,9 @@ class LugaresFragment : Fragment() {
      */
     private fun analizarFiltroVoz(secuencia: String) {
         // Nombre
-        if (secuencia.contains("nombre") &&
-            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO= Filtro.NOMBRE_ASC
-        }
-        else if (secuencia.contains("nombre") &&
-            (secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO= Filtro.NOMBRE_DESC
-
-        }
-
-        // Fecha
-        else if (secuencia.contains("fecha") &&
-            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO= Filtro.FECHA_ASC
-        } else if (secuencia.contains("fecha") &&
-            (secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO = Filtro.FECHA_DESC
-        }
-
-        // Tipo
-        else if (secuencia.contains("tipo") &&
-            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO= Filtro.TIPO_ASC
-        } else if (secuencia.contains("tipo") &&
-            (secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO = Filtro.TIPO_DESC
-        }
-
-        // Favorito
-        else if (secuencia.contains("favorito") &&
-            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO= Filtro.FAVORITO_ASC
-        } else if (secuencia.contains("favorito") &&
-            (secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO= Filtro.FAVORITO_DESC
-        }
-
-        // Votos
-        else if (secuencia.contains("votos") &&
-            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO= Filtro.VOTOS_ASC
-        } else if (secuencia.contains("votos") &&
-            (secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO= Filtro.VOTOS_DESC
-        }
-
-        // Lugar
-        else if (secuencia.contains("lugar") &&
-            !(secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO= Filtro.NOMBRE_ASC
-        }
-        else if (secuencia.contains("lugar") &&
-            (secuencia.contains("descendente") || secuencia.contains("inverso"))
-        ) {
-            FILTRO= Filtro.NOMBRE_DESC
-        }
-        // Por defecto
-        else {
-            FILTRO= Filtro.NADA
-        }
+        FILTRO = FiltroController.analizarFiltroSecuencia(secuencia)
     }
+
 
     /**
      * función para ordenar la lista como mayores y menores

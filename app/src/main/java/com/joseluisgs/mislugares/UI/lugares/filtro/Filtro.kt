@@ -1,4 +1,4 @@
-package com.joseluisgs.mislugares.UI.lugares
+package com.joseluisgs.mislugares.UI.lugares.filtro
 
 enum class Filtro {
     NADA, NOMBRE_ASC, NOMBRE_DESC, TIPO_ASC, TIPO_DESC, FECHA_ASC, FECHA_DESC,
