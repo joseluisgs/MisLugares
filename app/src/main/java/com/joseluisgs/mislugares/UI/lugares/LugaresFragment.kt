@@ -64,7 +64,7 @@ class LugaresFragment : Fragment() {
         iniciarSwipeHorizontal()
         lugaresRecycler.layoutManager = LinearLayoutManager(context)
         lugaresFabNuevo.setOnClickListener { nuevoElemento() }
-        lugaresFabVoz.setOnClickListener { controlPorVoz() }
+        lugaresButtonVoz.setOnClickListener { controlPorVoz() }
 
         Log.i("Lugares", "Fin la IU")
     }
