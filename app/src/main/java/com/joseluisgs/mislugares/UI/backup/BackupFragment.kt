@@ -2,16 +2,24 @@ package com.joseluisgs.mislugares.UI.backup
 
 import android.app.AlertDialog
 import android.content.Context
+import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.joseluisgs.mislugares.Entidades.Backup.BackupController
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.UI.lugares.LugaresFragment
+import com.joseluisgs.mislugares.UI.lugares.LugaresListAdapter
 import kotlinx.android.synthetic.main.fragment_backup.*
+import kotlinx.android.synthetic.main.fragment_lugares.*
 
 class BackupFragment: Fragment() {
+    var RES = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,6 +37,7 @@ class BackupFragment: Fragment() {
      * Inicia la IU
      */
     private fun initUI() {
+        backupProgressBar.visibility = View.GONE
         backupUltimaText.text = BackupController.fechaUltimoBackup(context!!)
         backupArchivarImage.setOnClickListener { exportar() }
         backupImportarImage.setOnClickListener { importar() }
@@ -65,25 +74,8 @@ class BackupFragment: Fragment() {
      */
     private fun exportarDatos(context: Context) {
         // Se archiva y si todo va bien se da un mensaje y cambia la fecha
-        val res = BackupController.exportarDatos(context)
-        if(res) {
-            AlertDialog.Builder(context)
-                .setIcon(R.drawable.ic_exportar)
-                .setTitle("Exportar datos")
-                .setMessage("Copia de Seguridad guardada con éxito")
-                .setPositiveButton(getString(R.string.aceptar), null)
-                // .setNegativeButton(getString(R.string.cancelar), null)
-                .show()
-            backupUltimaText.text = BackupController.fechaUltimoBackup(context!!)
-        } else {
-            AlertDialog.Builder(context)
-                .setIcon(R.drawable.ic_exportar)
-                .setTitle("Error Exportar datos")
-                .setMessage("Ha habido un error al exportar los datos")
-                .setPositiveButton(getString(R.string.aceptar), null)
-                // .setNegativeButton(getString(R.string.cancelar), null)
-                .show()
-        }
+        val tareaExportar = TareaExportar()
+        tareaExportar.execute()
     }
 
     /**
@@ -108,6 +100,45 @@ class BackupFragment: Fragment() {
                 .setPositiveButton(getString(R.string.aceptar), null)
                 // .setNegativeButton(getString(R.string.cancelar), null)
                 .show()
+        }
+    }
+
+    inner class TareaExportar : AsyncTask<Void?, Void?, Void?>() {
+        // Pre-Tarea
+        override fun onPreExecute() {
+            backupProgressBar.visibility = View.VISIBLE
+        }
+        // Tarea
+        override fun doInBackground(vararg args: Void?): Void? {
+            try {
+                RES = BackupController.importarDatos(context!!)
+            } catch (e: Exception) {
+                RES = false
+            }
+            return null
+        }
+        //Post-Tarea
+        override fun onPostExecute(args: Void?) {
+            backupProgressBar.visibility = View.GONE
+            if(RES) {
+                AlertDialog.Builder(context)
+                    .setIcon(R.drawable.ic_exportar)
+                    .setTitle("Exportar datos")
+                    .setMessage("Copia de Seguridad guardada con éxito")
+                    .setPositiveButton(getString(R.string.aceptar), null)
+                    // .setNegativeButton(getString(R.string.cancelar), null)
+                    .show()
+                backupUltimaText.text = BackupController.fechaUltimoBackup(context!!)
+            } else {
+                AlertDialog.Builder(context)
+                    .setIcon(R.drawable.ic_exportar)
+                    .setTitle("Error Exportar datos")
+                    .setMessage("Ha habido un error al exportar los datos")
+                    .setPositiveButton(getString(R.string.aceptar), null)
+                    // .setNegativeButton(getString(R.string.cancelar), null)
+                    .show()
+            }
+            RES = false
         }
     }
 }
