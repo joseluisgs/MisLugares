@@ -34,6 +34,9 @@
     <string name="cantactar_email_mensaje">¿Desea mandar un mail al desarrolldor?</string>
     <string name="dialogo_abrir_web_titulo">Visitar URL</string>
     <string name="dialogo_abrir_web_mensaje">¿Quiere visitar esta dirección web?</string>
+    <string name="backup_datos">Backup de datos</string>
+    <string name="copia_de_seguridad">Copia de Seguridad</string>
+    <string name="importar_exportar">Importar/Exportar</string>
 
     <!-- Tipos de lugares para insertar -->
     <string-array name="tipos_lugares">

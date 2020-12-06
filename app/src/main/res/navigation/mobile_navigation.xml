@@ -27,6 +27,12 @@
     </fragment>
 
     <fragment
+            android:id="@+id/nav_backup"
+            android:name="com.joseluisgs.mislugares.UI.backup.BackupFragment"
+            android:label="@string/backup_datos"
+            tools:layout="@layout/fragment_backup"/>
+
+    <fragment
             android:id="@+id/nav_brujula"
             android:name="com.joseluisgs.mislugares.UI.brujula.BrujulaFragment"
             android:label="@string/brujula"
