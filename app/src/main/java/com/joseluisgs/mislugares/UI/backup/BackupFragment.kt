@@ -29,7 +29,7 @@ class BackupFragment: Fragment() {
      * Inicia la IU
      */
     private fun initUI() {
-        backupUltimaText.text = BackupController.fechaUltimoBackup()
+        backupUltimaText.text = BackupController.fechaUltimoBackup(context!!)
         backupArchivarImage.setOnClickListener { exportar() }
         backupImportarImage.setOnClickListener { importar() }
     }
@@ -74,6 +74,7 @@ class BackupFragment: Fragment() {
                 .setPositiveButton(getString(R.string.aceptar), null)
                 // .setNegativeButton(getString(R.string.cancelar), null)
                 .show()
+            backupUltimaText.text = BackupController.fechaUltimoBackup(context!!)
         }
         // BackupController.test(context)
     }

@@ -1,6 +1,5 @@
 package com.joseluisgs.mislugares.Entidades.Backup
 
-import android.R.attr.path
 import android.content.Context
 import android.os.Environment
 import android.util.Log
@@ -11,7 +10,14 @@ import com.joseluisgs.mislugares.Entidades.Preferencias.PreferenciasController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.LinkOption
 import java.nio.file.Paths
+import java.nio.file.attribute.BasicFileAttributeView
+import java.nio.file.attribute.BasicFileAttributes
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 /**
@@ -19,8 +25,10 @@ import java.nio.file.Paths
  */
 object BackupController {
 
-    fun fechaUltimoBackup(): String {
-        return "Prueba"
+    fun fechaUltimoBackup(context: Context): String {
+        val cad = leerPropiedades(context)
+        Log.i("Backup", cad)
+        return cad;
     }
 
     fun exportarDatos(context: Context): Boolean {
@@ -34,7 +42,7 @@ object BackupController {
             lugares = lugares,
             fotografias = fotografias
         )
-        // Creo el objeto JSON 
+        // Creo el objeto JSON
         val backupJSON = Gson().toJson(backup)
         // Archivo el objeto JSON
         return archivar(context, backupJSON.toString())
@@ -92,7 +100,7 @@ object BackupController {
                 return true
             } else
                 return false
-        }catch(ex: Exception) {
+        }catch (ex: Exception) {
             return false
         }
     }
@@ -108,5 +116,28 @@ object BackupController {
             }
         }
         return datos
+    }
+
+    fun leerPropiedades(context: Context): String {
+        val dirBackup =
+            File((context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath) + "/MisLugaresBack")
+        val file = File(dirBackup, "backup.json")
+        if (file.exists()) {
+            val basicfile: BasicFileAttributeView =
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    Files.getFileAttributeView(
+                        Paths.get(file.toURI()),
+                        BasicFileAttributeView::class.java, LinkOption.NOFOLLOW_LINKS
+                    )
+                } else {
+                    TODO("VERSION.SDK_INT < O")
+                }
+            val attr: BasicFileAttributes = basicfile.readAttributes()
+            val date: Long = attr.creationTime().toMillis()
+            val instant: Instant = Instant.ofEpochMilli(date)
+            val lt = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+            return DateTimeFormatter.ofPattern("dd/MM/yyyy-HH:mm:ss").format(lt)
+        }
+        return ""
     }
 }
