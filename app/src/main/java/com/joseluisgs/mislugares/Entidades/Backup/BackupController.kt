@@ -2,12 +2,10 @@ package com.joseluisgs.mislugares.Entidades.Backup
 
 import android.content.Context
 import android.os.Environment
-import android.util.Log
 import com.google.gson.Gson
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
-import com.joseluisgs.mislugares.Entidades.Preferencias.PreferenciasController
-import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
+import com.joseluisgs.mislugares.Entidades.Sesiones.SesionController
 import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioController
 import java.io.File
 import java.nio.file.Files
@@ -43,14 +41,16 @@ object BackupController {
      */
     fun exportarDatos(context: Context): Boolean {
         // Recojo los datos
-        val usuarios =  mutableListOf<Usuario>()
-        usuarios.add(PreferenciasController.leerSesion(context))
+        val usuarios =  UsuarioController.selectAll()!! // mutableListOf<Usuario>()
+        // usuarios.add(PreferenciasController.leerSesion(context))
         val lugares = LugarController.selectAll()!!
         val fotografias = FotografiaController.selectAll()!!
+        val sesiones  = SesionController.selectAll()!! // No es necesario
         val backup = Backup(
             usuarios = usuarios,
             lugares = lugares,
-            fotografias = fotografias
+            fotografias = fotografias,
+            sesiones = sesiones // No es necesario
         )
         // Creo el objeto JSON
         val backupJSON = Gson().toJson(backup)
@@ -81,6 +81,7 @@ object BackupController {
             backup.usuarios.forEach { UsuarioController.insert(it) }
             backup.lugares.forEach { LugarController.insert(it) }
             backup.fotografias.forEach { FotografiaController.insert(it) }
+            backup.sesiones.forEach { SesionController.insert(it) } // No es necesario
             return true
         }catch(ex: Exception) {
             return false
@@ -94,6 +95,7 @@ object BackupController {
         UsuarioController.removeAll()
         LugarController.removeAll()
         FotografiaController.removeAll()
+        SesionController.removeAll()    // No es necesario
     }
 
     /**
