@@ -21,6 +21,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
+import com.joseluisgs.mislugares.Entidades.Sesiones.SesionController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
@@ -116,7 +117,38 @@ class MainActivity : AppCompatActivity() {
             .into(navUserImage)
         // Elimino la imagen temporal
         // ImageBase64.removeTempFile(avatar)
+        // Evento de salir
+        navUserImage.setOnClickListener { salirSesion() }
+    }
 
+    /**
+     * Sale de la sesion
+     */
+    private fun salirSesion() {
+        Log.i("Salir", "Saliendo...")
+        AlertDialog.Builder(this)
+            .setIcon(R.drawable.ic_exit_app)
+            .setTitle("Cerrar sesión actual")
+            .setMessage("¿Desea salir de la sesión actual?")
+            .setPositiveButton(getString(R.string.si)) { dialog, which -> cerrarSesion() }
+            .setNegativeButton(getString(R.string.no), null)
+            .show()
+    }
+
+    /**
+     * Cerra la sesión Actual
+     */
+    private fun cerrarSesion() {
+        // Borramos la sesión asociada
+        try {
+            SesionController.deleteByID(USER.id)
+            // Y vamos a login
+            val login = Intent(this, LoginActivity::class.java)
+            startActivity(login)
+            finish()
+        } catch (ex: Exception) {
+            Log.i("Salir", "Error al salir: " + ex.localizedMessage)
+        }
     }
 
     /**

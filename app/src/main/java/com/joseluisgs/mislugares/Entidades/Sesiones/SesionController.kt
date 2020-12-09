@@ -1,6 +1,5 @@
-package com.joseluisgs.mislugares.Entidades.Sesion
+package com.joseluisgs.mislugares.Entidades.Sesiones
 
-import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import io.realm.Realm
 import io.realm.kotlin.where
 
@@ -28,6 +27,12 @@ object SesionController  {
         }
     }
 
+    fun deleteByID(usuarioID: String) {
+        Realm.getDefaultInstance().executeTransaction {
+            it.where<Sesion>().equalTo("usuarioID", usuarioID).findFirst()?.deleteFromRealm()
+        }
+    }
+
 
     /**
      * Busca lugar por id
@@ -47,6 +52,16 @@ object SesionController  {
     fun getFirst(): Sesion? {
         return Realm.getDefaultInstance().copyFromRealm(
             Realm.getDefaultInstance().where<Sesion>().findFirst()
+        )
+    }
+
+    /**
+     * Te devuelve la sesion actual
+     * @return Sesion?
+     */
+    fun selectAll(): MutableList<Sesion>? {
+        return Realm.getDefaultInstance().copyFromRealm(
+            Realm.getDefaultInstance().where<Sesion>().findAll()
         )
     }
 

@@ -66,7 +66,7 @@ class MyApp : Application() {
             Log.i("Config", "No existe Sesión de usuario")
             SESION_USUARIO = PreferenciasController.crearSesion(applicationContext)
         }
-        Log.i("Config", "Usuario activo Login: ${SESION_USUARIO.login} con datos: $SESION_USUARIO")
+        Log.i("Config", "Usuario activo Login: ${SESION_USUARIO.login}") // con datos: $SESION_USUARIO")
         Log.i("Config", "Fin Preferencias")
     }
 

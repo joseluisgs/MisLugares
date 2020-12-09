@@ -7,21 +7,19 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
-import com.joseluisgs.mislugares.Entidades.Sesion.Sesion
-import com.joseluisgs.mislugares.Entidades.Sesion.SesionController
+import com.joseluisgs.mislugares.Entidades.Sesiones.Sesion
+import com.joseluisgs.mislugares.Entidades.Sesiones.SesionController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioController
 import com.joseluisgs.mislugares.R
 import kotlinx.android.synthetic.main.activity_login.*
-import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import java.util.*
 
 
 class LoginActivity : AppCompatActivity() {
+    val MAX_TIME_SEG = 600 // Tiempo en segundos
     lateinit var usuario: Usuario
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,12 +62,12 @@ class LoginActivity : AppCompatActivity() {
             // Log.i("Login", "Usuario: " + usuario.login)
             // Vemos si no ha caducado
             val now = LocalDateTime.now()
-            // Log.i("Login", "now: $now")
+            Log.i("Login", "now: $now")
             val time = LocalDateTime.parse(sesion.time)
-            // Log.i("Login", "time: $time")
-            val minutos: Long = ChronoUnit.MINUTES.between(time, now)
+            Log.i("Login", "time: $time")
+            val seg = ChronoUnit.SECONDS.between(time, now)
             // Log.i("Login", "Aqui!")
-            if (minutos>=60) {
+            if (seg>=MAX_TIME_SEG) {
                 Log.i("Login", "Sesion ha Caducado")
                 return false
             } else {
@@ -125,14 +123,17 @@ class LoginActivity : AppCompatActivity() {
             token = UUID.randomUUID().toString()
         )
         try {
+            // Borramos el anterior si lo hay
+            SesionController.deleteByID(usuario.id)
             SesionController.insert(sesion)
             // Cargamos el usuario en la sesion
             (this.application as MyApp).SESION_USUARIO = usuario
             // abrimos la siguiente
-            Log.i("Login", "usuario o pas correctos")
+            Log.i("Login", "usuario y passs correctos")
             abrirPrincipal()
         } catch (ex: Exception) {
             Log.i("Login", "Error al crear la sesion")
+            Log.i("Login", "Error: " + ex.localizedMessage)
         }
 
     }
