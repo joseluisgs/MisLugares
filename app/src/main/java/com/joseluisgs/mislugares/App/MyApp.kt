@@ -19,7 +19,7 @@ import io.realm.RealmConfiguration
 class MyApp : Application() {
     // Propiedades, getters and setters (visibilidad)
     lateinit var SESION_USUARIO: Usuario
-        private set
+        // private set
     private val BD_NOMBRE = "MIS_LUGARES_BD"
     private val BD_VERSION = 1L
     var APP_PERMISOS = false
@@ -66,7 +66,7 @@ class MyApp : Application() {
             Log.i("Config", "No existe Sesión de usuario")
             SESION_USUARIO = PreferenciasController.crearSesion(applicationContext)
         }
-        Log.i("Config", "Usuario activo Login: ${SESION_USUARIO.login} con datos: $SESION_USUARIO")
+        Log.i("Config", "Usuario activo Login: ${SESION_USUARIO.login}") // con datos: $SESION_USUARIO")
         Log.i("Config", "Fin Preferencias")
     }
 

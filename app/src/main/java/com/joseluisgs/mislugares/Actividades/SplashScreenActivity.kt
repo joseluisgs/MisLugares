@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
+import com.joseluisgs.mislugares.Actividades.LoginActivity
 import com.joseluisgs.mislugares.Actividades.MainActivity
 import kotlinx.android.synthetic.main.activity_splash_screen.*
 
@@ -34,11 +35,11 @@ class SplashActivityActivity : AppCompatActivity() {
         splashImage.animation = animacion1
 
         //crea un intent para ir al activity main
-        val main = Intent(this, MainActivity::class.java)
+        val login = Intent(this, LoginActivity::class.java)
 
         Handler(Looper.getMainLooper()).postDelayed({
             run {
-                startActivity(main)
+                startActivity(login)
                 finish()
             }
         }, this.TIME)
