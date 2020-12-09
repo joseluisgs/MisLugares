@@ -53,6 +53,7 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 - [Códigos QR](https://github.com/zxing/zxing)
 - [Permisos con Dexter](https://github.com/Karumi/Dexter)
 - [Imágenes con Picasso](https://square.github.io/picasso/)
+- [Sesiones y Toekens](https://programacionymas.com/blog/jwt-vs-cookies-y-sesiones)
 
 #### Cosideraciones para ver los mapas
 Los mapas hace uso de Google Map Api Key, es por ello que debes activar la clave de la API y activarla para tu proyecto, 
