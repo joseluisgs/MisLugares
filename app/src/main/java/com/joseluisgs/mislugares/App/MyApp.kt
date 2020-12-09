@@ -19,7 +19,7 @@ import io.realm.RealmConfiguration
 class MyApp : Application() {
     // Propiedades, getters and setters (visibilidad)
     lateinit var SESION_USUARIO: Usuario
-        private set
+        // private set
     private val BD_NOMBRE = "MIS_LUGARES_BD"
     private val BD_VERSION = 1L
     var APP_PERMISOS = false

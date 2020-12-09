@@ -1,18 +1,28 @@
 package com.joseluisgs.mislugares.Actividades
 
 import Utilidades.Cifrador
-import android.graphics.drawable.BitmapDrawable
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
+import com.joseluisgs.mislugares.App.MyApp
+import com.joseluisgs.mislugares.Entidades.Sesion.Sesion
+import com.joseluisgs.mislugares.Entidades.Sesion.SesionController
+import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
+import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioController
 import com.joseluisgs.mislugares.R
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
+import java.util.*
+
 
 class LoginActivity : AppCompatActivity() {
+    lateinit var usuario: Usuario
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,13 +37,116 @@ class LoginActivity : AppCompatActivity() {
         loginInputLogin.setText("joseluisgs")
         loginInputPass.setText("1234")
         loginBoton.setOnClickListener{ iniciarSesion() }
+
+        // SesionController.removeAll()
+        // comprobamos si hay una sesión activa
+        comprobarSesionActiva()
     }
 
-    private fun iniciarSesion() {
-        if (comprobarFormulario()) {
-            val pass = Cifrador.toHash(loginInputPass.text.toString())
-            Log.i("Login", pass!!)
+    /**
+     * Abre la sesión principal
+     */
+    private fun abrirPrincipal() {
+        val main = Intent(this, MainActivity::class.java)
+        startActivity(main)
+        finish()
+    }
+
+    /**
+     * Comprueba si hay una sesión activa
+     */
+    private fun comprobarSesionActiva(): Boolean {
+        try {
+            val sesion = SesionController.getFirst()
+            // Log.i("Login", "SI hay sesion activa")
+            // Obtengo el usuario de la sesion
+            usuario = UsuarioController.selectById(sesion!!.usuarioID)!!
+            // Log.i("Login", "Usuario: " + usuario.login)
+            // Vemos si no ha caducado
+            val now = LocalDateTime.now()
+            // Log.i("Login", "now: $now")
+            val time = LocalDateTime.parse(sesion.time)
+            // Log.i("Login", "time: $time")
+            val minutos: Long = ChronoUnit.MINUTES.between(time, now)
+            // Log.i("Login", "Aqui!")
+            if (minutos>=60) {
+                Log.i("Login", "Sesion ha Caducado")
+                return false
+            } else {
+                // Almacenamos la sesion activa
+                Log.i("Login", "Sesion activa, entramos")
+                (this.application as MyApp).SESION_USUARIO = usuario
+                abrirPrincipal()
+                return true
+            }
+            
+        } catch (ex: Exception) {
+            Log.i("Login", "NO hay sesion activa o no existe sesiones")
+            Log.i("Login", "Error: " + ex.localizedMessage)
+            return false
         }
+    }
+
+    /**
+     * Inicia una sesion
+     * @return Boolean
+     */
+    private fun iniciarSesion(): Boolean {
+        if (comprobarFormulario()) {
+            val pass = Cifrador.toHash(loginInputPass.text.toString()).toString()
+            // buscamos el usuario
+            try {
+                usuario = UsuarioController.selectByLogin(loginInputLogin.text.toString())!!
+                //Log.i("Login", usuario.password)
+                // Log.i("Login", pass)
+                if( usuario.password == pass ) {
+                    almacenarSesion(usuario)
+                } else {
+                    mensajeError()
+                    return false
+                }
+            } catch (ex: Exception) {
+                mensajeError()
+                return false
+            }
+        }
+        return false
+    }
+
+    /**
+     * Almacenamos la sesion y pasamos
+     * @param usuario Usuario
+     */
+    private fun almacenarSesion(usuario: Usuario) {
+        // Creamos la sesion
+        val sesion = Sesion(
+            usuarioID = usuario.id,
+            time = LocalDateTime.now().toString(),
+            token = UUID.randomUUID().toString()
+        )
+        try {
+            SesionController.insert(sesion)
+            // Cargamos el usuario en la sesion
+            (this.application as MyApp).SESION_USUARIO = usuario
+            // abrimos la siguiente
+            Log.i("Login", "usuario o pas correctos")
+            abrirPrincipal()
+        } catch (ex: Exception) {
+            Log.i("Login", "Error al crear la sesion")
+        }
+
+    }
+
+    /**
+     * Mensaje genérico de error
+     */
+    fun mensajeError() {
+        Log.i("Login", "usuario o pas incorrectos")
+        Snackbar.make(
+            findViewById(android.R.id.content),
+            "Usuario o Contraseña incorrectos",
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 
     /**
