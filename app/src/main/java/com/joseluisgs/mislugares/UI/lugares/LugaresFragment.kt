@@ -377,8 +377,8 @@ class LugaresFragment : Fragment() {
         when (FILTRO) {
             Filtro.NADA -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.id.compareTo(l2.id) }
             // Nombre
-            Filtro.NOMBRE_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.nombre.compareTo(l2.nombre) }
-            Filtro.NOMBRE_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l2.nombre.compareTo(l1.nombre) }
+            Filtro.NOMBRE_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.nombre.toLowerCase().compareTo(l2.nombre.toLowerCase()) }
+            Filtro.NOMBRE_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l2.nombre.toLowerCase().compareTo(l1.nombre.toLowerCase()) }
 
             // Tipo
             Filtro.TIPO_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.tipo.compareTo(l2.tipo) }

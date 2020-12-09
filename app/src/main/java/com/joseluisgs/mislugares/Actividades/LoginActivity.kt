@@ -13,7 +13,9 @@ import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioController
 import com.joseluisgs.mislugares.R
 import kotlinx.android.synthetic.main.activity_login.*
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.*
 
@@ -61,10 +63,10 @@ class LoginActivity : AppCompatActivity() {
             usuario = UsuarioController.selectById(sesion!!.usuarioID)!!
             // Log.i("Login", "Usuario: " + usuario.login)
             // Vemos si no ha caducado
-            val now = LocalDateTime.now()
-            Log.i("Login", "now: $now")
-            val time = LocalDateTime.parse(sesion.time)
-            Log.i("Login", "time: $time")
+            val now = Instant.now()
+            Log.i("Login", "now: ${now.atZone(ZoneId.systemDefault())}")
+            val time = Instant.parse(sesion.time)
+            Log.i("Login", "time: ${time.atZone(ZoneId.systemDefault())}")
             val seg = ChronoUnit.SECONDS.between(time, now)
             // Log.i("Login", "Aqui!")
             if (seg>=MAX_TIME_SEG) {
@@ -119,7 +121,7 @@ class LoginActivity : AppCompatActivity() {
         // Creamos la sesion
         val sesion = Sesion(
             usuarioID = usuario.id,
-            time = LocalDateTime.now().toString(),
+            time = Instant.now().toString(),
             token = UUID.randomUUID().toString()
         )
         try {
