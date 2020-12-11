@@ -21,10 +21,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
+import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
+import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioDTO
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Services.MisLugaresAPI
 import com.joseluisgs.mislugares.UI.lugares.filtro.Filtro
 import com.joseluisgs.mislugares.UI.lugares.filtro.FiltroController
 import kotlinx.android.synthetic.main.fragment_lugares.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,7 +41,6 @@ class LugaresFragment : Fragment() {
     // Propiedades
     private var LUGARES = mutableListOf<Lugar>()
     private lateinit var lugaresAdapter: LugaresListAdapter //Adaptador de Noticias de Recycler
-    private lateinit var tareaLugares: TareaCargarLugares // Tarea en segundo plano
     private var paintSweep = Paint()
 
     // Búsquedas
@@ -221,14 +228,6 @@ class LugaresFragment : Fragment() {
     }
 
     /**
-     * Carga los lugares
-     */
-    private fun cargarLugares() {
-        tareaLugares = TareaCargarLugares()
-        tareaLugares.execute()
-    }
-
-    /**
      * Abre un nuevo elemeneto
      */
     private fun nuevoElemento() {
@@ -406,40 +405,49 @@ class LugaresFragment : Fragment() {
     }
 
     /**
-     * Tarea asíncrona para la carga de noticias
+     * Carga los lugares
      */
-    inner class TareaCargarLugares : AsyncTask<Void?, Void?, Void?>() {
-        // Pre-Tarea
-        override fun onPreExecute() {
-            if (lugaresSwipeRefresh.isRefreshing) {
-                lugaresSwipeRefresh.isRefreshing = false
-            }
-            Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
-        }
-        // Tarea
-        override fun doInBackground(vararg args: Void?): Void? {
-            try {
-                LUGARES = LugarController.selectAll()!!
-                Log.i("Lugares", "Lista de lugares de tamaño: " + LUGARES.size)
-            } catch (e: Exception) {
-                Log.e("T2Plano ", e.message.toString());
-            }
-            return null
-        }
-        //Post-Tarea
-        override fun onPostExecute(args: Void?) {
-           ordenarLugares()
-            lugaresAdapter = LugaresListAdapter(LUGARES) {
-                eventoClicFila(it)
-            }
-            lugaresRecycler.adapter = lugaresAdapter
-            // Avismos que ha cambiado
-            lugaresAdapter.notifyDataSetChanged()
-            lugaresRecycler.setHasFixedSize(true)
-            lugaresSwipeRefresh.isRefreshing = false
-            Toast.makeText(context, "Lugares cargados", Toast.LENGTH_LONG).show()
-        }
+    private fun cargarLugares() {
+        lugaresSwipeRefresh.isRefreshing = true
+        Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
+        val clientREST = MisLugaresAPI.service
+        val call: Call<List<LugarDTO>> = clientREST.lugaresGetAll()
+        call.enqueue((object : Callback<List<LugarDTO>> {
 
+            override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "LugaresGetAll ok")
+                    LUGARES = (LugarMapper.fromDTO(response.body() as MutableList<LugarDTO>)) as MutableList<Lugar>
+                    Log.i("Lugares", "Lista de lugares de tamaño: " + LUGARES.size)
+                    procesarLugares()
+                } else {
+                    Log.i("REST", "Error: LugaresGetAll isSuccessful")
+                }
+            }
+
+            override fun onFailure(call: Call<List<LugarDTO>>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+    }
+
+    /**
+     * Procesa los lugares
+     */
+    private fun procesarLugares() {
+        ordenarLugares()
+        lugaresAdapter = LugaresListAdapter(LUGARES) {
+            eventoClicFila(it)
+        }
+        lugaresRecycler.adapter = lugaresAdapter
+        // Avismos que ha cambiado
+        lugaresAdapter.notifyDataSetChanged()
+        lugaresRecycler.setHasFixedSize(true)
+        lugaresSwipeRefresh.isRefreshing = false
+        Toast.makeText(context, "Lugares cargados", Toast.LENGTH_LONG).show()
     }
 
     /**
@@ -448,16 +456,6 @@ class LugaresFragment : Fragment() {
     private fun visualizarListaItems() {
         ordenarLugares()
         lugaresRecycler.adapter = lugaresAdapter
-        // lugaresAdapter.notifyDataSetChanged()
-        // lugaresRecycler.setHasFixedSize(true)
-    }
-
-    /**
-     * Si paramos cancelamos la tarea
-     */
-    override fun onStop() {
-        super.onStop()
-        tareaLugares.cancel(true)
     }
 }
 

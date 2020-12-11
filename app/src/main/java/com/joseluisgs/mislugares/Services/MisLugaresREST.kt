@@ -1,5 +1,6 @@
 package com.joseluisgs.mislugares.Services
 
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
 import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
 import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioDTO
 import retrofit2.http.GET
@@ -8,7 +9,8 @@ import retrofit2.Call
 import retrofit2.http.*
 
 /**
- * Tiene los métodos y llamadas para procesar las acciones sobre los EndPoints
+ * Métodos y llamadas para procesar las acciones sobre los EndPoints
+ * de nuestra API RESR
  */
 interface MisLugaresREST {
     // SESIONES
@@ -29,6 +31,10 @@ interface MisLugaresREST {
     // Obtener Sesion por ID de usuario
     @GET("usuarios/{id}")
     fun usuarioGetById(@Path("id") id: String): Call<UsuarioDTO>
+
+    // LUGARES
+    @GET("lugares/")
+    fun lugaresGetAll(): Call<List<LugarDTO>>
 
 //    // Obtener todos
 //    // https://my-json-server.typicode.com/joseluisgs/APIRESTFake/users
