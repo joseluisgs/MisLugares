@@ -57,5 +57,11 @@
       "twitter": "https://twitter.com/joseluisgonsan"
     }
   ],
-  "sesiones": []
+  "sesiones": [
+    {
+      "id": "b92d21a0-34dc-4fa7-9e84-067fbde7693c",
+      "time": "2020-12-11T09:45:36.901Z",
+      "token": "b92d21a0-34dc-4fa7-9e84-067fbde7693c"
+    }
+  ]
 }

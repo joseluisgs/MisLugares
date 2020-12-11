@@ -39,10 +39,6 @@ class SplashActivityActivity : AppCompatActivity() {
         //crea un intent para ir al activity main
         val login = Intent(this, LoginActivity::class.java)
 
-        // Para limpiar los datos
-        // FotografiaController.removeAll()
-        //  LugarController.removeAll()
-
         Handler(Looper.getMainLooper()).postDelayed({
             run {
                 startActivity(login)
