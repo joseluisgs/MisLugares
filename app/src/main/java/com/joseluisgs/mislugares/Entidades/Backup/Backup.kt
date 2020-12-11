@@ -8,6 +8,6 @@ import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 class Backup(
     val usuarios: MutableList<Usuario>,
     val lugares: MutableList<Lugar>,
-    val fotografias: MutableList<Fotografia>,
-    val sesiones: MutableList<Sesion> // No es necesario
+    val fotografias: MutableList<Fotografia>
+    // val sesiones: MutableList<Sesion> // No es necesario
     )

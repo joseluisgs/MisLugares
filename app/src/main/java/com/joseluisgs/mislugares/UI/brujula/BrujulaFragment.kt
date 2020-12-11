@@ -60,15 +60,27 @@ class BrujulaFragment: Fragment(), SensorEventListener {
                 azimut = orientation[0] * (180 / Math.PI.toFloat())
             }
         }
-        val grados = azimut*-1
-        brujulaImagen.rotation = grados
-        brujulaTexto.text = "Grados: $grados º"
+        //try {
+            val grados = azimut * -1
+            brujulaImagen.rotation = grados
+            brujulaTexto.text = "Grados: $grados º"
+        //}catch (ex: Exception) {
+
+        //}
     }
 
 
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
 
+    }
+
+    /**
+     * Para que no se quede el sensor leyendo
+     */
+    override fun onPause() {
+        super.onPause()
+        sensorManager?.unregisterListener(this)
     }
 
 
