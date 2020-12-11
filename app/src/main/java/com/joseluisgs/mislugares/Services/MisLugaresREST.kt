@@ -2,6 +2,9 @@ package com.joseluisgs.mislugares.Services
 
 import retrofit2.http.GET
 
+/**
+ * Tiene los métodos y llamadas para procesar las acciones sobre los EndPoints
+ */
 interface MisLugaresREST {
 //    // Obtener todos
 //    // https://my-json-server.typicode.com/joseluisgs/APIRESTFake/users
