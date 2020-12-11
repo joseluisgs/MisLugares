@@ -4,6 +4,7 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 import io.realm.annotations.Required
+import java.io.Serializable
 
 @RealmClass
 open class Sesion (
@@ -13,4 +14,4 @@ open class Sesion (
     var time: String = "",
     @Required
     var token: String = ""
-) : RealmObject()
+) : RealmObject(), Serializable

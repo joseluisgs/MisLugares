@@ -5,6 +5,7 @@ import io.realm.annotations.Index
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 import io.realm.annotations.Required
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -37,7 +38,7 @@ open class Usuario(
     var correo: String ="",
     var twitter: String ="",
     var github: String =""
-) : RealmObject() {
+) : RealmObject(), Serializable {
 
     /**
      * Constructor

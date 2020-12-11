@@ -31,6 +31,11 @@ con el objetivo de unificar sistemas para las próximas versiones.
 Las imágenes se usan usando el sistema de codificación en Base64. Esta manera no es muy correcta, pero puede ser útil si
 nos enfrentamos a servicios remotos donde desconocemos como subir la imagen. Este sistema tiene el problema de que sobrecarga 
 la base de datos y no es muy recomendado salvo excepciones como esta.
+- **v2.0.0**: Versión donde el almacenamiento de todos los datos se hace a través de una API REST con el objetivo de salir 
+al exterior para enviar o recibir información. De nuevo mandaremos las imágenes en Base64, aunque lo ideal sería hacer peticiones 
+multipart. De nuevo se hace hincapié en el uso docente y este es acercar la tecnología de uso de Servicios Web y de una API REST
+para poder intercambiar información con una app móvil y el exterior (otros servidores y recursos). 
+Para el desarrollo de la API REST nos basaremos en el proyecto [API REST Fake](https://github.com/joseluisgs/APIRESTFake).
 
 #### Referencias
 Se destacan las siguientes tecnologías usadas, cuyos enlaces son los mismos que hemos utilizado como apuntes en clase y 
@@ -58,6 +63,11 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 - [Permisos con Dexter](https://github.com/Karumi/Dexter)
 - [Imágenes con Picasso](https://square.github.io/picasso/)
 - [Sesiones y Tokens](https://programacionymas.com/blog/jwt-vs-cookies-y-sesiones)
+- [API REST](https://www.bbvaapimarket.com/es/mundo-api/api-rest-que-es-y-cuales-son-sus-ventajas-en-el-desarrollo-de-proyectos/#:~:text=En%20el%20campo%20de%20las,a%20partir%20de%20ese%20software.)
+- [HTTP Métodos de petición](https://developer.mozilla.org/es/docs/Web/HTTP/Methods)
+- [HTTP Código de estado de respuestas](https://developer.mozilla.org/es/docs/Web/HTTP/Status)
+- [Retrofit](https://square.github.io/retrofit/)
+
 
 #### Capturas
 <p align="center">
