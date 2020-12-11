@@ -15,3 +15,10 @@ open class Sesion (
     @Required
     var token: String = ""
 ) : RealmObject(), Serializable
+{
+    fun fromSesion(sesion: Sesion) {
+        this.usuarioID = sesion.usuarioID
+        this.time = sesion.time
+        this.token = sesion.token
+    }
+}

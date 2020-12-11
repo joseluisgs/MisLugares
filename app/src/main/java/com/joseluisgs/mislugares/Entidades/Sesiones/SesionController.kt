@@ -1,14 +1,49 @@
 package com.joseluisgs.mislugares.Entidades.Sesiones
 
+import android.content.Context
+import android.util.Log
+import com.joseluisgs.mislugares.Entidades.Preferencias.PreferenciasController
+import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
+import com.joseluisgs.mislugares.Services.MisLugaresAPI
+import com.joseluisgs.mislugares.Services.MisLugaresREST
 import io.realm.Realm
 import io.realm.kotlin.where
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
 * Controlador de Sesion
 */
 object SesionController  {
-      /**
-     * Inserta una sesion
+
+    /**
+     * Lee los datos de una sesión local
+     * @param context Context
+     * @return Usuario?
+     */
+    fun getLocal(context: Context): Usuario? {
+        if(PreferenciasController.comprobarSesion(context)) {
+            try {
+                return PreferenciasController.leerSesion(context)
+            } catch (ex: Exception) {
+                Log.i("Sesion", "Error al leer sesion: " + ex.localizedMessage)
+                return null
+            }
+        }
+        return null
+    }
+
+    /**
+     * Inserta en una sesión local
+     * @param usuarioID String
+     * @param context Context
+     */
+    fun insertLocal(usuario: Usuario, context: Context) {
+        PreferenciasController.crearSesion(usuario, context)
+    }
+
+     /* Inserta una sesion
      * @param sesion Sesion
      */
     fun insert(sesion: Sesion) {

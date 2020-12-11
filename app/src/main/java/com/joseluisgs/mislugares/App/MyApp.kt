@@ -17,7 +17,7 @@ import io.realm.RealmConfiguration
 
 
 class MyApp : Application() {
-    // Propiedades, getters and setters (visibilidad)
+    // Propiedades, getters and setters (visibilidad) globales
     lateinit var SESION_USUARIO: Usuario
     var APP_PERMISOS = false
         private set
@@ -31,9 +31,7 @@ class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
         Log.i("Config", "Init Configuración")
-        // initPermisos()
         initRealmBD()
-        initPreferencias()
         Log.i("Config", "Fin Configuración")
     }
 
@@ -51,21 +49,6 @@ class MyApp : Application() {
             .build()
         Realm.setDefaultConfiguration(config)
         Log.i("Config", "Fin Realm")
-    }
-
-    /**
-     * Inicia algunas preferencias por defecto
-     */
-    private fun initPreferencias() {
-        // Vamos a simular que una vez que nos conectamos hemos metido al usuario en la BB.DD
-        Log.i("Config", "Init Preferencias")
-        // Comprobamos si hay sesion, es decir, si es != 0
-        if(PreferenciasController.comprobarSesion(applicationContext)) {
-            Log.i("Config", "Sí existe Sesión de usuario")
-            SESION_USUARIO = PreferenciasController.leerSesion(applicationContext)
-        }
-        Log.i("Config", "Usuario activo Login: ${SESION_USUARIO.login}") // con datos: $SESION_USUARIO")
-        Log.i("Config", "Fin Preferencias")
     }
 
     /**
