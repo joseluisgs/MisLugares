@@ -17,6 +17,11 @@ import retrofit2.Response
 */
 object SesionController  {
 
+    /**
+     * Lee los datos de una sesión local
+     * @param context Context
+     * @return Usuario?
+     */
     fun getLocal(context: Context): Usuario? {
         if(PreferenciasController.comprobarSesion(context)) {
             try {
@@ -29,28 +34,14 @@ object SesionController  {
         return null
     }
 
-//    fun selectById(usuarioID: String, sesion: Sesion): {
-//        clientREST = MisLugaresAPI.service
-//        val call: Call<SesionDTO> = clientREST.sesionById(usuarioID)
-//        call.enqueue((object : Callback<SesionDTO> {
-//            override fun onResponse(call: Call<SesionDTO>, response: Response<SesionDTO>) {
-//                // Si ok
-//                if (response.isSuccessful) {
-//                   Log.i("REST", "SesionByID ok")
-//                    var remoteSesion = SesionMapper.fromDTO(response.body() as SesionDTO)
-//                    sesion.fromSesion(remoteSesion)
-//                } else {
-//                    Log.i("REST", "Error: SesionByID isSuccessful")
-//                }
-//            }
-//            override fun onFailure(call: Call<SesionDTO>, t: Throwable) {
-//                Log.i("REST", "Error: SesionByID on Failure")
-//            }
-//        }))
-//        return
-//    }
-
-
+    /**
+     * Inserta en una sesión local
+     * @param usuarioID String
+     * @param context Context
+     */
+    fun insertLocal(usuario: Usuario, context: Context) {
+        PreferenciasController.crearSesion(usuario, context)
+    }
 
      /* Inserta una sesion
      * @param sesion Sesion

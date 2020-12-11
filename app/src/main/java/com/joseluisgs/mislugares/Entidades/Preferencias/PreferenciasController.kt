@@ -35,24 +35,7 @@ object PreferenciasController {
      * Crea una sesión con el usuario por defecto
      * @param context Context
      */
-    fun crearSesion(context: Context): Usuario {
-        // Creamos un usuario por defecto para la BB.DD y la sesión
-        // Esto lo creo porque no voy a tener registro si no no podría hacerlo así, debería registrar
-        // De esta manera si saliese de la sesión siempre crearía el mismo usuario con distinto ID
-        var usuario = Usuario(
-            nombre = "José Luis González Sánchez",
-            login = "joseluisgs",
-            password = Cifrador.toHash("1234", "SHA-256")!!,
-            avatar = ImageBase64.toBase64(BitmapFactory.decodeResource(context.resources, user_avatar))!!,
-            correo  = "jlgs@cifpvirgendegracia.com",
-            twitter = "https://twitter.com/joseluisgonsan",
-            github = "https://github.com/joseluisgs"
-        )
-        // Lo insertamos en la Base de Datos
-        UsuarioController.insert(usuario);
-        // Consultamos su ID
-        // usuario = UsuarioController.selectByLogin(usuario.login)!!
-
+    fun crearSesion(usuario: Usuario, context: Context) {
         // Abrimos las preferemcias en modo escritura
         val prefs = context.getSharedPreferences("MisLugares", Context.MODE_PRIVATE)
         val editor = prefs.edit()
@@ -60,7 +43,6 @@ object PreferenciasController {
         // Escribimos el usuario como JSON
         editor.putString("USER", Gson().toJson(usuario))
         editor.apply()
-        return usuario
     }
 
     /**
