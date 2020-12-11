@@ -1,8 +1,10 @@
 package com.joseluisgs.mislugares.Actividades
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.ImageView
@@ -19,6 +21,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
+import com.joseluisgs.mislugares.Entidades.Sesiones.SesionController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
@@ -38,6 +41,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Limpiamos la cache y temporales.
+        limpiarBasura()
         // elementos de la interfaz propios
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -48,7 +53,8 @@ class MainActivity : AppCompatActivity() {
         // Identificamos los elementos para navegar
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_lugares, R.id.nav_mapa, R.id.nav_lugar_detalle, R.id.nav_acerca_de
+                R.id.nav_lugares, R.id.nav_mapa, R.id.nav_importar_lugar,
+                R.id.nav_acerca_de, R.id.nav_brujula, R.id.nav_linterna, R.id.nav_backup
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -111,7 +117,38 @@ class MainActivity : AppCompatActivity() {
             .into(navUserImage)
         // Elimino la imagen temporal
         // ImageBase64.removeTempFile(avatar)
+        // Evento de salir
+        navUserImage.setOnClickListener { salirSesion() }
+    }
 
+    /**
+     * Sale de la sesion
+     */
+    private fun salirSesion() {
+        Log.i("Salir", "Saliendo...")
+        AlertDialog.Builder(this)
+            .setIcon(R.drawable.ic_exit_app)
+            .setTitle("Cerrar sesión actual")
+            .setMessage("¿Desea salir de la sesión actual?")
+            .setPositiveButton(getString(R.string.si)) { dialog, which -> cerrarSesion() }
+            .setNegativeButton(getString(R.string.no), null)
+            .show()
+    }
+
+    /**
+     * Cerra la sesión Actual
+     */
+    private fun cerrarSesion() {
+        // Borramos la sesión asociada
+        try {
+            SesionController.deleteByID(USER.id)
+            // Y vamos a login
+            val login = Intent(this, LoginActivity::class.java)
+            startActivity(login)
+            finish()
+        } catch (ex: Exception) {
+            Log.i("Salir", "Error al salir: " + ex.localizedMessage)
+        }
     }
 
     /**
@@ -185,9 +222,44 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         // Cerramos REALM
-        Realm.getDefaultInstance().close()
-        // limpiamos cache
+        Realm.getDefaultInstance().close() // limpiamos realm
+        limpiarBasura() // Por si acaso
+        Log.i("Destroy", "Ejecutando OnDestroy")
+    }
+
+    /**
+     * Limpia nuestros ficheros temporales
+     */
+    fun limpiarBasura() {
         Utils.deleteCache(this)
         Fotos.deleteFotoDir(this)
+        Log.i("Basura", "Limpiando Basura")
+    }
+
+    /**
+     * Quitamos fragment apilados, y si no hay salimos
+     */
+    override fun onBackPressed() {
+        try {
+            if (supportFragmentManager.backStackEntryCount > 0)
+                    supportFragmentManager.popBackStackImmediate()
+            else
+                confirmarSalir()
+        } catch (ex: Exception) {
+            confirmarSalir()
+        }
+    }
+
+    /**
+     * Mensaje para confirmar para salir
+     */
+    fun confirmarSalir() {
+        AlertDialog.Builder(this)
+            .setIcon(R.drawable.ic_exit_app)
+            .setTitle(getString(R.string.cerrar_app))
+            .setMessage(getString(R.string.mensaje_cerrar))
+            .setPositiveButton(getString(R.string.si)) { dialog, which -> finish() }
+            .setNegativeButton(getString(R.string.no), null)
+            .show()
     }
 }

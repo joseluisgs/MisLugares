@@ -11,10 +11,14 @@
     <color name="secondaryTextColor">#ffffff</color>
     <color name="itemListColor">#FFE6FFF2</color>
     <color name="favOffColor">#FFFFDFDF</color>
-    <color name="favOnColor">#FFFF7A7A</color>
+    <color name="favOnColor">#F65A5A</color>
     <color name="removeColor">#FF5151</color>
     <color name="updateColor">#52B0EC</color>
+    <color name="importColor">#DCE775</color>
     <color name="recyclerListColor">#FBFFFD</color>
     <color name="addLocationButtonColor">#52B0EC</color>
     <color name="vozButtonColor">#DC71EE</color>
+    <color name="qrCodeColor">#C5A1FF</color>
+    <color name="color_navigation_list_background">#FFE6FFF2</color>
+    <color name="color_selector_navigation_item">#39796b</color>
 </resources>

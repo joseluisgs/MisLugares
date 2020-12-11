@@ -18,10 +18,31 @@
             tools:layout="@layout/fragment_mapa"/>
 
     <fragment
-            android:id="@+id/nav_lugar_detalle"
-            android:name="com.joseluisgs.mislugares.UI.lugares.LugarDetalleFragment"
-            android:label="@string/app_name"
-            tools:layout="@layout/fragment_lugar_detalle"/>
+            android:id="@+id/nav_importar_lugar"
+            android:name="com.joseluisgs.mislugares.UI.lugares.LugarImportarFragment"
+            android:label="@string/escanear_lugar"
+            tools:layout="@layout/fragment_importar_lugar">
+        <action android:id="@+id/action_nav_importar_lugar_to_nav_lugares" app:destination="@id/nav_lugares"
+                app:exitAnim="@anim/nav_default_exit_anim"/>
+    </fragment>
+
+    <fragment
+            android:id="@+id/nav_backup"
+            android:name="com.joseluisgs.mislugares.UI.backup.BackupFragment"
+            android:label="@string/backup_datos"
+            tools:layout="@layout/fragment_backup"/>
+
+    <fragment
+            android:id="@+id/nav_brujula"
+            android:name="com.joseluisgs.mislugares.UI.brujula.BrujulaFragment"
+            android:label="@string/brujula"
+            tools:layout="@layout/fragment_brujula"/>
+
+    <fragment
+            android:id="@+id/nav_linterna"
+            android:name="com.joseluisgs.mislugares.UI.linterna.LinternaFragment"
+            android:label="@string/linterna"
+            tools:layout="@layout/fragment_linterna"/>
 
     <fragment
             android:id="@+id/nav_acerca_de"

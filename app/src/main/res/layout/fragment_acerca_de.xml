@@ -4,7 +4,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical" android:background="@color/colorAccent">
+              android:orientation="vertical" android:background="@color/color_navigation_list_background">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -37,8 +37,8 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="@string/autor"
-                    android:textSize="36sp" android:textStyle="bold"
-                    android:textColor="@color/letter_color_splash" android:fontFamily="sans-serif-black"
+                    android:textSize="50sp" android:textStyle="bold"
+                    android:textColor="@color/letter_color_splash" android:fontFamily="@font/caveat_bold"
                     tools:layout_editor_absoluteY="-7dp" app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toEndOf="parent"/>
             <TextView
@@ -52,7 +52,7 @@
                     app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintEnd_toEndOf="parent"/>
             <TextView
-                    android:id="@+id/acercaDeIinstituto"
+                    android:id="@+id/acercaDeInstituto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
@@ -68,7 +68,7 @@
                     android:gravity="center_horizontal"
                     android:text="@string/lugar"
                     tools:text="@string/lugar" android:layout_marginTop="4dp"
-                    app:layout_constraintTop_toBottomOf="@+id/acercaDeIinstituto"
+                    app:layout_constraintTop_toBottomOf="@+id/acercaDeInstituto"
                     android:textColor="@color/letter_color_splash" app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toEndOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -93,7 +93,7 @@
                     app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     tools:srcCompat="@drawable/ic_email" style="@android:style/Widget.Material.ImageButton"
-                    android:scaleType="fitXY" android:background="@color/colorAccent"
+                    android:scaleType="fitXY" android:background="@color/color_navigation_list_background"
                     app:layout_constraintVertical_bias="0.495" android:layout_marginStart="46dp"/>
             <ImageButton
                     android:layout_width="75dp"
@@ -102,7 +102,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     tools:srcCompat="@drawable/ic_twitter" style="@android:style/Widget.Material.ImageButton"
-                    android:scaleType="fitXY" android:background="@color/colorAccent"
+                    android:scaleType="fitXY" android:background="@color/color_navigation_list_background"
                     app:layout_constraintVertical_bias="0.495"
                     app:layout_constraintStart_toEndOf="@+id/acercaDeMail" app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintEnd_toStartOf="@+id/acercaDeGithub"/>
@@ -111,7 +111,7 @@
                     android:layout_height="75dp" app:srcCompat="@drawable/ic_github"
                     android:id="@+id/acercaDeGithub"
                     tools:srcCompat="@drawable/ic_github" style="@android:style/Widget.Material.ImageButton"
-                    android:scaleType="fitXY" android:background="@color/colorAccent"
+                    android:scaleType="fitXY" android:background="@color/color_navigation_list_background"
                     app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintVertical_bias="0.495" android:layout_marginEnd="46dp"/>

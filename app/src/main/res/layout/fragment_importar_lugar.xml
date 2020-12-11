@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@color/itemListColor" android:id="@+id/importarLugarLayout">
+
+
+    <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/itemListColor">
+
+
+        <TextView
+                android:text="Lugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/importarLugarTextNombre"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold" tools:text="Lugar" android:textSize="24sp"
+                android:textColor="@color/letter_color_splash"
+                android:gravity="center|center_horizontal|center_vertical"/>
+
+
+        <TextView
+                android:text="Lugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/importarLugarTextTipo"
+                android:layout_marginTop="50dp"
+                android:textStyle="bold" tools:text="Lugar" android:layout_alignParentEnd="true"
+                android:layout_marginEnd="0dp" android:textSize="18sp"
+                android:gravity="center|center_horizontal|center_vertical" android:textColor="@color/colorPrimaryDark"/>
+        <TextView
+                android:text="Lugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/importarLugarTextFecha"
+                android:layout_marginTop="80dp"
+                android:textStyle="bold" tools:text="Lugar" android:layout_alignParentEnd="true"
+                android:layout_marginEnd="0dp" android:textSize="18sp"
+                android:gravity="center|center_horizontal|center_vertical" android:textColor="@color/colorPrimary"/>
+        <fragment
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/importarLugarMapa"
+                android:name="com.google.android.gms.maps.SupportMapFragment" android:layout_marginTop="120dp"
+                android:layout_marginStart="0dp" android:layout_marginEnd="0dp"
+                android:layout_below="@+id/linearLayoutImportarLugar"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:src="@drawable/ic_importar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true" android:layout_alignParentStart="true" android:layout_marginStart="19dp"
+                android:layout_alignParentBottom="true" android:layout_marginBottom="36dp"
+                android:id="@+id/importarFabAccion" android:backgroundTint="@color/importColor"
+                app:backgroundTint="@color/importColor"/>
+
+
+    </RelativeLayout>
+
+</FrameLayout>

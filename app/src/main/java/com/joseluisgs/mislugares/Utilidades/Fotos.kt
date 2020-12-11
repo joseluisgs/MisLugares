@@ -6,7 +6,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
+import android.os.StrictMode
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.net.toFile
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -162,7 +164,8 @@ object Fotos {
     }
 
     fun deleteFotoDir(context: Context) {
-        val dirFotos = File((context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath) + "MisLugares")
+        val dirFotos = File((context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath) + "/MisLugares")
+        Log.i("File", dirFotos.absolutePath)
         dirFotos.deleteRecursively()
     }
 }

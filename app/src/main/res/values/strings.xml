@@ -19,6 +19,24 @@
     <string name="mi_mapa">Mi Mapa</string>
     <string name="aceptar">Aceptar</string>
     <string name="cancelar">Cancelar</string>
+    <string name="texto_ordenacion_voz">¿Cómo quieres ordenar la lista?</string>
+    <string name="escanear_lugar">Escanear Lugar</string>
+    <string name="escaneando_codigo">Escaneando QR de Lugar</string>
+    <string name="cerrar_app">Cerrar Mis Lugares</string>
+    <string name="mensaje_cerrar">¿De verdad quieres salir?</string>
+    <string name="si">Sí</string>
+    <string name="no">No</string>
+    <string name="brujula">Brújula</string>
+    <string name="linterna">Linterna</string>
+    <string name="contacto">Contacto</string>
+    <string name="utilidades">Utilidades</string>
+    <string name="contactar_email">Contactar por E-Mail</string>
+    <string name="cantactar_email_mensaje">¿Desea mandar un mail al desarrolldor?</string>
+    <string name="dialogo_abrir_web_titulo">Visitar URL</string>
+    <string name="dialogo_abrir_web_mensaje">¿Quiere visitar esta dirección web?</string>
+    <string name="backup_datos">Backup de datos</string>
+    <string name="copia_de_seguridad">Copia de Seguridad</string>
+    <string name="importar_exportar">Importar/Exportar</string>
 
     <!-- Tipos de lugares para insertar -->
     <string-array name="tipos_lugares">
@@ -32,10 +50,25 @@
 
     <!-- Tipos de busqueda -->
     <string-array name="tipos_busqueda">
-        <item>Ordenar por nombre</item>
-        <item>Ordenar por fecha</item>
-        <item>Ordenar por tipo</item>
-        <item>Ordenar por favoritos</item>
-        <item>Ordenar por votos</item>
+        <item>Filtro y ordenación</item>
+        <item>Ordenar por nombre ascendente</item>
+        <item>Ordenar por nombre descendente</item>
+        <item>Ordenar por fecha ascendente</item>
+        <item>Ordenar por fecha descendente</item>
+        <item>Ordenar por tipo ascendente</item>
+        <item>Ordenar por tipo descendente</item>
+        <item>Ordenar por favoritos ascendente</item>
+        <item>Ordenar por favoritos descendente</item>
+        <item>Ordenar por votos ascendente</item>
+        <item>Ordenar por votos descendente</item>
     </string-array>
+    <string name="title_activity_login">LoginActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>
