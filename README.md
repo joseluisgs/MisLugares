@@ -1,6 +1,7 @@
-# Mis Lugares 2020
+# Mis Lugares App
 
-2DAM PMYDM App para poner en práctica todo lo visto en el primer trimestre de 2020.
+2DAM PMYDM App para poner en práctica todo lo visto en este curso en la primera parte del curso en Programación Móvil 
+en sistemas Android usando de lenguaje Android. Podrás llevar tus momentos favoritos siempre en tu móvil.
 
 [![Android](https://img.shields.io/badge/App-Android-g)](https://www.android.com/intl/es_es/)
 [![Kotlin](https://img.shields.io/badge/Code-Kotlin-blue)](https://kotlinlang.org/)
@@ -11,12 +12,14 @@
 
 Sencilla app para trabajar con todos los contenidos desarrollados a lo largo del primer trimestre.
 En esta App manejaremos conceptos como diseño de interfaces dinámicas, almacenamiento en teléfono, base de datos y el uso
-de sensores y elementos de tu móvil Android como pueden ser la cámara y el GPS.
+de sensores y elementos de tu móvil Android como pueden ser la cámara y el GPS usando como lenguaje de referencia Kotlin.
+La aplicación es de ámbito docente y obviamente muchos aspectos son mejorables, pero hay que entender el contexto en el cual 
+se genera y se usa en clase. 
 
-A lo largo del curso avanzaremos y complementaremos el proyecto con distintas tecnologías en sus distintas versiones.
+El objetivo es poder llevar un registro de tus lugares favoritos siempre en tu móvil. A lo largo del curso avanzaremos y complementaremos el proyecto con distintas tecnologías en sus distintas versiones.
 
-Es importante, antes de abordar esta App, que revises los proyectos realizados en este curso. En definitiva, este es
-un proyecto integrador que resume lo trabajado este año
+Es importante, antes de abordar esta App, que revises [los proyectos realizados en este curso](https://github.com/joseluisgs?tab=repositories). 
+En definitiva, este es un proyecto integrador que resume lo trabajado en este modulo.
 
 ### Versiones y revisiones
 Las versiones no están pensadas para que el alumnado maneje distintas técnicas, no buscando la ideal que dependerá de siempre del problema y la tecnología.s 
@@ -49,13 +52,35 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 - [Tareas en segundo plano](https://developer.android.com/guide/background)
 - [Funciones de Voz](https://developer.android.com/training/wearables/apps/voice)
 - [Animaciones](https://developer.android.com/training/animation/overview)
+- [Material Design](https://material.io/)
 - [Json con Gson](https://github.com/google/gson)
 - [Códigos QR](https://github.com/zxing/zxing)
 - [Permisos con Dexter](https://github.com/Karumi/Dexter)
 - [Imágenes con Picasso](https://square.github.io/picasso/)
-- [Sesiones y Toekens](https://programacionymas.com/blog/jwt-vs-cookies-y-sesiones)
+- [Sesiones y Tokens](https://programacionymas.com/blog/jwt-vs-cookies-y-sesiones)
 
-#### Cosideraciones para ver los mapas
+#### Capturas
+<p align="center">
+   <img src="https://i.imgur.com/BIhr1xY.jpg" 
+    height="325">
+    <img src="https://i.imgur.com/PrZxEZw.jpg" 
+    height="325">
+     <img src="https://i.imgur.com/ZWrNzlM.jpg" 
+      height="325">
+  <img src="https://i.imgur.com/h4iZgY2.jpg" 
+  height="325">
+ </p>
+ <p align="center">
+     <img src="https://i.imgur.com/d3AOKdM.jpg" 
+      height="325">
+      <img src="https://i.imgur.com/9fIDBM8.jpg" 
+      height="325">
+       <img src="https://i.imgur.com/Kd4h7aL.jpg" 
+        height="325">
+    <img src="https://i.imgur.com/va9mYna.jpg" 
+    height="325">
+ </p>
+#### Consideraciones para ver los mapas
 Los mapas hace uso de Google Map Api Key, es por ello que debes activar la clave de la API y activarla para tu proyecto, 
 pues puede que varíe a la huella del mio, o que simplemente yo haya desactivado la mía (te recuerdo que es un proyecto para finn docente y lo activo y desactivo sobre la marcha).
 Por favor sigue [este tutorial](https://developers.google.com/maps/documentation/android-sdk/get-api-key?hl=es-419) para que puedas ver tus mapas con tu clave.
@@ -85,7 +110,7 @@ Estas son las herramientas que más hemos usado en clase para la realización de
   height="45">
    <img src="https://user-images.githubusercontent.com/17736615/30980083-f7f8a860-a43c-11e7-939e-f6717a2210fe.png" 
   height="45">
-  </p>
+ </p>
 
 
 ## Autor
