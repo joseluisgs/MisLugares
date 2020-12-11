@@ -1,7 +1,5 @@
 package com.joseluisgs.mislugares.Entidades.Lugares
 
-import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
-import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioDTO
 
 /**
  * Mapea entre DTO y Clase Modelo
