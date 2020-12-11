@@ -29,7 +29,7 @@ A partir de esta versión cambiaremos esta forma y solo trabajaremos con las im�
 con el objetivo de unificar sistemas para las próximas versiones.
 - **v1.0.0**: Versión donde el almacenamiento de todos los datos se hace de manera local usando una base de datos Realm. 
 Las imágenes se usan usando el sistema de codificación en Base64. Esta manera no es muy correcta, pero puede ser útil si
-nos enfrentamos a servicios remotos donde desconocemos como subir la imagen. Este sistema tiene el problema de que sobre carga 
+nos enfrentamos a servicios remotos donde desconocemos como subir la imagen. Este sistema tiene el problema de que sobrecarga 
 la base de datos y no es muy recomendado salvo excepciones como esta.
 
 #### Referencias
