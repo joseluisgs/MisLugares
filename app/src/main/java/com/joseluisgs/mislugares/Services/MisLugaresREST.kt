@@ -1,5 +1,7 @@
 package com.joseluisgs.mislugares.Services
 
+import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
+import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
 import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
 import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioDTO
@@ -39,6 +41,11 @@ interface MisLugaresREST {
     // Obtiene todos los lugares que tengan en su campo el userID que le paso
     @GET("lugares/")
     fun lugaresGetAllByUserID(@Query("usuarioID") usuarioID: String): Call<List<LugarDTO>>
+
+    // IMAGENES
+    // Obtener Fotografias por su id
+    @GET("fotografias/{id}")
+    fun fotografiasGetById(@Path("id") id: String): Call<FotografiaDTO>
 
 //    // Obtener todos
 //    // https://my-json-server.typicode.com/joseluisgs/APIRESTFake/users
