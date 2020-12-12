@@ -37,15 +37,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionMapper
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Services.MisLugaresAPI
@@ -265,7 +261,7 @@ class LugarDetalleFragment(
     private fun insertar() {
         // Iderntamos la fotografia
         val b64 = ImageBase64.toBase64(this.FOTO)!!
-        val fotografia= Fotografia(
+        LUGAR_FOTOGRAFIA = Fotografia(
             id = UUID.randomUUID().toString(),
             imagen = b64,
             uri = IMAGEN_URI.toString(),
@@ -274,7 +270,7 @@ class LugarDetalleFragment(
             usuarioID = USUARIO.id
         )
         // Lanzamos el hilo de insertar fotografia
-        insertarFotografia(fotografia)
+        insertarFotografia()
 
         // Insertamos lugar
         LUGAR = Lugar(
@@ -284,7 +280,7 @@ class LugarDetalleFragment(
             fecha = detalleLugarBotonFecha.text.toString(),
             latitud = posicion?.latitude.toString(),
             longitud = posicion?.longitude.toString(),
-            imagenID = fotografia.id,
+            imagenID = LUGAR_FOTOGRAFIA!!.id,
             favorito = false,
             votos = 0,
             time = Instant.now().toString(),
@@ -318,9 +314,9 @@ class LugarDetalleFragment(
         }))
     }
 
-    private fun insertarFotografia(fotografia: Fotografia) {
+    private fun insertarFotografia() {
         val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaPost((FotografiaMapper.toDTO(fotografia)))
+        val call: Call<FotografiaDTO> = clientREST.fotografiaPost((FotografiaMapper.toDTO(LUGAR_FOTOGRAFIA!!)))
         call.enqueue((object : Callback<FotografiaDTO> {
 
             override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
@@ -352,12 +348,12 @@ class LugarDetalleFragment(
      */
     private fun eliminar() {
         //Eliminamos lógicamente // Eliminamos el lugar
-        val fotografiaID = LUGAR?.imagenID.toString()
+        // val fotografiaID = LUGAR?.imagenID.toString()
         // Lanzo el hilo de eliminar fotografía
-        eliminarFotografia(fotografiaID)
+        eliminarFotografia()
         // Borramos el lugar
         val clientREST = MisLugaresAPI.service
-        val call: Call<LugarDTO> = clientREST.lugarDelete((LUGAR?.id.toString()))
+        val call: Call<LugarDTO> = clientREST.lugarDelete((LUGAR!!.id))
         call.enqueue((object : Callback<LugarDTO> {
 
             override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
@@ -383,9 +379,13 @@ class LugarDetalleFragment(
         }))
     }
 
-    private fun eliminarFotografia(fotografiaID: String) {
+    /**
+     * Elimina una fotografía
+     * @param fotografiaID String
+     */
+    private fun eliminarFotografia() {
         val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaDelete((fotografiaID))
+        val call: Call<FotografiaDTO> = clientREST.fotografiaDelete((LUGAR_FOTOGRAFIA!!.id))
         call.enqueue((object : Callback<FotografiaDTO> {
 
             override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
@@ -418,47 +418,79 @@ class LugarDetalleFragment(
     * Actualiza un lugar
      */
     private fun actualizar() {
-        try {
-            // Actualizamos la fotografía por si hay cambios
-            val fotografiaID = LUGAR?.imagenID.toString()
-            val fotografia = FotografiaController.selectById(fotografiaID)
-            val b64 = ImageBase64.toBase64(this.FOTO)!!
-            Log.i("Actualizar", "Imagenes Distintas")
-            with(fotografia!!) {
-                imagen = b64
-                uri = IMAGEN_URI.toString()
-                hash = Cifrador.toHash(b64).toString()
-                time = Instant.now().toString() // Fecha de la ultima actualización
-                usuarioID = USUARIO.id
-            }
-            FotografiaController.update(fotografia)
-            Log.i("Actualizar", "Fotografía actualizada")
-            Log.i("Actualizar", "Actualizamos los lugares")
-            with(LUGAR!!) {
-                nombre = detalleLugarInputNombre.text.toString().trim()
-                tipo = (detalleLugarSpinnerTipo.selectedItem as String)
-                fecha = detalleLugarBotonFecha.text.toString()
-                latitud = posicion?.latitude.toString()
-                longitud = posicion?.longitude.toString()
-                time = Instant.now().toString()
-            }
-            LugarController.update(LUGAR!!)
-            // Actualizamos el adapter
-            ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
-            Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show();
-            Log.i("Actualizar", "Lugar actualizado con éxito con id" + LUGAR!!.id)
-            // Volvemos
-            volver()
+        // Actualizamos la fotografía por si hay cambios
+        val b64 = ImageBase64.toBase64(this.FOTO)!!
+        Log.i("Actualizar", "Imagenes Distintas")
+        with(LUGAR_FOTOGRAFIA!!) {
+            imagen = b64
+            uri = IMAGEN_URI.toString()
+            hash = Cifrador.toHash(b64).toString()
+            time = Instant.now().toString() // Fecha de la ultima actualización
+            usuarioID = USUARIO.id
+        }
+        // Llamamos al hilo de actualizar fotografía
+        actualizarFotografia()
 
-        } catch (ex: Exception) {
-            Toast.makeText(context, "Error al actualizar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
-            Log.i("Actualizar", "Error al actualizar: " + ex.localizedMessage)
+        with(LUGAR!!) {
+            nombre = detalleLugarInputNombre.text.toString().trim()
+            tipo = (detalleLugarSpinnerTipo.selectedItem as String)
+            fecha = detalleLugarBotonFecha.text.toString()
+            latitud = posicion?.latitude.toString()
+            longitud = posicion?.longitude.toString()
+            time = Instant.now().toString()
         }
-        try {
-            IMAGEN_URI.toFile().delete()
-            Log.i("Modificar", "Borrada la imagen temporal asociada")
-        } catch (ex: Exception) {
-        }
+        val clientREST = MisLugaresAPI.service
+        val lugarDTO = LugarMapper.toDTO(LUGAR!!)
+
+        val call: Call<LugarDTO> = clientREST.lugarUpdate(LUGAR!!.id, lugarDTO)
+        call.enqueue((object : Callback<LugarDTO> {
+
+            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "lugarUpdate ok")
+                    // Actualizamos el adapter
+                    ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
+                    Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show();
+                    Log.i("Actualizar", "Lugar actualizado con éxito con id" + LUGAR!!.id)
+                    // Volvemos
+                    volver()
+                } else {
+                    Toast.makeText(context, "Error al actualizar: " + response.message(), Toast.LENGTH_LONG).show()
+                    Log.i("Actualizar", "Error al actualizar: " + response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+    }
+
+    private fun actualizarFotografia() {
+        val fotografiaDTO = FotografiaMapper.toDTO(LUGAR_FOTOGRAFIA!!)
+        val clientREST = MisLugaresAPI.service
+        val call: Call<FotografiaDTO> = clientREST.fotografiaUpdate(LUGAR_FOTOGRAFIA!!.id, fotografiaDTO)
+        call.enqueue((object : Callback<FotografiaDTO> {
+
+            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "fotografiaUpdate ok")
+                    Log.i("Actualizar", "Fotografía actualizada")
+                } else {
+                    Log.i("REST", "Error: fotografiaUpdate isSuccessful")
+                }
+            }
+
+            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
     }
 
     /**

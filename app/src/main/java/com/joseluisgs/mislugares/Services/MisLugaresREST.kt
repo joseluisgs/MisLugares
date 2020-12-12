@@ -61,5 +61,8 @@ interface MisLugaresREST {
     // Elimina la fotografía
     @DELETE("fotografias/{id}")
     fun fotografiaDelete(@Path("id") id: String): Call<FotografiaDTO>
+    // Actualiza una fotografia
+    @PUT("fotografias/{id}")
+    fun fotografiaUpdate(@Path("id") id: String, @Body fotografiaDTO: FotografiaDTO): Call<FotografiaDTO>
 
 }

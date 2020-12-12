@@ -120,7 +120,7 @@ class LugaresListAdapter(
                 if (response.isSuccessful) {
                     Log.i("REST", "fotografiasGetById ok")
                     var remoteFotografia = FotografiaMapper.fromDTO(response.body() as FotografiaDTO)
-                    holder.itemLugarImagen.setImageBitmap(ImageBase64.toBitmap(remoteFotografia.imagen.toString()))
+                    holder.itemLugarImagen.setImageBitmap(ImageBase64.toBitmap(remoteFotografia.imagen))
                 } else {
                     Log.i("REST", "Error: fotografiasGetById isSuccessful")
                     holder.itemLugarImagen.setImageBitmap(BitmapFactory.decodeResource(holder.context?.resources, R.drawable.ic_mapa))
