@@ -209,14 +209,39 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         val inflater = requireActivity().layoutInflater
         val vista = inflater.inflate(R.layout.intem_visualizacion_mapa, null)
         // Le ponemos las cosas
-        val imagen = vista.findViewById(R.id.mapaLugarImagen) as ImageView
-        imagen.setImageBitmap(ImageBase64.toBitmap(FotografiaController.selectById(lugar.imagenID)!!.imagen))
         val nombre = vista.findViewById(R.id.mapaLugarTextNombre) as TextView
         nombre.text = lugar.nombre
         val tipo = vista.findViewById(R.id.mapaLugarTextTipo) as TextView
         tipo.text = lugar.tipo
         val fecha = vista.findViewById(R.id.mapaLugarTextFecha) as TextView
         fecha.text = lugar.fecha
+
+        // Buscamos la imagen
+        val imagen = vista.findViewById(R.id.mapaLugarImagen) as ImageView
+        imagen.setImageBitmap(ImageBase64.toBitmap(FotografiaController.selectById(lugar.imagenID)!!.imagen))
+
+        val clientREST = MisLugaresAPI.service
+        val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(lugar.imagenID)
+        call.enqueue((object : Callback<FotografiaDTO> {
+
+            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "fotografiasGetById ok")
+                    var remoteFotografia = FotografiaMapper.fromDTO(response.body() as FotografiaDTO)
+                    imagen.setImageBitmap(ImageBase64.toBitmap(remoteFotografia.imagen))
+                } else {
+                    Log.i("REST", "Error: fotografiasGetById isSuccessful")
+                    // holder.itemLugarImagen.setImageBitmap(BitmapFactory.decodeResource(holder.context?.resources, R.drawable.ic_mapa))
+                }
+            }
+
+            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
         builder
             .setView(vista)
             .setIcon(R.drawable.ic_location)
@@ -225,7 +250,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             .setPositiveButton(R.string.aceptar) { _, _ ->
                 null
             }
-            //.setNegativeButton(R.string.cancelar, null)
+        //.setNegativeButton(R.string.cancelar, null)
         // setNeutralButton("Maybe", neutralButtonClick)
         builder.show()
     }
