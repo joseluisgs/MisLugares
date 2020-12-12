@@ -19,11 +19,13 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
+import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioDTO
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Services.MisLugaresAPI
@@ -42,6 +44,7 @@ class LugaresFragment : Fragment() {
     private var LUGARES = mutableListOf<Lugar>()
     private lateinit var lugaresAdapter: LugaresListAdapter //Adaptador de Noticias de Recycler
     private var paintSweep = Paint()
+    private lateinit var USUARIO: Usuario
 
     // Búsquedas
     private var FILTRO = Filtro.NADA
@@ -59,6 +62,7 @@ class LugaresFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Iniciamos la interfaz
+        this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
         initUI()
     }
 
@@ -411,7 +415,8 @@ class LugaresFragment : Fragment() {
         lugaresSwipeRefresh.isRefreshing = true
         Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
         val clientREST = MisLugaresAPI.service
-        val call: Call<List<LugarDTO>> = clientREST.lugaresGetAll()
+        // Ontenemos los lugares filtrados por el usuario, para no mostrar otros.
+        val call: Call<List<LugarDTO>> = clientREST.lugaresGetAllByUserID(USUARIO.id)
         call.enqueue((object : Callback<List<LugarDTO>> {
 
             override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {

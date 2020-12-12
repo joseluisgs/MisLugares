@@ -33,8 +33,12 @@ interface MisLugaresREST {
     fun usuarioGetById(@Path("id") id: String): Call<UsuarioDTO>
 
     // LUGARES
+    // Obtiene todos los lugares
     @GET("lugares/")
     fun lugaresGetAll(): Call<List<LugarDTO>>
+    // Obtiene todos los lugares que tengan en su campo el userID que le paso
+    @GET("lugares/")
+    fun lugaresGetAllByUserID(@Query("usuarioID") usuarioID: String): Call<List<LugarDTO>>
 
 //    // Obtener todos
 //    // https://my-json-server.typicode.com/joseluisgs/APIRESTFake/users
