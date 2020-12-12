@@ -1,6 +1,5 @@
 package com.joseluisgs.mislugares.UI.lugares
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,13 +8,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionMapper
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Services.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
@@ -137,12 +134,6 @@ class LugaresListAdapter(
                     .show()
             }
         }))
-
-       /* try {
-            return ImageBase64.toBitmap(fotografia?.imagen.toString())
-        } catch (ex: Exception) {
-            return BitmapFactory.decodeResource(holder.context?.resources, R.drawable.ic_mapa);
-        }*/
     }
 
     /**
@@ -160,10 +151,42 @@ class LugaresListAdapter(
         else
             listaLugares[position].votos --
 
-        LugarController.update(listaLugares[position])
-        holder.itemLugarVotos.text = listaLugares[position].votos.toString()
-        Log.i("Favorito", listaLugares[position].favorito.toString())
-        Log.i("Favorito", listaLugares[position].votos.toString())
+        // Actualizamos los lugares
+        actualizarLugarVotos(listaLugares[position], holder)
+    }
+
+    /**
+     * Actualiza los votos de un lugar
+     * @param lugar Lugar
+     * @param holder LugarViewHolder
+     */
+    private fun actualizarLugarVotos(lugar: Lugar, holder: LugarViewHolder) {
+        val clientREST = MisLugaresAPI.service
+        val lugarDTO = LugarMapper.toDTO(lugar)
+
+        val call: Call<LugarDTO> = clientREST.lugarUpdate(lugar.id, lugarDTO)
+        call.enqueue((object : Callback<LugarDTO> {
+
+            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "lugarUpdate ok")
+
+                    holder.itemLugarVotos.text = lugar.votos.toString()
+                    Log.i("Favorito", lugar.favorito.toString())
+                    Log.i("Favorito", lugar.votos.toString())
+                } else {
+                    Log.i("REST", "Error: lugarUpdate isSuccessful")
+                }
+            }
+
+            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
+                Toast.makeText(holder.context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+
     }
 
     /**

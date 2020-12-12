@@ -4,7 +4,6 @@ import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.*
-import android.os.AsyncTask
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.util.Log
@@ -21,12 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
-import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioDTO
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Services.MisLugaresAPI
 import com.joseluisgs.mislugares.UI.lugares.filtro.Filtro
@@ -416,7 +412,7 @@ class LugaresFragment : Fragment() {
         Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
         val clientREST = MisLugaresAPI.service
         // Ontenemos los lugares filtrados por el usuario, para no mostrar otros.
-        val call: Call<List<LugarDTO>> = clientREST.lugaresGetAllByUserID(USUARIO.id)
+        val call: Call<List<LugarDTO>> = clientREST.lugarGetAllByUserID(USUARIO.id)
         call.enqueue((object : Callback<List<LugarDTO>> {
 
             override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {

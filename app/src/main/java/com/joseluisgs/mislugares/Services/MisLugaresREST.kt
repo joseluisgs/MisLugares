@@ -37,10 +37,13 @@ interface MisLugaresREST {
     // LUGARES
     // Obtiene todos los lugares
     @GET("lugares/")
-    fun lugaresGetAll(): Call<List<LugarDTO>>
+    fun lugarGetAll(): Call<List<LugarDTO>>
     // Obtiene todos los lugares que tengan en su campo el userID que le paso
     @GET("lugares/")
-    fun lugaresGetAllByUserID(@Query("usuarioID") usuarioID: String): Call<List<LugarDTO>>
+    fun lugarGetAllByUserID(@Query("usuarioID") usuarioID: String): Call<List<LugarDTO>>
+    // Actualiza un lugar
+    @PUT("lugares/{id}")
+    fun lugarUpdate(@Path("id") id: String, @Body lugarDTO: LugarDTO): Call<LugarDTO>
 
     // IMAGENES
     // Obtener Fotografias por su id
