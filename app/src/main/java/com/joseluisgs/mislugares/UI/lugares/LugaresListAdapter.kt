@@ -113,7 +113,7 @@ class LugaresListAdapter(
      */
     private fun imagenLugar(lugar: Lugar, holder: LugarViewHolder) {
         val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiasGetById(lugar.imagenID)
+        val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(lugar.imagenID)
         call.enqueue((object : Callback<FotografiaDTO> {
 
             override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {

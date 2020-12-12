@@ -44,11 +44,18 @@ interface MisLugaresREST {
     // Actualiza un lugar
     @PUT("lugares/{id}")
     fun lugarUpdate(@Path("id") id: String, @Body lugarDTO: LugarDTO): Call<LugarDTO>
+    // Inserta un lugar
+    @POST("lugares/")
+    fun lugarPost(@Body lugar: LugarDTO): Call<LugarDTO>
 
-    // IMAGENES
+    // FOTOGRAFIAS
     // Obtener Fotografias por su id
     @GET("fotografias/{id}")
-    fun fotografiasGetById(@Path("id") id: String): Call<FotografiaDTO>
+    fun fotografiaGetById(@Path("id") id: String): Call<FotografiaDTO>
+    // Inserta una fotografia
+    @POST("fotografias/")
+    fun fotografiaPost(@Body fotografia: FotografiaDTO): Call<FotografiaDTO>
+
 
 //    // Obtener todos
 //    // https://my-json-server.typicode.com/joseluisgs/APIRESTFake/users

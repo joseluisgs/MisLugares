@@ -456,7 +456,9 @@ class LugaresFragment : Fragment() {
      */
     private fun visualizarListaItems() {
         ordenarLugares()
-        lugaresRecycler.adapter = lugaresAdapter
+        try {
+            lugaresRecycler.adapter = lugaresAdapter
+        } catch (ex: Exception) {}
     }
 }
 
