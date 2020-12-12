@@ -351,22 +351,58 @@ class LugarDetalleFragment(
      * Elimina un objeto de la base de datos
      */
     private fun eliminar() {
-        try {
-            //Eliminamos lógicamente // Eliminamos el lugar
-            val fotografiaID = LUGAR?.imagenID.toString()
-            val fotografia = FotografiaController.selectById(fotografiaID)
-            FotografiaController.delete(fotografia!!)
-            LugarController.delete(LUGAR!!)
-            // Actualizamos el adapter
-            ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
-            Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show();
-            Log.i("Eliminar", "Lugar eliminado con éxito")
-        } catch (ex: Exception) {
-            Toast.makeText(context, "Error al eliminar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
-            Log.i("Eliminar", "Error al eliminar: " + ex.localizedMessage)
-        }
-        // Volvemos
-        volver()
+        //Eliminamos lógicamente // Eliminamos el lugar
+        val fotografiaID = LUGAR?.imagenID.toString()
+        // Lanzo el hilo de eliminar fotografía
+        eliminarFotografia(fotografiaID)
+        // Borramos el lugar
+        val clientREST = MisLugaresAPI.service
+        val call: Call<LugarDTO> = clientREST.lugarDelete((LUGAR?.id.toString()))
+        call.enqueue((object : Callback<LugarDTO> {
+
+            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "lugarDelete ok")
+                    ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
+                    Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show();
+                    Log.i("Eliminar", "Lugar eliminado con éxito")
+                    volver()
+                } else {
+                    Log.i("REST", "Error: lugarDelete isSuccessful")
+                    Toast.makeText(context, "Error al eliminar: " + response.message(), Toast.LENGTH_LONG).show()
+                    Log.i("Eliminar", "Error al eliminar: " + response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+    }
+
+    private fun eliminarFotografia(fotografiaID: String) {
+        val clientREST = MisLugaresAPI.service
+        val call: Call<FotografiaDTO> = clientREST.fotografiaDelete((fotografiaID))
+        call.enqueue((object : Callback<FotografiaDTO> {
+
+            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "fotografiaDelete ok")
+                } else {
+                    Log.i("REST", "Error: fotografiaDelete isSuccessful")
+                }
+            }
+
+            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
     }
 
     /**
