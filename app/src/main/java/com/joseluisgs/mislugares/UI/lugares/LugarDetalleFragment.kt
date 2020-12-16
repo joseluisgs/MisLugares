@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
@@ -36,15 +37,21 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
+import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
+import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Services.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.Fotos
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.QRCode
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.IOException
 import java.time.Instant
 import java.time.LocalDateTime
@@ -60,6 +67,7 @@ class LugarDetalleFragment(
     private val MODO: Modo? = Modo.INSERTAR,
     private val ANTERIOR: LugaresFragment? = null,
     private val LUGAR_INDEX: Int? = null,
+    private var LUGAR_FOTOGRAFIA: Fotografia? = null
 ) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     // Mis Variables
@@ -171,15 +179,42 @@ class LugarDetalleFragment(
             )
         )
         detalleLugarSpinnerTipo.isEnabled = false
-        val fotografia = FotografiaController.selectById(LUGAR?.imagenID.toString())
-        this.FOTO = ImageBase64.toBitmap(fotografia?.imagen.toString())!!
-        IMAGEN_URI = Uri.parse(fotografia?.uri)
-        detalleLugarImagen.setImageBitmap(this.FOTO)
+        cargarFotografia()
 
         detalleLugarFabAccion.visibility = View.VISIBLE
         detalleLugarFabAccion.setImageResource(R.drawable.ic_qr_code)
         detalleLugarFabAccion.backgroundTintList = AppCompatResources.getColorStateList(context!!, R.color.qrCodeColor)
         detalleLugarFabAccion.setOnClickListener { compartirLugar() }
+    }
+
+    /**
+     * Carga la fotografía del lugar
+     */
+    private fun cargarFotografia() {
+        val clientREST = MisLugaresAPI.service
+        val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(LUGAR?.imagenID.toString())
+        call.enqueue((object : Callback<FotografiaDTO> {
+
+            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "fotografiasGetById ok")
+                    LUGAR_FOTOGRAFIA = FotografiaMapper.fromDTO(response.body() as FotografiaDTO)
+                    FOTO = ImageBase64.toBitmap(LUGAR_FOTOGRAFIA!!.imagen)!!
+                    IMAGEN_URI = Uri.parse(LUGAR_FOTOGRAFIA!!.uri)
+                    detalleLugarImagen.setImageBitmap(FOTO)
+                } else {
+                    Log.i("REST", "Error: fotografiasGetById isSuccessful")
+                    detalleLugarImagen.setImageBitmap(BitmapFactory.decodeResource(context?.resources, R.drawable.ic_mapa))
+                }
+            }
+
+            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
     }
 
     /**
@@ -224,49 +259,87 @@ class LugarDetalleFragment(
      * Inserta en el sistema de persistencia o almacenamiento
      */
     private fun insertar() {
-        try {
-            // Iderntamos la fotografia
-            val b64 = ImageBase64.toBase64(this.FOTO)!!
-            val fotografia = Fotografia(
-                id = UUID.randomUUID().toString(),
-                imagen = b64,
-                uri = IMAGEN_URI.toString(),
-                hash = Cifrador.toHash(b64).toString(),
-                time = Instant.now().toString(),
-                usuarioID = USUARIO.id
-            )
-            FotografiaController.insert(fotografia)
-            Log.i("Insertar", "Fotografía insertada con éxito con: " + fotografia.id)
-            // Insertamos lugar
-            LUGAR = Lugar(
-                id = UUID.randomUUID().toString(),
-                nombre = detalleLugarInputNombre.text.toString().trim(),
-                tipo = (detalleLugarSpinnerTipo.selectedItem as String),
-                fecha = detalleLugarBotonFecha.text.toString(),
-                latitud = posicion?.latitude.toString(),
-                longitud = posicion?.longitude.toString(),
-                imagenID = fotografia.id,
-                favorito = false,
-                votos = 0,
-                time = Instant.now().toString(),
-                usuarioID = USUARIO.id
-            )
-            LugarController.insert(LUGAR!!)
-            // Actualizamos el adapter
-            ANTERIOR?.insertarItemLista(LUGAR!!)
-            Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
-            Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR)
-            volver()
-        } catch (ex: Exception) {
-            Toast.makeText(context, "Error al insertar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
-            Log.i("Insertar", "Error al insertar: " + ex.localizedMessage)
-        }
-        try {
-            IMAGEN_URI.toFile().delete()
-            Log.i("Insertar", "Borrada la imagen tempral asociada")
-        } catch (ex: Exception) {
-        }
+        // Iderntamos la fotografia
+        val b64 = ImageBase64.toBase64(this.FOTO)!!
+        LUGAR_FOTOGRAFIA = Fotografia(
+            id = UUID.randomUUID().toString(),
+            imagen = b64,
+            uri = IMAGEN_URI.toString(),
+            hash = Cifrador.toHash(b64).toString(),
+            time = Instant.now().toString(),
+            usuarioID = USUARIO.id
+        )
+        // Lanzamos el hilo de insertar fotografia
+        insertarFotografia()
+
+        // Insertamos lugar
+        LUGAR = Lugar(
+            id = UUID.randomUUID().toString(),
+            nombre = detalleLugarInputNombre.text.toString().trim(),
+            tipo = (detalleLugarSpinnerTipo.selectedItem as String),
+            fecha = detalleLugarBotonFecha.text.toString(),
+            latitud = posicion?.latitude.toString(),
+            longitud = posicion?.longitude.toString(),
+            imagenID = LUGAR_FOTOGRAFIA!!.id,
+            favorito = false,
+            votos = 0,
+            time = Instant.now().toString(),
+            usuarioID = USUARIO.id
+        )
+
+        val clientREST = MisLugaresAPI.service
+        val call: Call<LugarDTO> = clientREST.lugarPost((LugarMapper.toDTO(LUGAR!!)))
+        call.enqueue((object : Callback<LugarDTO> {
+
+            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "lugarPost ok")
+                    ANTERIOR?.insertarItemLista(LUGAR!!)
+                    Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
+                    Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR)
+                    volver()
+                } else {
+                    Log.i("REST", "Error lugarPost isSeccesful")
+                    Toast.makeText(context, "Error al insertar: " + response.message(), Toast.LENGTH_LONG).show()
+                    Log.i("Insertar", "Error al insertar: " + response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
     }
+
+    /**
+     * Inserta una fotografía
+     */
+    private fun insertarFotografia() {
+        val clientREST = MisLugaresAPI.service
+        val call: Call<FotografiaDTO> = clientREST.fotografiaPost((FotografiaMapper.toDTO(LUGAR_FOTOGRAFIA!!)))
+        call.enqueue((object : Callback<FotografiaDTO> {
+
+            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "fotografiaPost ok")
+                } else {
+                    Log.i("REST", "Error fotografiaPost isSeccesful")
+                }
+            }
+
+            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+    }
+
+
 
     /**
      * Precondiciones para eliminar
@@ -279,22 +352,62 @@ class LugarDetalleFragment(
      * Elimina un objeto de la base de datos
      */
     private fun eliminar() {
-        try {
-            //Eliminamos lógicamente // Eliminamos el lugar
-            val fotografiaID = LUGAR?.imagenID.toString()
-            val fotografia = FotografiaController.selectById(fotografiaID)
-            FotografiaController.delete(fotografia!!)
-            LugarController.delete(LUGAR!!)
-            // Actualizamos el adapter
-            ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
-            Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show();
-            Log.i("Eliminar", "Lugar eliminado con éxito")
-        } catch (ex: Exception) {
-            Toast.makeText(context, "Error al eliminar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
-            Log.i("Eliminar", "Error al eliminar: " + ex.localizedMessage)
-        }
-        // Volvemos
-        volver()
+        //Eliminamos lógicamente // Eliminamos el lugar
+        // val fotografiaID = LUGAR?.imagenID.toString()
+        // Lanzo el hilo de eliminar fotografía
+        eliminarFotografia()
+        // Borramos el lugar
+        val clientREST = MisLugaresAPI.service
+        val call: Call<LugarDTO> = clientREST.lugarDelete((LUGAR!!.id))
+        call.enqueue((object : Callback<LugarDTO> {
+
+            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "lugarDelete ok")
+                    ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
+                    Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show();
+                    Log.i("Eliminar", "Lugar eliminado con éxito")
+                    volver()
+                } else {
+                    Log.i("REST", "Error: lugarDelete isSuccessful")
+                    Toast.makeText(context, "Error al eliminar: " + response.message(), Toast.LENGTH_LONG).show()
+                    Log.i("Eliminar", "Error al eliminar: " + response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+    }
+
+    /**
+     * Elimina una fotografía
+     * @param fotografiaID String
+     */
+    private fun eliminarFotografia() {
+        val clientREST = MisLugaresAPI.service
+        val call: Call<FotografiaDTO> = clientREST.fotografiaDelete((LUGAR_FOTOGRAFIA!!.id))
+        call.enqueue((object : Callback<FotografiaDTO> {
+
+            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "fotografiaDelete ok")
+                } else {
+                    Log.i("REST", "Error: fotografiaDelete isSuccessful")
+                }
+            }
+
+            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
     }
 
     /**
@@ -310,47 +423,79 @@ class LugarDetalleFragment(
     * Actualiza un lugar
      */
     private fun actualizar() {
-        try {
-            // Actualizamos la fotografía por si hay cambios
-            val fotografiaID = LUGAR?.imagenID.toString()
-            val fotografia = FotografiaController.selectById(fotografiaID)
-            val b64 = ImageBase64.toBase64(this.FOTO)!!
-            Log.i("Actualizar", "Imagenes Distintas")
-            with(fotografia!!) {
-                imagen = b64
-                uri = IMAGEN_URI.toString()
-                hash = Cifrador.toHash(b64).toString()
-                time = Instant.now().toString() // Fecha de la ultima actualización
-                usuarioID = USUARIO.id
-            }
-            FotografiaController.update(fotografia)
-            Log.i("Actualizar", "Fotografía actualizada")
-            Log.i("Actualizar", "Actualizamos los lugares")
-            with(LUGAR!!) {
-                nombre = detalleLugarInputNombre.text.toString().trim()
-                tipo = (detalleLugarSpinnerTipo.selectedItem as String)
-                fecha = detalleLugarBotonFecha.text.toString()
-                latitud = posicion?.latitude.toString()
-                longitud = posicion?.longitude.toString()
-                time = Instant.now().toString()
-            }
-            LugarController.update(LUGAR!!)
-            // Actualizamos el adapter
-            ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
-            Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show();
-            Log.i("Actualizar", "Lugar actualizado con éxito con id" + LUGAR!!.id)
-            // Volvemos
-            volver()
+        // Actualizamos la fotografía por si hay cambios
+        val b64 = ImageBase64.toBase64(this.FOTO)!!
+        Log.i("Actualizar", "Imagenes Distintas")
+        with(LUGAR_FOTOGRAFIA!!) {
+            imagen = b64
+            uri = IMAGEN_URI.toString()
+            hash = Cifrador.toHash(b64).toString()
+            time = Instant.now().toString() // Fecha de la ultima actualización
+            usuarioID = USUARIO.id
+        }
+        // Llamamos al hilo de actualizar fotografía
+        actualizarFotografia()
 
-        } catch (ex: Exception) {
-            Toast.makeText(context, "Error al actualizar: " + ex.localizedMessage, Toast.LENGTH_LONG).show()
-            Log.i("Actualizar", "Error al actualizar: " + ex.localizedMessage)
+        with(LUGAR!!) {
+            nombre = detalleLugarInputNombre.text.toString().trim()
+            tipo = (detalleLugarSpinnerTipo.selectedItem as String)
+            fecha = detalleLugarBotonFecha.text.toString()
+            latitud = posicion?.latitude.toString()
+            longitud = posicion?.longitude.toString()
+            time = Instant.now().toString()
         }
-        try {
-            IMAGEN_URI.toFile().delete()
-            Log.i("Modificar", "Borrada la imagen temporal asociada")
-        } catch (ex: Exception) {
-        }
+        val clientREST = MisLugaresAPI.service
+        val lugarDTO = LugarMapper.toDTO(LUGAR!!)
+
+        val call: Call<LugarDTO> = clientREST.lugarUpdate(LUGAR!!.id, lugarDTO)
+        call.enqueue((object : Callback<LugarDTO> {
+
+            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "lugarUpdate ok")
+                    // Actualizamos el adapter
+                    ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
+                    Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show();
+                    Log.i("Actualizar", "Lugar actualizado con éxito con id" + LUGAR!!.id)
+                    // Volvemos
+                    volver()
+                } else {
+                    Toast.makeText(context, "Error al actualizar: " + response.message(), Toast.LENGTH_LONG).show()
+                    Log.i("Actualizar", "Error al actualizar: " + response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+    }
+
+    private fun actualizarFotografia() {
+        val fotografiaDTO = FotografiaMapper.toDTO(LUGAR_FOTOGRAFIA!!)
+        val clientREST = MisLugaresAPI.service
+        val call: Call<FotografiaDTO> = clientREST.fotografiaUpdate(LUGAR_FOTOGRAFIA!!.id, fotografiaDTO)
+        call.enqueue((object : Callback<FotografiaDTO> {
+
+            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "fotografiaUpdate ok")
+                    Log.i("Actualizar", "Fotografía actualizada")
+                } else {
+                    Log.i("REST", "Error: fotografiaUpdate isSuccessful")
+                }
+            }
+
+            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
     }
 
     /**

@@ -1,19 +1,25 @@
 package com.joseluisgs.mislugares.UI.lugares
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
+import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
+import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Services.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import kotlinx.android.synthetic.main.item_lugar.view.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class LugaresListAdapter(
@@ -40,7 +46,7 @@ class LugaresListAdapter(
         holder.itemLugarFecha.text = listaLugares[position].fecha
         holder.itemLugarTipo.text = listaLugares[position].tipo
         holder.itemLugarVotos.text = listaLugares[position].votos.toString()
-        holder.itemLugarImagen.setImageBitmap(imagenLugar(listaLugares[position], holder))
+        imagenLugar(listaLugares[position], holder)
 
         // procesamos el ffavorito
         // color
@@ -104,16 +110,30 @@ class LugaresListAdapter(
 
     /**
      * Devuelve la imagen de un lugar
-     * @param lugar Lugar
-     * @return Bitmap?
      */
-    private fun imagenLugar(lugar: Lugar, holder: LugarViewHolder): Bitmap? {
-        try {
-            val fotografia = FotografiaController.selectById(lugar.imagenID)
-            return ImageBase64.toBitmap(fotografia?.imagen.toString())
-        } catch (ex: Exception) {
-            return BitmapFactory.decodeResource(holder.context?.resources, R.drawable.ic_mapa);
-        }
+    private fun imagenLugar(lugar: Lugar, holder: LugarViewHolder) {
+        val clientREST = MisLugaresAPI.service
+        val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(lugar.imagenID)
+        call.enqueue((object : Callback<FotografiaDTO> {
+
+            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "fotografiasGetById ok")
+                    var remoteFotografia = FotografiaMapper.fromDTO(response.body() as FotografiaDTO)
+                    holder.itemLugarImagen.setImageBitmap(ImageBase64.toBitmap(remoteFotografia.imagen))
+                } else {
+                    Log.i("REST", "Error: fotografiasGetById isSuccessful")
+                    holder.itemLugarImagen.setImageBitmap(BitmapFactory.decodeResource(holder.context?.resources, R.drawable.ic_mapa))
+                }
+            }
+
+            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
+                Toast.makeText(holder.context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
     }
 
     /**
@@ -131,10 +151,42 @@ class LugaresListAdapter(
         else
             listaLugares[position].votos --
 
-        LugarController.update(listaLugares[position])
-        holder.itemLugarVotos.text = listaLugares[position].votos.toString()
-        Log.i("Favorito", listaLugares[position].favorito.toString())
-        Log.i("Favorito", listaLugares[position].votos.toString())
+        // Actualizamos los lugares
+        actualizarLugarVotos(listaLugares[position], holder)
+    }
+
+    /**
+     * Actualiza los votos de un lugar
+     * @param lugar Lugar
+     * @param holder LugarViewHolder
+     */
+    private fun actualizarLugarVotos(lugar: Lugar, holder: LugarViewHolder) {
+        val clientREST = MisLugaresAPI.service
+        val lugarDTO = LugarMapper.toDTO(lugar)
+
+        val call: Call<LugarDTO> = clientREST.lugarUpdate(lugar.id, lugarDTO)
+        call.enqueue((object : Callback<LugarDTO> {
+
+            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "lugarUpdate ok")
+
+                    holder.itemLugarVotos.text = lugar.votos.toString()
+                    Log.i("Favorito", lugar.favorito.toString())
+                    Log.i("Favorito", lugar.votos.toString())
+                } else {
+                    Log.i("REST", "Error: lugarUpdate isSuccessful")
+                }
+            }
+
+            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
+                Toast.makeText(holder.context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+
     }
 
     /**
