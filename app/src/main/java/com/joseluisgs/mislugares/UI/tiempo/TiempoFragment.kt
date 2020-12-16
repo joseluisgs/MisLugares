@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -19,11 +20,17 @@ import com.joseluisgs.mislugares.Entidades.Tiempo.WeatherResponse
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Services.MisLugaresAPI
 import com.joseluisgs.mislugares.Services.Tiempo.ElTiempoAPI
+import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_brujula.*
 import kotlinx.android.synthetic.main.fragment_tiempo.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class TiempoFragment: Fragment() {
     private lateinit var mPosicion: FusedLocationProviderClient
@@ -63,30 +70,36 @@ class TiempoFragment: Fragment() {
                 if (response.code() == 200) {
                     val weatherResponse = response.body()!!
 
-                    val stringBuilder = "Country: " +
-                            weatherResponse.sys!!.country +
-                            "\n" +
-                            "Temperature: " +
-                            weatherResponse.main!!.temp +
-                            "\n" +
-                            "Temperature(Min): " +
-                            weatherResponse.main!!.temp_min +
-                            "\n" +
-                            "Temperature(Max): " +
-                            weatherResponse.main!!.temp_max +
-                            "\n" +
-                            "Humidity: " +
-                            weatherResponse.main!!.humidity +
-                            "\n" +
-                            "Pressure: " +
-                            weatherResponse.main!!.pressure
-
-                    tiempoText!!.text = stringBuilder
+                    tiempoCiudad.text = weatherResponse.name
+                    tiempoPais.text = weatherResponse.sys?.country
+                    var sdf = SimpleDateFormat("HH:mm   dd/MM/yyyy")
+                    var date = Date((weatherResponse.dt.toLong() * 1000))
+                    tiempoHora.text =  sdf.format(date)
+                    tiempoTemperatura.text = weatherResponse.main?.temp.toString() + "º"
+                    Picasso.get()
+                        // .load(R.drawable.user_avatar)
+                        .load("http://openweathermap.org/img/wn/"+weatherResponse.weather[0].icon+"@2x.png")
+                        .resize(200, 200)
+                        .into(tiempoImagen)
+                    tiempoDescripcion.text = weatherResponse.weather[0].description.toString().capitalize()
+                    tiempoTempMax.text = "Temperatura (Max): " + weatherResponse.main?.temp_max + "º"
+                    tiempoTempMin.text = "Temperatura (Min): " + weatherResponse.main?.temp_min + "º"
+                    tiempoHumedad.text = "Humedad: " + weatherResponse.main?.humidity + " %"
+                    tiempoPresion.text = "Presión: " + weatherResponse.main?.pressure + " mBar"
+                    tiempoVisibilidad.text = "Visibilidad: " + weatherResponse.visibility + " m"
+                    sdf = SimpleDateFormat("HH:mm")
+                    date = Date((weatherResponse.sys!!.sunrise * 1000))
+                    tiempoAmanecerHora.text = sdf.format(date)
+                    date = Date((weatherResponse.sys!!.sunset * 1000))
+                    tiempoAnocherHora.text = sdf.format(date)
                 }
             }
 
             override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
-                tiempoText!!.text = t.message
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
             }
         })
     }

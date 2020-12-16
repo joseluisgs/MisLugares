@@ -25,5 +25,7 @@ class WeatherResponse {
     var name: String? = null
     @SerializedName("cod")
     var cod: Float = 0.toFloat()
+    @SerializedName("visibility")
+    var visibility: Float = 0.toFloat()
 }
 
