@@ -712,6 +712,58 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "OPENWEATHER",
+			"item": [
+				{
+					"name": "GetByLatLong",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "api.openweathermap.org/data/2.5/weather?lat=38.6931794&lon=-4.1084901&appid=d1da41b678103181ec84cbc640adb315&units=metric&lang=es",
+							"host": [
+								"api",
+								"openweathermap",
+								"org"
+							],
+							"path": [
+								"data",
+								"2.5",
+								"weather"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "38.6931794"
+								},
+								{
+									"key": "lon",
+									"value": "-4.1084901"
+								},
+								{
+									"key": "appid",
+									"value": "d1da41b678103181ec84cbc640adb315"
+								},
+								{
+									"key": "units",
+									"value": "metric"
+								},
+								{
+									"key": "lang",
+									"value": "es"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
