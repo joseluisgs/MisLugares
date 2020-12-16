@@ -314,6 +314,9 @@ class LugarDetalleFragment(
         }))
     }
 
+    /**
+     * Inserta una fotografía
+     */
     private fun insertarFotografia() {
         val clientREST = MisLugaresAPI.service
         val call: Call<FotografiaDTO> = clientREST.fotografiaPost((FotografiaMapper.toDTO(LUGAR_FOTOGRAFIA!!)))
@@ -335,6 +338,8 @@ class LugarDetalleFragment(
             }
         }))
     }
+
+
 
     /**
      * Precondiciones para eliminar

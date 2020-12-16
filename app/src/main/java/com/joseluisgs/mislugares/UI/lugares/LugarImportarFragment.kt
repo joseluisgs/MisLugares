@@ -3,9 +3,11 @@ package com.joseluisgs.mislugares.UI.lugares
 import Utilidades.Cifrador
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,13 +29,21 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
+import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
+import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Services.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.CaptureActivity
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import kotlinx.android.synthetic.main.fragment_importar_lugar.*
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.time.Instant
 import java.util.*
 
@@ -42,6 +52,9 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private var posicion: LatLng? = null
     private lateinit var mapFragment: SupportMapFragment
+    private lateinit var FOTO: Bitmap
+    private lateinit var IMAGEN_URI: Uri
+    private var LUGAR_FOTOGRAFIA: Fotografia? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,6 +81,7 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
         importarLugarTextNombre.visibility = View.INVISIBLE
         importarLugarTextTipo.visibility = View.INVISIBLE
         importarLugarTextFecha.visibility = View.INVISIBLE
+        importarLugarImagen.visibility = View.INVISIBLE
         initMapa()
         mapFragment.view?.visibility = View.INVISIBLE
 
@@ -122,6 +136,7 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
         importarLugarTextNombre.visibility = View.VISIBLE
         importarLugarTextTipo.visibility = View.VISIBLE
         importarLugarTextFecha.visibility = View.VISIBLE
+        importarLugarImagen.visibility = View.VISIBLE
 
         importarLugarTextNombre.text = LUGAR.nombre
         importarLugarTextTipo.text = LUGAR.tipo
@@ -133,6 +148,7 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
         mapFragment.view?.visibility = View.VISIBLE
         initMapa()
         puntoEnMapa()
+        cargarFotografia()
 
     }
 
@@ -153,36 +169,112 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
      * Importa el lugar
      */
     private fun importar() {
-        // Como sabemos que no tiene imagen le creamos una
-        val imagen = AppCompatResources.getDrawable(context!!, R.drawable.ic_mapa_item_lista)?.toBitmap()
-        val b64 = ImageBase64.toBase64(imagen!!)
-        val fotografia = Fotografia(
+        // Guardamos la imagen como nueva
+        val b64 = ImageBase64.toBase64(FOTO)
+        LUGAR_FOTOGRAFIA = Fotografia(
             id = UUID.randomUUID().toString(),
             imagen = b64!!,
             hash = Cifrador.toHash(b64).toString(),
             time = Instant.now().toString(),
             usuarioID = (activity?.application as MyApp).SESION_USUARIO.toString()
         )
-        FotografiaController.insert(fotografia)
-        Log.i("Insertar", "Fotografía insertada con éxito con: " + fotografia.id)
+        // Lanzamos el hilo de insertar fotografia
+        insertarFotografia()
+
         // Insertamos lugar
-        val lugar = Lugar(
+        LUGAR = Lugar(
             id= UUID.randomUUID().toString(),
             nombre = LUGAR.nombre,
             tipo = LUGAR.tipo,
             fecha = LUGAR.fecha,
             latitud = LUGAR.latitud,
             longitud = LUGAR.longitud,
-            imagenID = fotografia.id,
-            favorito = false,
-            votos = 0,
+            imagenID = LUGAR_FOTOGRAFIA!!.id,
+            favorito = LUGAR.favorito,
+            votos = LUGAR.votos,
             time = Instant.now().toString(),
-            usuarioID = (activity?.application as MyApp).SESION_USUARIO.toString()
+            usuarioID = (activity?.application as MyApp).SESION_USUARIO.id
         )
-        LugarController.insert(lugar)
-        Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
-        Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR)
+        val clientREST = MisLugaresAPI.service
+        val call: Call<LugarDTO> = clientREST.lugarPost((LugarMapper.toDTO(LUGAR)))
+        call.enqueue((object : Callback<LugarDTO> {
+
+            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "lugarPost ok")
+                    Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
+                    Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR)
+                } else {
+                    Log.i("REST", "Error lugarPost isSeccesful")
+                    Toast.makeText(context, "Error al insertar: " + response.message(), Toast.LENGTH_LONG).show()
+                    Log.i("Insertar", "Error al insertar: " + response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+
         initUI()
+    }
+
+    /**
+     * Carga la fotografía del lugar
+     */
+    private fun cargarFotografia() {
+        val clientREST = MisLugaresAPI.service
+        val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(LUGAR.imagenID.toString())
+        call.enqueue((object : Callback<FotografiaDTO> {
+
+            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "fotografiasGetById ok")
+                    LUGAR_FOTOGRAFIA = FotografiaMapper.fromDTO(response.body() as FotografiaDTO)
+                    FOTO = ImageBase64.toBitmap(LUGAR_FOTOGRAFIA!!.imagen)!!
+                    IMAGEN_URI = Uri.parse(LUGAR_FOTOGRAFIA!!.uri)
+                    importarLugarImagen.setImageBitmap(FOTO)
+                } else {
+                    Log.i("REST", "Error: fotografiasGetById isSuccessful")
+                    detalleLugarImagen.setImageBitmap(BitmapFactory.decodeResource(context?.resources, R.drawable.ic_mapa))
+                }
+            }
+
+            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+    }
+
+    /**
+     * Inserta una fotografía
+     */
+    private fun insertarFotografia() {
+        val clientREST = MisLugaresAPI.service
+        val call: Call<FotografiaDTO> = clientREST.fotografiaPost((FotografiaMapper.toDTO(LUGAR_FOTOGRAFIA!!)))
+        call.enqueue((object : Callback<FotografiaDTO> {
+
+            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "fotografiaPost ok")
+                } else {
+                    Log.i("REST", "Error fotografiaPost isSeccesful")
+                }
+            }
+
+            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
     }
 
     /**
