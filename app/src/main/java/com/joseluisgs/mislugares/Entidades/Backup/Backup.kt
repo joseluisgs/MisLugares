@@ -6,8 +6,14 @@ import com.joseluisgs.mislugares.Entidades.Sesiones.Sesion
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 
 class Backup(
-    val usuarios: MutableList<Usuario>,
+    val usuario: Usuario,
     val lugares: MutableList<Lugar>,
     val fotografias: MutableList<Fotografia>
-    // val sesiones: MutableList<Sesion> // No es necesario
     )
+{
+    override fun toString(): String {
+        return "Backup(usuario=$usuario, lugares=$lugares, fotografias=$fotografias)"
+    }
+}
+
+

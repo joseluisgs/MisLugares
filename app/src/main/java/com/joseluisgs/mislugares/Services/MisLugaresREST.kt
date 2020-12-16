@@ -64,5 +64,8 @@ interface MisLugaresREST {
     // Actualiza una fotografia
     @PUT("fotografias/{id}")
     fun fotografiaUpdate(@Path("id") id: String, @Body fotografiaDTO: FotografiaDTO): Call<FotografiaDTO>
+    // Obtiene todas las fotografías de un usuario
+    @GET("fotografias/")
+    fun fotografiaGetAllByUserID(@Query("usuarioID") usuarioID: String): Call<List<FotografiaDTO>>
 
 }
