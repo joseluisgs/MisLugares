@@ -71,7 +71,29 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 - [HTTP Código de estado de respuestas](https://developer.mozilla.org/es/docs/Web/HTTP/Status)
 - [Retrofit](https://square.github.io/retrofit/)
 
-#### Capturas
+### Uso del servidor propio para API REST
+
+Para la versión 2.X.X se hace uso del servidor propio [API REST Fake](https://github.com/joseluisgs/APIRESTFake), con el objetivo de no complicar el asunto aprendiendo a hacer un servidor propio REST. Para ello se ha creado en la carpeta apirest todo lo necesario para correr ese servidor, usando una base de datos JSON. De esta manera no te tienes que preocupar en como se desarrolla este tipo de servicios si no solo en consumirlo y usarlo en tu app móvil.
+
+Para ello es fundamental tener instalado en tu sistema operativo [NodeJS](https://nodejs.org/es/). La base de datos está en el directorio bd y se llama db.json, y debe tener una estructura de array de objetos por cada recurso a consumir. Puedes leer más al respecto en [API REST Fake](https://github.com/joseluisgs/APIRESTFake) o consultar los ejemplos.
+
+Para arrancar el servidor debes hacer lo siguiente:
+
+```bash
+$npm install --> Instala las dependencias necesarias para su uso
+$npm start   --> Inicia el servidor.
+```
+
+Si todo ha ido bien obtendrás la siguiente salida:
+
+```bash
+⚑ Servidor JSON funcionando ✓ -> http://localhost:6969
+⚑ Fake API REST por joseluisgs ✓ -> https://github.com/joseluisgs/APIRESTFake
+```
+
+Te recomiendo el uso de [Postman](https://www.postman.com/) para testear y comprender como hacer las llamadas que luego realizarás en [Retrofit](https://square.github.io/retrofit/).
+
+### Capturas
 
 <p align="center">
    <img src="https://i.imgur.com/BIhr1xY.jpg" 
@@ -93,8 +115,10 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
     <img src="https://i.imgur.com/va9mYna.jpg" 
     height="325">
  </p>
-#### Consideraciones para ver los mapas
-Los mapas hace uso de Google Map Api Key, es por ello que debes activar la clave de la API y activarla para tu proyecto, 
+
+### Consideraciones para ver los mapas
+
+Los mapas hace uso de Google Map Api Key, es por ello que debes activar la clave de la API y activarla para tu proyecto,
 pues puede que varíe a la huella del mio, o que simplemente yo haya desactivado la mía (te recuerdo que es un proyecto para finn docente y lo activo y desactivo sobre la marcha).
 Por favor sigue [este tutorial](https://developers.google.com/maps/documentation/android-sdk/get-api-key?hl=es-419) para que puedas ver tus mapas con tu clave.
 

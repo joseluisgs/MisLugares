@@ -10,8 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Backup.BackupController
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
+import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.UI.lugares.LugaresFragment
 import com.joseluisgs.mislugares.UI.lugares.LugaresListAdapter
@@ -20,6 +22,8 @@ import kotlinx.android.synthetic.main.fragment_lugares.*
 
 class BackupFragment: Fragment() {
     var RES = false
+    private lateinit var USUARIO: Usuario
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,6 +34,8 @@ class BackupFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
         initUI()
     }
 
@@ -98,7 +104,7 @@ class BackupFragment: Fragment() {
         // Tarea
         override fun doInBackground(vararg args: Void?): Void? {
             try {
-                RES = BackupController.exportarDatos(context!!)
+                RES = BackupController.exportarDatos(context!!, USUARIO)
             } catch (e: Exception) {
                 RES = false
             }

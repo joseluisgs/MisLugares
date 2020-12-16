@@ -344,6 +344,35 @@
 						"description": "Elimina"
 					},
 					"response": []
+				},
+				{
+					"name": "getAllByUserID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/lugares?usuarioID=b92d21a0-34dc-4fa7-9e84-067fbde7693c",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"lugares"
+							],
+							"query": [
+								{
+									"key": "usuarioID",
+									"value": "b92d21a0-34dc-4fa7-9e84-067fbde7693c"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -490,6 +519,35 @@
 							]
 						},
 						"description": "Elimina la fotografía"
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllByUserID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/fotografias?usuarioID=b92d21a0-34dc-4fa7-9e84-067fbde7693c",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"fotografias"
+							],
+							"query": [
+								{
+									"key": "usuarioID",
+									"value": "b92d21a0-34dc-4fa7-9e84-067fbde7693c"
+								}
+							]
+						}
 					},
 					"response": []
 				}
