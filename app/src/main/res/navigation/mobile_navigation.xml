@@ -45,6 +45,12 @@
             tools:layout="@layout/fragment_linterna"/>
 
     <fragment
+            android:id="@+id/nav_tiempo"
+            android:name="com.joseluisgs.mislugares.UI.tiempo.TiempoFragment"
+            android:label="@string/el_tiempo"
+            tools:layout="@layout/fragment_tiempo"/>
+
+    <fragment
             android:id="@+id/nav_acerca_de"
             android:name="com.joseluisgs.mislugares.UI.acerca_de.AcercaDeFragment"
             android:label="@string/acerca_de"

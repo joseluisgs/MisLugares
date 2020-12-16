@@ -16,7 +16,7 @@
             android:text="Iniciar sesión"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" android:id="@+id/textView" android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent" android:id="@+id/tiempoText" android:layout_marginTop="32dp"
             app:layout_constraintTop_toBottomOf="@+id/imageView" android:textColor="@color/letter_color_splash"
             android:textSize="36sp" android:textStyle="bold" app:layout_constraintHorizontal_bias="0.5"/>
     <TextView
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:background="@color/ic_launcher_background"
-            android:hint="usuario" app:layout_constraintTop_toBottomOf="@+id/textView"
+            android:hint="usuario" app:layout_constraintTop_toBottomOf="@+id/tiempoText"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintEnd_toEndOf="parent">
 
