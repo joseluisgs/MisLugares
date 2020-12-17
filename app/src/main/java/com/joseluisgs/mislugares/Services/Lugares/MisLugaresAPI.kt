@@ -1,4 +1,4 @@
-package com.joseluisgs.mislugares.Services
+package com.joseluisgs.mislugares.Services.Lugares
 
 /**
  * Punto de acceso para entrar a la API

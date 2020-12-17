@@ -1,10 +1,5 @@
 package com.joseluisgs.mislugares.UI.tiempo
 
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -18,18 +13,13 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.joseluisgs.mislugares.Entidades.Tiempo.WeatherResponse
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.MisLugaresAPI
 import com.joseluisgs.mislugares.Services.Tiempo.ElTiempoAPI
-import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_brujula.*
 import kotlinx.android.synthetic.main.fragment_tiempo.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class TiempoFragment: Fragment() {

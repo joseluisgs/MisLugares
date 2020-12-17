@@ -4,13 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.joseluisgs.mislugares.Entidades.Preferencias.PreferenciasController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
-import com.joseluisgs.mislugares.Services.MisLugaresAPI
-import com.joseluisgs.mislugares.Services.MisLugaresREST
 import io.realm.Realm
 import io.realm.kotlin.where
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 /**
 * Controlador de Sesion

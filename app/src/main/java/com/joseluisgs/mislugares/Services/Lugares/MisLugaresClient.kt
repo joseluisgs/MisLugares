@@ -1,4 +1,4 @@
-package com.joseluisgs.mislugares.Services
+package com.joseluisgs.mislugares.Services.Lugares
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

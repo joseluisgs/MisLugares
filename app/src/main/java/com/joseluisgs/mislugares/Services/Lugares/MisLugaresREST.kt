@@ -1,4 +1,4 @@
-package com.joseluisgs.mislugares.Services
+package com.joseluisgs.mislugares.Services.Lugares
 
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
