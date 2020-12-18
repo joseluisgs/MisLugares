@@ -14,7 +14,7 @@ import com.joseluisgs.mislugares.R
 import kotlinx.android.synthetic.main.fragment_brujula.*
 
 
-class BrujulaFragment: Fragment(), SensorEventListener {
+class BrujulaFragment : Fragment(), SensorEventListener {
     private var sensorManager: SensorManager? = null
     var giroscopio: Sensor? = null
     var acelerometro: Sensor? = null
@@ -25,7 +25,7 @@ class BrujulaFragment: Fragment(), SensorEventListener {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_brujula, container, false)
@@ -33,13 +33,12 @@ class BrujulaFragment: Fragment(), SensorEventListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sensorManager = context?.getSystemService(SENSOR_SERVICE) as SensorManager?;
-        acelerometro = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        giroscopio = sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        if (giroscopio != null)
-        {
-            sensorManager!!.registerListener(this, giroscopio, SensorManager.SENSOR_DELAY_NORMAL);
-            sensorManager!!.registerListener(this, acelerometro, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager = context?.getSystemService(SENSOR_SERVICE) as SensorManager?
+        acelerometro = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        giroscopio = sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        if (giroscopio != null) {
+            sensorManager!!.registerListener(this, giroscopio, SensorManager.SENSOR_DELAY_NORMAL)
+            sensorManager!!.registerListener(this, acelerometro, SensorManager.SENSOR_DELAY_NORMAL)
         }
     }
 
@@ -61,14 +60,13 @@ class BrujulaFragment: Fragment(), SensorEventListener {
             }
         }
         //try {
-            val grados = azimut * -1
-            brujulaImagen.rotation = grados
-            brujulaTexto.text = "Grados: $grados º"
+        val grados = azimut * -1
+        brujulaImagen.rotation = grados
+        brujulaTexto.text = "Grados: $grados º"
         //}catch (ex: Exception) {
 
         //}
     }
-
 
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {

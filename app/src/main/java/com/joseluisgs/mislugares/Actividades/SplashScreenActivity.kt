@@ -1,16 +1,13 @@
 package com.joseluisgs.mislugares
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
+import androidx.appcompat.app.AppCompatActivity
 import com.joseluisgs.mislugares.Actividades.LoginActivity
-import com.joseluisgs.mislugares.Actividades.MainActivity
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import kotlinx.android.synthetic.main.activity_splash_screen.*
 
 /**

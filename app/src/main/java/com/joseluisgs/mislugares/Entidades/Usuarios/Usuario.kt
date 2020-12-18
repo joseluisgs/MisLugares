@@ -28,16 +28,16 @@ open class Usuario(
     // Cambiar a UUID.randomUUID().toString() o long
     var id: String = "",
     @Required
-    var nombre: String ="",
+    var nombre: String = "",
     @Required @Index
-    var login: String ="",
+    var login: String = "",
     @Required
-    var password: String ="",
-    var avatar: String ="",
+    var password: String = "",
+    var avatar: String = "",
     @Required @Index
-    var correo: String ="",
-    var twitter: String ="",
-    var github: String =""
+    var correo: String = "",
+    var twitter: String = "",
+    var github: String = "",
 ) : RealmObject(), Serializable {
 
     /**
@@ -51,9 +51,17 @@ open class Usuario(
      * @param github String
      * @constructor
      */
-    constructor(nombre: String, login: String, password: String, avatar: String, correo: String, twitter: String, github: String) :
+    constructor(
+        nombre: String,
+        login: String,
+        password: String,
+        avatar: String,
+        correo: String,
+        twitter: String,
+        github: String,
+    ) :
             this((UUID.randomUUID().toString()), nombre, login, password, avatar, correo, twitter, github)
-                // this((System.currentTimeMillis() / 1000L), nombre, login, password, avatar, correo, twitter, github)
+    // this((System.currentTimeMillis() / 1000L), nombre, login, password, avatar, correo, twitter, github)
 
     override fun toString(): String {
         return "Usuario(id=$id, nombre='$nombre', login='$login', password='$password', avatar='$avatar', correo='$correo', twitter='$twitter', github='$github')"

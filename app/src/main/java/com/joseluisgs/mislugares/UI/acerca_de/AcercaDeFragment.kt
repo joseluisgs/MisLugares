@@ -6,24 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
-import com.google.gson.Gson
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Utilidades.QRCode
 import com.joseluisgs.mislugares.Utilidades.Utils
-import kotlinx.android.synthetic.main.activity_splash_screen.*
 import kotlinx.android.synthetic.main.fragment_acerca_de.*
 
 class AcercaDeFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_acerca_de, container, false)
@@ -79,7 +71,8 @@ class AcercaDeFragment : Fragment() {
             .setTitle(getString(R.string.dialogo_abrir_web_titulo))
             .setMessage(getString(R.string.dialogo_abrir_web_mensaje))
             .setPositiveButton(getString(R.string.aceptar)) { dialog, which ->
-                Utils.abrirURL(activity!!, url) }
+                Utils.abrirURL(activity!!, url)
+            }
             .setNegativeButton(getString(R.string.cancelar), null)
             .show()
     }
@@ -93,7 +86,8 @@ class AcercaDeFragment : Fragment() {
             .setTitle(getString(R.string.contactar_email))
             .setMessage(getString(R.string.cantactar_email_mensaje))
             .setPositiveButton(getString(R.string.aceptar)) { dialog, which ->
-                Utils.mandarEMail(activity, para = "jlgs@cifpvirgendegracia.com", asunto ="Contacto Mis Lugares") }
+                Utils.mandarEMail(activity, para = "jlgs@cifpvirgendegracia.com", asunto = "Contacto Mis Lugares")
+            }
             .setNegativeButton(getString(R.string.cancelar), null)
             .show()
     }

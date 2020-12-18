@@ -1,15 +1,9 @@
 package com.joseluisgs.mislugares.Entidades.Preferencias
 
-import Utilidades.Cifrador
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.util.Log
 import com.google.gson.Gson
-import com.joseluisgs.mislugares.Entidades.Sesiones.Sesion
-import com.joseluisgs.mislugares.R.drawable.user_avatar
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
-import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioController
-import com.joseluisgs.mislugares.Utilidades.ImageBase64
 
 /**
  * Clase para el manejo de preferencias
@@ -50,7 +44,7 @@ object PreferenciasController {
      * @param context Context
      * @return Usuario
      */
-    fun leerSesion(context: Context): Usuario{
+    fun leerSesion(context: Context): Usuario {
         val prefs = context.getSharedPreferences("MisLugares", Context.MODE_PRIVATE)
         return Gson().fromJson(prefs.getString("USER", ""), Usuario::class.java)
     }

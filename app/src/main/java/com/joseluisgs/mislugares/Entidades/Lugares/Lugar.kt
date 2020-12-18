@@ -43,8 +43,8 @@ open class Lugar(
     @Required
     var time: String = "",
     @Required
-    var usuarioID: String = ""
-): RealmObject(), Serializable {
+    var usuarioID: String = "",
+) : RealmObject(), Serializable {
     constructor(
         nombre: String,
         tipo: String,
@@ -55,7 +55,7 @@ open class Lugar(
         favorito: Boolean,
         votos: Int,
         time: String,
-        usuarioID: String
+        usuarioID: String,
     ) :
             this(
                 (UUID.randomUUID().toString()),

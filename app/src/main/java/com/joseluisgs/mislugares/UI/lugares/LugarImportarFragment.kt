@@ -40,7 +40,7 @@ import retrofit2.Response
 import java.time.Instant
 import java.util.*
 
-class LugarImportarFragment: Fragment(), OnMapReadyCallback {
+class LugarImportarFragment : Fragment(), OnMapReadyCallback {
     private lateinit var LUGAR: Lugar
     private lateinit var mMap: GoogleMap
     private var posicion: LatLng? = null
@@ -52,7 +52,7 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_importar_lugar, container, false)
     }
@@ -105,8 +105,7 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
         if (result != null) {
             if (result.contents == null) {
                 Toast.makeText(context, "Cancelado", Toast.LENGTH_LONG).show()
-            }
-            else {
+            } else {
                 try {
                     LUGAR = Gson().fromJson(result.contents, Lugar::class.java)
                     // Toast.makeText(context, "Recuperado: $LUGAR", Toast.LENGTH_LONG).show()
@@ -176,7 +175,7 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
 
         // Insertamos lugar
         LUGAR = Lugar(
-            id= UUID.randomUUID().toString(),
+            id = UUID.randomUUID().toString(),
             nombre = LUGAR.nombre,
             tipo = LUGAR.tipo,
             fecha = LUGAR.fecha,
@@ -195,7 +194,7 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
             override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
                 if (response.isSuccessful) {
                     Log.i("REST", "lugarPost ok")
-                    Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show()
                     Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR)
                 } else {
                     Log.i("REST", "Error lugarPost isSeccesful")
@@ -232,7 +231,8 @@ class LugarImportarFragment: Fragment(), OnMapReadyCallback {
                     importarLugarImagen.setImageBitmap(FOTO)
                 } else {
                     Log.i("REST", "Error: fotografiasGetById isSuccessful")
-                    detalleLugarImagen.setImageBitmap(BitmapFactory.decodeResource(context?.resources, R.drawable.ic_mapa))
+                    detalleLugarImagen.setImageBitmap(BitmapFactory.decodeResource(context?.resources,
+                        R.drawable.ic_mapa))
                 }
             }
 

@@ -112,7 +112,8 @@ object BackupController {
             override fun onResponse(call: Call<List<FotografiaDTO>>, response: Response<List<FotografiaDTO>>) {
                 if (response.isSuccessful) {
                     Log.i("REST", "fotografiasGetAll ok")
-                    FOTOGRAFIAS = (FotografiaMapper.fromDTO(response.body() as MutableList<FotografiaDTO>)) as MutableList<Fotografia>
+                    FOTOGRAFIAS =
+                        (FotografiaMapper.fromDTO(response.body() as MutableList<FotografiaDTO>)) as MutableList<Fotografia>
                 } else {
                     Log.i("REST", "Error: LugaresGetAll isSuccessful")
                 }
@@ -149,8 +150,8 @@ object BackupController {
             eliminarDatos()
             insertarDatos()
             return true
-        }catch(ex: Exception) {
-            Log.i("Backup", "Error: " +ex.localizedMessage)
+        } catch (ex: Exception) {
+            Log.i("Backup", "Error: " + ex.localizedMessage)
             return false
         }
     }
@@ -215,7 +216,7 @@ object BackupController {
      */
     private fun eliminarDatos() {
         // Podría lanzar por dos lados eliminar fotografía y lugar, pero si falla, voy de uno en uno y no dejo nada suelto, o eso espero :)
-        BACKUP.lugares.forEach{
+        BACKUP.lugares.forEach {
             eliminarLugar(it)
         }
 //        BACKUP.fotografias.forEach {
@@ -280,8 +281,9 @@ object BackupController {
      * @return Boolean
      */
     fun archivar(context: Context, datos: String): Boolean {
-        val dirBackup = File((context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath) + "/MisLugaresBack")
-        if(!dirBackup.exists())
+        val dirBackup =
+            File((context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath) + "/MisLugaresBack")
+        if (!dirBackup.exists())
             dirBackup.mkdir()
         val file = File(dirBackup, "backup.json")
         try {
@@ -291,8 +293,8 @@ object BackupController {
                 return true
             } else
                 return false
-        }catch (ex: Exception) {
-            Log.i("Backup", "Error: " +ex.localizedMessage)
+        } catch (ex: Exception) {
+            Log.i("Backup", "Error: " + ex.localizedMessage)
             return false
         }
     }

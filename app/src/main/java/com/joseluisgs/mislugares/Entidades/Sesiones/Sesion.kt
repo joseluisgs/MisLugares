@@ -7,15 +7,14 @@ import io.realm.annotations.Required
 import java.io.Serializable
 
 @RealmClass
-open class Sesion (
+open class Sesion(
     @PrimaryKey
     var usuarioID: String = "",
     @Required
     var time: String = "",
     @Required
-    var token: String = ""
-) : RealmObject(), Serializable
-{
+    var token: String = "",
+) : RealmObject(), Serializable {
     fun fromSesion(sesion: Sesion) {
         this.usuarioID = sesion.usuarioID
         this.time = sesion.time

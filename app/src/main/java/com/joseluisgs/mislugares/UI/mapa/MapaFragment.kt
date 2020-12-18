@@ -16,7 +16,6 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
@@ -39,7 +38,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_mapa, container, false)
     }
@@ -107,7 +106,8 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {
                 if (response.isSuccessful) {
                     Log.i("REST", "LugaresGetAll ok")
-                    val listaLugares = (LugarMapper.fromDTO(response.body() as MutableList<LugarDTO>)) as MutableList<Lugar>
+                    val listaLugares =
+                        (LugarMapper.fromDTO(response.body() as MutableList<LugarDTO>)) as MutableList<Lugar>
                     procesarLugares(listaLugares)
                 } else {
                     Log.i("REST", "Error: LugaresGetAll isSuccessful")
@@ -214,10 +214,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         tipo.text = lugar.tipo
         val fecha = vista.findViewById(R.id.mapaLugarTextFecha) as TextView
         fecha.text = lugar.fecha
-
-        // Buscamos la imagen
         val imagen = vista.findViewById(R.id.mapaLugarImagen) as ImageView
-        imagen.setImageBitmap(ImageBase64.toBitmap(FotografiaController.selectById(lugar.imagenID)!!.imagen))
 
         val clientREST = MisLugaresAPI.service
         val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(lugar.imagenID)

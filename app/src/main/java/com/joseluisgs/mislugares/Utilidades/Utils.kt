@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import java.io.File
-import java.util.*
 
 object Utils {
     /**
@@ -24,7 +23,7 @@ object Utils {
         para: String = "",
         cc: String = "",
         asunto: String = "",
-        texto: String = ""
+        texto: String = "",
     ) {
         val intent = Intent(Intent.ACTION_SEND)
         intent.data = Uri.parse("mailto:")
