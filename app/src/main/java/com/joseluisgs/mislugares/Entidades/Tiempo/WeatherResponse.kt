@@ -2,6 +2,21 @@ package com.joseluisgs.mislugares.Entidades.Tiempo
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Respuesta del Servicio OpenWeather
+ * @property coord Coord?
+ * @property sys Sys?
+ * @property weather ArrayList<Weather>
+ * @property main Main?
+ * @property wind Wind?
+ * @property rain Rain?
+ * @property clouds Clouds?
+ * @property dt Float
+ * @property id Int
+ * @property name String?
+ * @property cod Float
+ * @property visibility Float
+ */
 class WeatherResponse {
     @SerializedName("coord")
     var coord: Coord? = null
