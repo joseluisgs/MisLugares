@@ -1,0 +1,769 @@
+{
+	"info": {
+		"_postman_id": "497fe173-593b-4c82-a29c-a966525585c1",
+		"name": "MIS LUGARES REST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TODO",
+			"item": [
+				{
+					"name": "TODO",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/db",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"db"
+							]
+						},
+						"description": "Todo"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "USUARIOS",
+			"item": [
+				{
+					"name": "GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/usuarios",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios"
+							]
+						},
+						"description": "Obtiene Todos"
+					},
+					"response": []
+				},
+				{
+					"name": "GetByID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/usuarios/b92d21a0-34dc-4fa7-9e84-067fbde7693c",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"b92d21a0-34dc-4fa7-9e84-067fbde7693c"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetByLogin",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/usuarios/?login=joseluisgs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								""
+							],
+							"query": [
+								{
+									"key": "login",
+									"value": "joseluisgs"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"login\": \"joseluisgs\",\n    \"nombre\": \"José Luis González Sánchez\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:6969/usuarios",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios"
+							]
+						},
+						"description": "Inserta Usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Put",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"login\": \"joseluisgsTest\",\n    \"nombre\": \"José Luis González Sánchez\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:6969/usuarios/wP5GA9U",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"wP5GA9U"
+							]
+						},
+						"description": "Actualiza"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/usuarios/wP5GA9U",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"usuarios",
+								"wP5GA9U"
+							]
+						},
+						"description": "Elimina un usuario"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "LUGARES",
+			"item": [
+				{
+					"name": "GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/lugares",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"lugares"
+							]
+						},
+						"description": "Obtiene todos"
+					},
+					"response": []
+				},
+				{
+					"name": "GetByID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/lugares/7c846664-90d2-4f21-ae1a-863129eafd03",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"lugares",
+								"7c846664-90d2-4f21-ae1a-863129eafd03"
+							]
+						},
+						"description": "Obtiene por ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"favorito\": false,\n    \"fecha\": \"09/12/2020\",\n    \"imagenID\": \"b21b4856-793c-4299-91ab-933a18a2041b\",\n    \"latitud\": \"38.6929934\",\n    \"longitud\": \"-4.1086243\",\n    \"nombre\": \"aula 209\",\n    \"time\": \"2020-12-09T13:20:34.680Z\",\n    \"tipo\": \"Ciudad\",\n    \"votos\": 0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:6969/lugares",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"lugares"
+							]
+						},
+						"description": "Inserta"
+					},
+					"response": []
+				},
+				{
+					"name": "Put",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"favorito\": false,\n    \"fecha\": \"09/12/2020\",\n    \"imagenID\": \"b21b4856-793c-4299-91ab-933a18a2041b\",\n    \"latitud\": \"38.6929934\",\n    \"longitud\": \"-4.1086243\",\n    \"nombre\": \"aula 209\",\n    \"time\": \"2020-12-09T13:20:34.680Z\",\n    \"tipo\": \"Prueba\",\n    \"votos\": 0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:6969/lugares/H7m_O6N",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"lugares",
+								"H7m_O6N"
+							]
+						},
+						"description": "Modifica"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/lugares/H7m_O6N",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"lugares",
+								"H7m_O6N"
+							]
+						},
+						"description": "Elimina"
+					},
+					"response": []
+				},
+				{
+					"name": "getAllByUserID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/lugares?usuarioID=b92d21a0-34dc-4fa7-9e84-067fbde7693c",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"lugares"
+							],
+							"query": [
+								{
+									"key": "usuarioID",
+									"value": "b92d21a0-34dc-4fa7-9e84-067fbde7693c"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FOTOGRAFIAS",
+			"item": [
+				{
+					"name": "GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/fotografias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"fotografias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetByID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/fotografias/oLtmprg",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"fotografias",
+								"oLtmprg"
+							]
+						},
+						"description": "Obtiene por ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"time\": \"hola\",\n\t\"hash\": \"hola\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:6969/fotografias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"fotografias"
+							]
+						},
+						"description": "Inserta Fotografía"
+					},
+					"response": []
+				},
+				{
+					"name": "Put",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"time\": \"hola2\",\n\t\"hash\": \"hola2\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:6969/fotografias/oLtmprg",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"fotografias",
+								"oLtmprg"
+							]
+						},
+						"description": "Actualiza una fotografía"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"time\": \"hola2\",\n\t\"hash\": \"hola2\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:6969/fotografias/oLtmprg",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"fotografias",
+								"oLtmprg"
+							]
+						},
+						"description": "Elimina la fotografía"
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllByUserID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/fotografias?usuarioID=b92d21a0-34dc-4fa7-9e84-067fbde7693c",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"fotografias"
+							],
+							"query": [
+								{
+									"key": "usuarioID",
+									"value": "b92d21a0-34dc-4fa7-9e84-067fbde7693c"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SESIONES",
+			"item": [
+				{
+					"name": "GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/sesiones",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"sesiones"
+							]
+						},
+						"description": "Obtiene todo"
+					},
+					"response": []
+				},
+				{
+					"name": "GetByID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/sesiones/1234",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"sesiones",
+								"1234"
+							]
+						},
+						"description": "Obtiene por ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"usuarioID\":\"1234\",\n\t\"time\":\"12345\",\n\t\"token\":\"123456\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:6969/sesiones/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"sesiones",
+								""
+							]
+						},
+						"description": "insertar"
+					},
+					"response": []
+				},
+				{
+					"name": "Put",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"1234\",\n    \"time\": \"999\",\n    \"token\": \"999\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:6969/sesiones/1234",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"sesiones",
+								"1234"
+							]
+						},
+						"description": "Actualiza los datos"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:6969/sesiones/1234",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "6969",
+							"path": [
+								"sesiones",
+								"1234"
+							]
+						},
+						"description": "Borrar los datos"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "OPENWEATHER",
+			"item": [
+				{
+					"name": "GetByLatLong",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "api.openweathermap.org/data/2.5/weather?lat=38.6931794&lon=-4.1084901&appid=d1da41b678103181ec84cbc640adb315&units=metric&lang=es",
+							"host": [
+								"api",
+								"openweathermap",
+								"org"
+							],
+							"path": [
+								"data",
+								"2.5",
+								"weather"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "38.6931794"
+								},
+								{
+									"key": "lon",
+									"value": "-4.1084901"
+								},
+								{
+									"key": "appid",
+									"value": "d1da41b678103181ec84cbc640adb315"
+								},
+								{
+									"key": "units",
+									"value": "metric"
+								},
+								{
+									"key": "lang",
+									"value": "es"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

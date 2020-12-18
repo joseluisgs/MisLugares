@@ -22,11 +22,6 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="Instantiatable">
-        <activity
-                android:name=".Actividades.LoginActivity"
-                android:label="@string/title_activity_login"
-                android:theme="@style/AppTheme.NoActionBar">
-        </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -40,11 +35,11 @@
                 android:value="@string/google_maps_key"/>
         <meta-data
                 android:name="preloaded_fonts"
-                android:resource="@array/preloaded_fonts"/> <!-- Ponemos de comienzo la actividad Splash que llama a la main -->
+                android:resource="@array/preloaded_fonts"/>
+        <!-- Ponemos de comienzo la actividad Splash que llama a la main -->
         <activity android:name=".SplashActivityActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -58,6 +53,17 @@
                 android:screenOrientation="fullSensor"
                 android:stateNotNeeded="true"
                 android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity
+                android:name=".Actividades.LoginActivity"
+                android:label="@string/title_activity_login"
+                android:theme="@style/AppTheme.NoActionBar">
+            <!--
+            <intent-filter>
+               <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            -->
+        </activity>
     </application>
 
 </manifest>

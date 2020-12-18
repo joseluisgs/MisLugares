@@ -4,7 +4,6 @@ import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.*
-import android.os.AsyncTask
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.util.Log
@@ -19,12 +18,19 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
+import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
+import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.UI.lugares.filtro.Filtro
 import com.joseluisgs.mislugares.UI.lugares.filtro.FiltroController
 import kotlinx.android.synthetic.main.fragment_lugares.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,8 +39,8 @@ class LugaresFragment : Fragment() {
     // Propiedades
     private var LUGARES = mutableListOf<Lugar>()
     private lateinit var lugaresAdapter: LugaresListAdapter //Adaptador de Noticias de Recycler
-    private lateinit var tareaLugares: TareaCargarLugares // Tarea en segundo plano
     private var paintSweep = Paint()
+    private lateinit var USUARIO: Usuario
 
     // Búsquedas
     private var FILTRO = Filtro.NADA
@@ -44,7 +50,7 @@ class LugaresFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_lugares, container, false)
     }
@@ -52,6 +58,7 @@ class LugaresFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Iniciamos la interfaz
+        this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
         initUI()
     }
 
@@ -78,8 +85,10 @@ class LugaresFragment : Fragment() {
         lugaresSpinnerFiltro.adapter = adapter
         lugaresSpinnerFiltro.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>,
-                                        view: View, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View, position: Int, id: Long,
+            ) {
                 FILTRO = FiltroController.analizarFiltroSpinner(position)
                 // Listamos los lugares y cargamos el recycler
                 Log.i("Filtro", position.toString())
@@ -116,7 +125,7 @@ class LugaresFragment : Fragment() {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
+                target: RecyclerView.ViewHolder,
             ): Boolean {
                 return false
             }
@@ -150,7 +159,7 @@ class LugaresFragment : Fragment() {
                 dX: Float,
                 dY: Float,
                 actionState: Int,
-                isCurrentlyActive: Boolean
+                isCurrentlyActive: Boolean,
             ) {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     val itemView = viewHolder.itemView
@@ -206,7 +215,7 @@ class LugaresFragment : Fragment() {
      */
     private fun botonIzquierdo(canvas: Canvas, dX: Float, itemView: View, width: Float) {
         // Pintamos de azul y ponemos el icono
-        paintSweep.setColor(Color.BLUE)
+        paintSweep.color = Color.BLUE
         val background = RectF(
             itemView.left.toFloat(), itemView.top.toFloat(), dX,
             itemView.bottom.toFloat()
@@ -218,14 +227,6 @@ class LugaresFragment : Fragment() {
                 .toFloat() + 2 * width, itemView.bottom.toFloat() - width
         )
         canvas.drawBitmap(icon, null, iconDest, paintSweep)
-    }
-
-    /**
-     * Carga los lugares
-     */
-    private fun cargarLugares() {
-        tareaLugares = TareaCargarLugares()
-        tareaLugares.execute()
     }
 
     /**
@@ -311,7 +312,7 @@ class LugaresFragment : Fragment() {
      * @param lugar Lugar
      */
     private fun eventoClicFila(lugar: Lugar) {
-            abrirElemento(lugar)
+        abrirElemento(lugar)
     }
 
     /**
@@ -377,8 +378,12 @@ class LugaresFragment : Fragment() {
         when (FILTRO) {
             Filtro.NADA -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.id.compareTo(l2.id) }
             // Nombre
-            Filtro.NOMBRE_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.nombre.toLowerCase().compareTo(l2.nombre.toLowerCase()) }
-            Filtro.NOMBRE_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l2.nombre.toLowerCase().compareTo(l1.nombre.toLowerCase()) }
+            Filtro.NOMBRE_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar ->
+                l1.nombre.toLowerCase().compareTo(l2.nombre.toLowerCase())
+            }
+            Filtro.NOMBRE_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar ->
+                l2.nombre.toLowerCase().compareTo(l1.nombre.toLowerCase())
+            }
 
             // Tipo
             Filtro.TIPO_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.tipo.compareTo(l2.tipo) }
@@ -406,40 +411,50 @@ class LugaresFragment : Fragment() {
     }
 
     /**
-     * Tarea asíncrona para la carga de noticias
+     * Carga los lugares
      */
-    inner class TareaCargarLugares : AsyncTask<Void?, Void?, Void?>() {
-        // Pre-Tarea
-        override fun onPreExecute() {
-            if (lugaresSwipeRefresh.isRefreshing) {
-                lugaresSwipeRefresh.isRefreshing = false
-            }
-            Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
-        }
-        // Tarea
-        override fun doInBackground(vararg args: Void?): Void? {
-            try {
-                LUGARES = LugarController.selectAll()!!
-                Log.i("Lugares", "Lista de lugares de tamaño: " + LUGARES.size)
-            } catch (e: Exception) {
-                Log.e("T2Plano ", e.message.toString());
-            }
-            return null
-        }
-        //Post-Tarea
-        override fun onPostExecute(args: Void?) {
-           ordenarLugares()
-            lugaresAdapter = LugaresListAdapter(LUGARES) {
-                eventoClicFila(it)
-            }
-            lugaresRecycler.adapter = lugaresAdapter
-            // Avismos que ha cambiado
-            lugaresAdapter.notifyDataSetChanged()
-            lugaresRecycler.setHasFixedSize(true)
-            lugaresSwipeRefresh.isRefreshing = false
-            Toast.makeText(context, "Lugares cargados", Toast.LENGTH_LONG).show()
-        }
+    private fun cargarLugares() {
+        lugaresSwipeRefresh.isRefreshing = true
+        Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
+        val clientREST = MisLugaresAPI.service
+        // Ontenemos los lugares filtrados por el usuario, para no mostrar otros.
+        val call: Call<List<LugarDTO>> = clientREST.lugarGetAllByUserID(USUARIO.id)
+        call.enqueue((object : Callback<List<LugarDTO>> {
 
+            override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "LugaresGetAll ok")
+                    LUGARES = (LugarMapper.fromDTO(response.body() as MutableList<LugarDTO>)) as MutableList<Lugar>
+                    Log.i("Lugares", "Lista de lugares de tamaño: " + LUGARES.size)
+                    procesarLugares()
+                } else {
+                    Log.i("REST", "Error: LugaresGetAll isSuccessful")
+                }
+            }
+
+            override fun onFailure(call: Call<List<LugarDTO>>, t: Throwable) {
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
+    }
+
+    /**
+     * Procesa los lugares
+     */
+    private fun procesarLugares() {
+        ordenarLugares()
+        lugaresAdapter = LugaresListAdapter(LUGARES) {
+            eventoClicFila(it)
+        }
+        lugaresRecycler.adapter = lugaresAdapter
+        // Avismos que ha cambiado
+        lugaresAdapter.notifyDataSetChanged()
+        lugaresRecycler.setHasFixedSize(true)
+        lugaresSwipeRefresh.isRefreshing = false
+        Toast.makeText(context, "Lugares cargados", Toast.LENGTH_LONG).show()
     }
 
     /**
@@ -447,17 +462,10 @@ class LugaresFragment : Fragment() {
      */
     private fun visualizarListaItems() {
         ordenarLugares()
-        lugaresRecycler.adapter = lugaresAdapter
-        // lugaresAdapter.notifyDataSetChanged()
-        // lugaresRecycler.setHasFixedSize(true)
-    }
-
-    /**
-     * Si paramos cancelamos la tarea
-     */
-    override fun onStop() {
-        super.onStop()
-        tareaLugares.cancel(true)
+        try {
+            lugaresRecycler.adapter = lugaresAdapter
+        } catch (ex: Exception) {
+        }
     }
 }
 

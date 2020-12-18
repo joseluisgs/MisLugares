@@ -30,13 +30,17 @@
             <menu>
                 <group android:checkableBehavior="single">
                     <item
-                            android:id="@+id/nav_brujula"
-                            android:icon="@drawable/ic_brujula"
-                            android:title="@string/brujula"/>
+                            android:id="@+id/nav_tiempo"
+                            android:icon="@drawable/ic_tiempo"
+                            android:title="@string/el_tiempo"/>
                     <item
                             android:id="@+id/nav_linterna"
                             android:icon="@drawable/ic_linterna"
                             android:title="@string/linterna"/>
+                    <item
+                            android:id="@+id/nav_brujula"
+                            android:icon="@drawable/ic_brujula"
+                            android:title="@string/brujula"/>
                 </group>
             </menu>
         </item>

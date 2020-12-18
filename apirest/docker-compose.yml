@@ -1,0 +1,18 @@
+# Indicamos la versión
+version: '3.7'
+
+# Iniciamos los servicios
+services:
+  # API REST Server
+  api-rest:
+    build: .
+    container_name: api-rest-server
+    restart: always
+    ports:
+      - 6969:6969
+    networks:
+      - api-rest-network
+
+networks:
+  api-rest-network:
+    driver: bridge

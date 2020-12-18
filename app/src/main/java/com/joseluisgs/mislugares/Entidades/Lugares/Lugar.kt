@@ -4,6 +4,7 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 import io.realm.annotations.Required
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -42,8 +43,8 @@ open class Lugar(
     @Required
     var time: String = "",
     @Required
-    var usuarioID: String = ""
-): RealmObject() {
+    var usuarioID: String = "",
+) : RealmObject(), Serializable {
     constructor(
         nombre: String,
         tipo: String,
@@ -54,7 +55,7 @@ open class Lugar(
         favorito: Boolean,
         votos: Int,
         time: String,
-        usuarioID: String
+        usuarioID: String,
     ) :
             this(
                 (UUID.randomUUID().toString()),

@@ -1,0 +1,29 @@
+{
+  "name": "lugares-apirest",
+  "version": "1.0.0",
+  "description": "Api Rest para la app Mis Lugares",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joseluisgs/MisLugares.git"
+  },
+  "keywords": [
+    "API",
+    "Rest"
+  ],
+  "author": "joseluisgs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joseluisgs/MisLugares/issues"
+  },
+  "homepage": "https://github.com/joseluisgs/MisLugares#readme",
+  "dependencies": {
+    "@babel/runtime": "^7.12.5",
+    "express": "^4.17.1",
+    "json-server": "^0.16.2"
+  }
+}

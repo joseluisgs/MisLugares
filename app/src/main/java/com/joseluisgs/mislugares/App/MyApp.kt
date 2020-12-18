@@ -2,10 +2,8 @@ package com.joseluisgs.mislugares.App
 
 import android.Manifest
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import com.joseluisgs.mislugares.Entidades.Preferencias.PreferenciasController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -17,22 +15,20 @@ import io.realm.RealmConfiguration
 
 
 class MyApp : Application() {
-    // Propiedades, getters and setters (visibilidad)
+    // Propiedades, getters and setters (visibilidad) globales
     lateinit var SESION_USUARIO: Usuario
-        // private set
-    private val BD_NOMBRE = "MIS_LUGARES_BD"
-    private val BD_VERSION = 1L
     var APP_PERMISOS = false
         private set
 
+    // private set
+    private val BD_NOMBRE = "MIS_LUGARES_BD"
+    private val BD_VERSION = 1L
 
 
     override fun onCreate() {
         super.onCreate()
         Log.i("Config", "Init Configuración")
-        // initPermisos()
         initRealmBD()
-        initPreferencias()
         Log.i("Config", "Fin Configuración")
     }
 
@@ -53,27 +49,9 @@ class MyApp : Application() {
     }
 
     /**
-     * Inicia algunas preferencias por defecto
-     */
-    private fun initPreferencias() {
-        // Vamos a simular que una vez que nos conectamos hemos metido al usuario en la BB.DD
-        Log.i("Config", "Init Preferencias")
-        // Comprobamos si hay sesion, es decir, si es != 0
-        if(PreferenciasController.comprobarSesion(applicationContext)) {
-            Log.i("Config", "Sí existe Sesión de usuario")
-            SESION_USUARIO = PreferenciasController.leerSesion(applicationContext)
-        } else {
-            Log.i("Config", "No existe Sesión de usuario")
-            SESION_USUARIO = PreferenciasController.crearSesion(applicationContext)
-        }
-        Log.i("Config", "Usuario activo Login: ${SESION_USUARIO.login}") // con datos: $SESION_USUARIO")
-        Log.i("Config", "Fin Preferencias")
-    }
-
-    /**
      * Comprobamos los permisos de la aplicación
      */
-     fun initPermisos() {
+    fun initPermisos() {
         Log.i("Config", "Init Permisos")
         // Indicamos el permisos y el manejador de eventos de los mismos
         Dexter.withContext(this)
@@ -105,7 +83,7 @@ class MyApp : Application() {
 
                 override fun onPermissionRationaleShouldBeShown(
                     permissions: List<PermissionRequest?>?,
-                    token: PermissionToken
+                    token: PermissionToken,
                 ) {
                     token.continuePermissionRequest()
                 }

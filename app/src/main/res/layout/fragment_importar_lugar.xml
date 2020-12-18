@@ -43,12 +43,16 @@
                 android:textStyle="bold" tools:text="Lugar" android:layout_alignParentEnd="true"
                 android:layout_marginEnd="0dp" android:textSize="18sp"
                 android:gravity="center|center_horizontal|center_vertical" android:textColor="@color/colorPrimary"/>
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="177dp" app:srcCompat="@drawable/ic_mapa_item_list"
+                android:id="@+id/importarLugarImagen" android:layout_marginTop="120dp"/>
         <fragment
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
                 android:layout_marginBottom="5dp"
                 android:id="@+id/importarLugarMapa"
-                android:name="com.google.android.gms.maps.SupportMapFragment" android:layout_marginTop="120dp"
+                android:name="com.google.android.gms.maps.SupportMapFragment" android:layout_marginTop="300dp"
                 android:layout_marginStart="0dp" android:layout_marginEnd="0dp"
                 android:layout_below="@+id/linearLayoutImportarLugar"/>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
