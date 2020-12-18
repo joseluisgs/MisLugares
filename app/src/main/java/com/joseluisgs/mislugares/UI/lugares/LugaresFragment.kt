@@ -24,7 +24,7 @@ import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.MisLugaresAPI
+import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.UI.lugares.filtro.Filtro
 import com.joseluisgs.mislugares.UI.lugares.filtro.FiltroController
 import kotlinx.android.synthetic.main.fragment_lugares.*

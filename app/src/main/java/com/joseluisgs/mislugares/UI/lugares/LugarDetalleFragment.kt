@@ -44,7 +44,7 @@ import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.MisLugaresAPI
+import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.Fotos
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.QRCode

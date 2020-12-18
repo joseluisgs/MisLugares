@@ -14,7 +14,7 @@ import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.MisLugaresAPI
+import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import kotlinx.android.synthetic.main.item_lugar.view.*
 import retrofit2.Call
