@@ -25,9 +25,9 @@ import retrofit2.Response
 class LugaresListAdapter(
     private val listaLugares: MutableList<Lugar>,
     // Famos a tener distintas acciones y eventos
-    private val accionPrincipal: (Lugar) -> Unit
+    private val accionPrincipal: (Lugar) -> Unit,
 
-) : RecyclerView.Adapter<LugaresListAdapter.LugarViewHolder>() {
+    ) : RecyclerView.Adapter<LugaresListAdapter.LugarViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LugarViewHolder {
         return LugarViewHolder(
@@ -123,7 +123,8 @@ class LugaresListAdapter(
                     holder.itemLugarImagen.setImageBitmap(ImageBase64.toBitmap(remoteFotografia.imagen))
                 } else {
                     Log.i("REST", "Error: fotografiasGetById isSuccessful")
-                    holder.itemLugarImagen.setImageBitmap(BitmapFactory.decodeResource(holder.context?.resources, R.drawable.ic_mapa))
+                    holder.itemLugarImagen.setImageBitmap(BitmapFactory.decodeResource(holder.context?.resources,
+                        R.drawable.ic_mapa))
                 }
             }
 
@@ -146,10 +147,10 @@ class LugaresListAdapter(
         // Procesamos el color
         colorBotonFavorito(position, holder)
         // Procesamos el número de votos
-        if(listaLugares[position].favorito)
-            listaLugares[position].votos ++
+        if (listaLugares[position].favorito)
+            listaLugares[position].votos++
         else
-            listaLugares[position].votos --
+            listaLugares[position].votos--
 
         // Actualizamos los lugares
         actualizarLugarVotos(listaLugares[position], holder)
@@ -196,7 +197,7 @@ class LugaresListAdapter(
      */
     private fun colorBotonFavorito(
         position: Int,
-        holder: LugarViewHolder
+        holder: LugarViewHolder,
     ) {
         if (listaLugares[position].favorito)
             holder.itemLugarFavorito.backgroundTintList =

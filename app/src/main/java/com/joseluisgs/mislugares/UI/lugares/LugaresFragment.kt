@@ -50,7 +50,7 @@ class LugaresFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_lugares, container, false)
     }
@@ -85,8 +85,10 @@ class LugaresFragment : Fragment() {
         lugaresSpinnerFiltro.adapter = adapter
         lugaresSpinnerFiltro.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>,
-                                        view: View, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View, position: Int, id: Long,
+            ) {
                 FILTRO = FiltroController.analizarFiltroSpinner(position)
                 // Listamos los lugares y cargamos el recycler
                 Log.i("Filtro", position.toString())
@@ -123,7 +125,7 @@ class LugaresFragment : Fragment() {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
+                target: RecyclerView.ViewHolder,
             ): Boolean {
                 return false
             }
@@ -157,7 +159,7 @@ class LugaresFragment : Fragment() {
                 dX: Float,
                 dY: Float,
                 actionState: Int,
-                isCurrentlyActive: Boolean
+                isCurrentlyActive: Boolean,
             ) {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     val itemView = viewHolder.itemView
@@ -213,7 +215,7 @@ class LugaresFragment : Fragment() {
      */
     private fun botonIzquierdo(canvas: Canvas, dX: Float, itemView: View, width: Float) {
         // Pintamos de azul y ponemos el icono
-        paintSweep.setColor(Color.BLUE)
+        paintSweep.color = Color.BLUE
         val background = RectF(
             itemView.left.toFloat(), itemView.top.toFloat(), dX,
             itemView.bottom.toFloat()
@@ -310,7 +312,7 @@ class LugaresFragment : Fragment() {
      * @param lugar Lugar
      */
     private fun eventoClicFila(lugar: Lugar) {
-            abrirElemento(lugar)
+        abrirElemento(lugar)
     }
 
     /**
@@ -376,8 +378,12 @@ class LugaresFragment : Fragment() {
         when (FILTRO) {
             Filtro.NADA -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.id.compareTo(l2.id) }
             // Nombre
-            Filtro.NOMBRE_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.nombre.toLowerCase().compareTo(l2.nombre.toLowerCase()) }
-            Filtro.NOMBRE_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l2.nombre.toLowerCase().compareTo(l1.nombre.toLowerCase()) }
+            Filtro.NOMBRE_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar ->
+                l1.nombre.toLowerCase().compareTo(l2.nombre.toLowerCase())
+            }
+            Filtro.NOMBRE_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar ->
+                l2.nombre.toLowerCase().compareTo(l1.nombre.toLowerCase())
+            }
 
             // Tipo
             Filtro.TIPO_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.tipo.compareTo(l2.tipo) }
@@ -458,7 +464,8 @@ class LugaresFragment : Fragment() {
         ordenarLugares()
         try {
             lugaresRecycler.adapter = lugaresAdapter
-        } catch (ex: Exception) {}
+        } catch (ex: Exception) {
+        }
     }
 }
 

@@ -67,7 +67,7 @@ class LugarDetalleFragment(
     private val MODO: Modo? = Modo.INSERTAR,
     private val ANTERIOR: LugaresFragment? = null,
     private val LUGAR_INDEX: Int? = null,
-    private var LUGAR_FOTOGRAFIA: Fotografia? = null
+    private var LUGAR_FOTOGRAFIA: Fotografia? = null,
 ) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     // Mis Variables
@@ -95,7 +95,7 @@ class LugarDetalleFragment(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_lugar_detalle, container, false)
     }
@@ -204,7 +204,8 @@ class LugarDetalleFragment(
                     detalleLugarImagen.setImageBitmap(FOTO)
                 } else {
                     Log.i("REST", "Error: fotografiasGetById isSuccessful")
-                    detalleLugarImagen.setImageBitmap(BitmapFactory.decodeResource(context?.resources, R.drawable.ic_mapa))
+                    detalleLugarImagen.setImageBitmap(BitmapFactory.decodeResource(context?.resources,
+                        R.drawable.ic_mapa))
                 }
             }
 
@@ -295,7 +296,7 @@ class LugarDetalleFragment(
                 if (response.isSuccessful) {
                     Log.i("REST", "lugarPost ok")
                     ANTERIOR?.insertarItemLista(LUGAR!!)
-                    Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show()
                     Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR)
                     volver()
                 } else {
@@ -340,7 +341,6 @@ class LugarDetalleFragment(
     }
 
 
-
     /**
      * Precondiciones para eliminar
      */
@@ -365,7 +365,7 @@ class LugarDetalleFragment(
                 if (response.isSuccessful) {
                     Log.i("REST", "lugarDelete ok")
                     ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
-                    Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show()
                     Log.i("Eliminar", "Lugar eliminado con éxito")
                     volver()
                 } else {
@@ -420,7 +420,7 @@ class LugarDetalleFragment(
     }
 
     /**
-    * Actualiza un lugar
+     * Actualiza un lugar
      */
     private fun actualizar() {
         // Actualizamos la fotografía por si hay cambios
@@ -455,7 +455,7 @@ class LugarDetalleFragment(
                     Log.i("REST", "lugarUpdate ok")
                     // Actualizamos el adapter
                     ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
-                    Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show()
                     Log.i("Actualizar", "Lugar actualizado con éxito con id" + LUGAR!!.id)
                     // Volvemos
                     volver()
@@ -502,7 +502,7 @@ class LugarDetalleFragment(
      * Vuelve
      */
     private fun volver() {
-        activity?.onBackPressed();
+        activity?.onBackPressed()
     }
 
     /**
@@ -527,7 +527,7 @@ class LugarDetalleFragment(
         val builder = AlertDialog.Builder(context)
         with(builder)
         {
-           setIcon(R.drawable.ic_lugar_dialog)
+            setIcon(R.drawable.ic_lugar_dialog)
             setTitle(titulo)
             setMessage(texto)
             setPositiveButton(R.string.aceptar) { _, _ ->
@@ -585,7 +585,7 @@ class LugarDetalleFragment(
                 compartirQRCode(code)
             }
             .setNegativeButton(R.string.cancelar, null)
-            // setNeutralButton("Maybe", neutralButtonClick)
+        // setNeutralButton("Maybe", neutralButtonClick)
         builder.show()
     }
 
@@ -754,7 +754,7 @@ class LugarDetalleFragment(
                             localizacion!!.latitude,
                             localizacion!!.longitude
                         )
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(posicion));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(posicion))
                         //}catch (ex: Exception) {
                         //   Snackbar.make(view!!, "GPS Inactivo o sin posición actual", Snackbar.LENGTH_LONG).show();
                         //}
@@ -769,7 +769,7 @@ class LugarDetalleFragment(
                 view!!,
                 "No se ha encontrado su posoción actual o el GPS está desactivado",
                 Snackbar.LENGTH_LONG
-            ).show();
+            ).show()
             Log.e("Exception: %s", e.message.toString())
         }
     }
@@ -862,7 +862,7 @@ class LugarDetalleFragment(
                     // Obtenemos el bitmap de su almacenamiento externo
                     // Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
                     if (Build.VERSION.SDK_INT < 28) {
-                        this.FOTO = MediaStore.Images.Media.getBitmap(context?.contentResolver, contentURI);
+                        this.FOTO = MediaStore.Images.Media.getBitmap(context?.contentResolver, contentURI)
                     } else {
                         val source: ImageDecoder.Source =
                             ImageDecoder.createSource(context?.contentResolver!!, contentURI)

@@ -2,10 +2,8 @@ package com.joseluisgs.mislugares.App
 
 import android.Manifest
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import com.joseluisgs.mislugares.Entidades.Preferencias.PreferenciasController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -22,10 +20,9 @@ class MyApp : Application() {
     var APP_PERMISOS = false
         private set
 
-        // private set
+    // private set
     private val BD_NOMBRE = "MIS_LUGARES_BD"
     private val BD_VERSION = 1L
-
 
 
     override fun onCreate() {
@@ -54,7 +51,7 @@ class MyApp : Application() {
     /**
      * Comprobamos los permisos de la aplicación
      */
-     fun initPermisos() {
+    fun initPermisos() {
         Log.i("Config", "Init Permisos")
         // Indicamos el permisos y el manejador de eventos de los mismos
         Dexter.withContext(this)
@@ -86,7 +83,7 @@ class MyApp : Application() {
 
                 override fun onPermissionRationaleShouldBeShown(
                     permissions: List<PermissionRequest?>?,
-                    token: PermissionToken
+                    token: PermissionToken,
                 ) {
                     token.continuePermissionRequest()
                 }

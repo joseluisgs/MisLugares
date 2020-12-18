@@ -21,7 +21,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionController
 import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
@@ -41,6 +40,7 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+
     // Obtenemos el usuario de la sesión
     private lateinit var USER: Usuario
 
@@ -261,7 +261,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         try {
             if (supportFragmentManager.backStackEntryCount > 0)
-                    supportFragmentManager.popBackStackImmediate()
+                supportFragmentManager.popBackStackImmediate()
             else
                 confirmarSalir()
         } catch (ex: Exception) {

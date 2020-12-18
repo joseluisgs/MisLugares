@@ -38,7 +38,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_mapa, container, false)
     }
@@ -106,7 +106,8 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {
                 if (response.isSuccessful) {
                     Log.i("REST", "LugaresGetAll ok")
-                    val listaLugares = (LugarMapper.fromDTO(response.body() as MutableList<LugarDTO>)) as MutableList<Lugar>
+                    val listaLugares =
+                        (LugarMapper.fromDTO(response.body() as MutableList<LugarDTO>)) as MutableList<Lugar>
                     procesarLugares(listaLugares)
                 } else {
                     Log.i("REST", "Error: LugaresGetAll isSuccessful")

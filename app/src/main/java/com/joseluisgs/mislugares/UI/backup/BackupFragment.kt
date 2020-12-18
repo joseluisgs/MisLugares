@@ -14,13 +14,13 @@ import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
 import kotlinx.android.synthetic.main.fragment_backup.*
 
-class BackupFragment: Fragment() {
+class BackupFragment : Fragment() {
     var RES = false
     private lateinit var USUARIO: Usuario
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_backup, container, false)
@@ -95,6 +95,7 @@ class BackupFragment: Fragment() {
         override fun onPreExecute() {
             backupProgressBar.visibility = View.VISIBLE
         }
+
         // Tarea
         override fun doInBackground(vararg args: Void?): Void? {
             try {
@@ -104,10 +105,11 @@ class BackupFragment: Fragment() {
             }
             return null
         }
+
         //Post-Tarea
         override fun onPostExecute(args: Void?) {
             backupProgressBar.visibility = View.GONE
-            if(RES) {
+            if (RES) {
                 AlertDialog.Builder(context)
                     .setIcon(R.drawable.ic_exportar)
                     .setTitle("Exportar datos")
@@ -137,6 +139,7 @@ class BackupFragment: Fragment() {
         override fun onPreExecute() {
             backupProgressBar.visibility = View.VISIBLE
         }
+
         // Tarea
         override fun doInBackground(vararg args: Void?): Void? {
             try {
@@ -146,10 +149,11 @@ class BackupFragment: Fragment() {
             }
             return null
         }
+
         //Post-Tarea
         override fun onPostExecute(args: Void?) {
             backupProgressBar.visibility = View.GONE
-            if(RES) {
+            if (RES) {
                 AlertDialog.Builder(context)
                     .setIcon(R.drawable.ic_desarchivar)
                     .setTitle("Importar datos")

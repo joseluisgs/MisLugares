@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
-import android.os.StrictMode
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.net.toFile
@@ -25,7 +24,7 @@ object Fotos {
      */
     fun crearNombreFoto(prefijo: String, extension: String): String {
         // Si no sabemos el nombre
-        return prefijo+"-" + UUID.randomUUID().toString() + extension
+        return prefijo + "-" + UUID.randomUUID().toString() + extension
     }
 
     /**
@@ -146,7 +145,7 @@ object Fotos {
                     id
                 )
                 // Borramos
-                context.contentResolver.delete(contentUri, null, null);
+                context.contentResolver.delete(contentUri, null, null)
             }
         }
     }
@@ -154,7 +153,7 @@ object Fotos {
     fun salvarFotoTemp(context: Context): File? {
         // Almacenamos en nuestro directorio de almacenamiento externo asignado en Pictures
         try {
-            val f = File.createTempFile("img_", ".jpg",context.cacheDir)
+            val f = File.createTempFile("img_", ".jpg", context.cacheDir)
             f.createNewFile()
             return f
         } catch (e1: Exception) {

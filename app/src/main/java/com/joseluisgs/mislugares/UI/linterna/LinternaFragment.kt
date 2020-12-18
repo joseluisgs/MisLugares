@@ -16,14 +16,14 @@ import androidx.fragment.app.Fragment
 import com.joseluisgs.mislugares.R
 import kotlinx.android.synthetic.main.fragment_linterna.*
 
-class LinternaFragment: Fragment() {
+class LinternaFragment : Fragment() {
     private lateinit var cameraManager: CameraManager
     private lateinit var cameraId: String
     private var estado = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_linterna, container, false)
@@ -58,7 +58,7 @@ class LinternaFragment: Fragment() {
             .create()
         alert.setTitle("Oops!")
         alert.setMessage("No hay Flash en este dispositivo...")
-        alert.setButton(DialogInterface.BUTTON_POSITIVE, "OK") { _, _ -> Log.i("Linterna", "Sin linterna")}
+        alert.setButton(DialogInterface.BUTTON_POSITIVE, "OK") { _, _ -> Log.i("Linterna", "Sin linterna") }
         alert.show()
     }
 
@@ -76,9 +76,8 @@ class LinternaFragment: Fragment() {
         } catch (e: CameraAccessException) {
             e.printStackTrace()
         }
-        if(status)
+        if (status)
             linternaImagen.setImageResource(R.drawable.ic_linterna_on)
-
         else
             linternaImagen.setImageResource(R.drawable.ic_linterna_off)
     }

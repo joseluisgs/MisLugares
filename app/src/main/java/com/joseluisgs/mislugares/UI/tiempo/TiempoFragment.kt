@@ -22,14 +22,14 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TiempoFragment: Fragment() {
+class TiempoFragment : Fragment() {
     private lateinit var mPosicion: FusedLocationProviderClient
     private lateinit var localizacion: Location
     private lateinit var posicion: LatLng
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tiempo, container, false)
@@ -40,8 +40,8 @@ class TiempoFragment: Fragment() {
         mPosicion = LocationServices.getFusedLocationProviderClient(activity!!)
         // Evento que obtiene la posición
         mPosicion.lastLocation
-            .addOnSuccessListener { location : Location? ->
-               this.localizacion = location!!
+            .addOnSuccessListener { location: Location? ->
+                this.localizacion = location!!
                 Log.i("Tiempo", this.localizacion.toString())
                 obtenerInformacionTiempo()
             }
@@ -52,8 +52,11 @@ class TiempoFragment: Fragment() {
      */
     private fun obtenerInformacionTiempo() {
         val clientREST = ElTiempoAPI.service
-        val call = clientREST.getCurrentWeatherData(this.localizacion.latitude.toString(), this.localizacion.longitude.toString(),
-            ElTiempoAPI.API_KEY, ElTiempoAPI.UNITS, ElTiempoAPI.LANG)
+        val call = clientREST.getCurrentWeatherData(this.localizacion.latitude.toString(),
+            this.localizacion.longitude.toString(),
+            ElTiempoAPI.API_KEY,
+            ElTiempoAPI.UNITS,
+            ElTiempoAPI.LANG)
 
         call.enqueue(object : Callback<WeatherResponse> {
             override fun onResponse(call: Call<WeatherResponse>, response: Response<WeatherResponse>) {
@@ -64,11 +67,11 @@ class TiempoFragment: Fragment() {
                     tiempoPais.text = weatherResponse.sys?.country
                     var sdf = SimpleDateFormat("HH:mm   dd/MM/yyyy")
                     var date = Date((weatherResponse.dt.toLong() * 1000))
-                    tiempoHora.text =  sdf.format(date)
+                    tiempoHora.text = sdf.format(date)
                     tiempoTemperatura.text = weatherResponse.main?.temp.toString() + "º"
                     Picasso.get()
                         // .load(R.drawable.user_avatar)
-                        .load("http://openweathermap.org/img/wn/"+weatherResponse.weather[0].icon+"@2x.png")
+                        .load("http://openweathermap.org/img/wn/" + weatherResponse.weather[0].icon + "@2x.png")
                         .resize(200, 200)
                         .into(tiempoImagen)
                     tiempoDescripcion.text = weatherResponse.weather[0].description.toString().capitalize()

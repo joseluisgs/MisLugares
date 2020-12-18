@@ -20,12 +20,10 @@ open class Fotografia(
     @Required
     var time: String = "",
     @Required
-    var usuarioID: String = ""
+    var usuarioID: String = "",
 ) : RealmObject(), Serializable {
     constructor(imagen: String, uri: String, hash: String, time: String, usuarioID: String) :
             this((UUID.randomUUID().toString()), imagen, uri, hash, time, usuarioID)
-
-
 
 
 }
