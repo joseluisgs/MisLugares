@@ -73,9 +73,19 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 
 ### Uso del servidor propio para API REST
 
-Para la versión 2.X.X se hace uso del servidor propio [API REST Fake](https://github.com/joseluisgs/APIRESTFake), con el objetivo de no complicar el asunto aprendiendo a hacer un servidor propio REST. Para ello se ha creado en la carpeta apirest todo lo necesario para correr ese servidor, usando una base de datos JSON. De esta manera no te tienes que preocupar en como se desarrolla este tipo de servicios si no solo en consumirlo y usarlo en tu app móvil.
+Para la versión 2.X.X se hace uso del servidor propio [API REST Fake](https://github.com/joseluisgs/APIRESTFake), con
+el objetivo de no complicar el asunto aprendiendo a hacer un servidor propio REST. Para ello se ha creado en la carpeta
+API REST todo lo necesario para correr ese servidor, usando una base de datos JSON. De esta manera no te tienes que preocupar
+en como se desarrolla este tipo de servicios si no solo en consumirlo y usarlo en tu app móvil.
 
-Para ello es fundamental tener instalado en tu sistema operativo [NodeJS](https://nodejs.org/es/). La base de datos está en el directorio bd y se llama db.json, y debe tener una estructura de array de objetos por cada recurso a consumir. Puedes leer más al respecto en [API REST Fake](https://github.com/joseluisgs/APIRESTFake) o consultar los ejemplos.
+Para ello es fundamental tener instalado en tu sistema operativo [NodeJS](https://nodejs.org/es/).
+La base de datos está en el directorio bd y se llama db.json, y debe tener una estructura de array de objetos por cada recurso a consumir.
+Puedes leer más al respecto en [API REST Fake](https://github.com/joseluisgs/APIRESTFake) o consultar los ejemplos.
+
+Esta pequeña aplicación que simula un servidor de API REST está probado en _Linux_ y _OS X_. Si la vas a usar en _Windows_, por favor
+asegúrate que los scripts de NPM son compatibles y las rutas de tu sistema.
+
+#### Configuración y puesta en marcha
 
 Para arrancar el servidor debes hacer lo siguiente:
 
@@ -91,7 +101,8 @@ Si todo ha ido bien obtendrás la siguiente salida:
 ⚑ Fake API REST por joseluisgs ✓ -> https://github.com/joseluisgs/APIRESTFake
 ```
 
-Te recomiendo el uso de [Postman](https://www.postman.com/) para testear y comprender como hacer las llamadas que luego realizarás en [Retrofit](https://square.github.io/retrofit/).
+Te recomiendo el uso de [Postman](https://www.postman.com/) para testear y comprender como hacer las llamadas que luego
+realizarás en [Retrofit](https://square.github.io/retrofit/).
 
 ### Capturas
 
