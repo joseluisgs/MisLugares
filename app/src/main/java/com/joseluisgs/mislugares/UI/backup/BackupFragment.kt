@@ -4,21 +4,15 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Backup.BackupController
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.UI.lugares.LugaresFragment
-import com.joseluisgs.mislugares.UI.lugares.LugaresListAdapter
 import kotlinx.android.synthetic.main.fragment_backup.*
-import kotlinx.android.synthetic.main.fragment_lugares.*
 
 class BackupFragment: Fragment() {
     var RES = false
