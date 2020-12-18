@@ -8,9 +8,6 @@ import android.os.Looper
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import com.joseluisgs.mislugares.Actividades.LoginActivity
-import com.joseluisgs.mislugares.Actividades.MainActivity
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarController
 import kotlinx.android.synthetic.main.activity_splash_screen.*
 
 /**

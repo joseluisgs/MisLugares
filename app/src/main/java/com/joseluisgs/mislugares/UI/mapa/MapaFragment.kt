@@ -16,7 +16,6 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaController
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
@@ -214,10 +213,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         tipo.text = lugar.tipo
         val fecha = vista.findViewById(R.id.mapaLugarTextFecha) as TextView
         fecha.text = lugar.fecha
-
-        // Buscamos la imagen
         val imagen = vista.findViewById(R.id.mapaLugarImagen) as ImageView
-        imagen.setImageBitmap(ImageBase64.toBitmap(FotografiaController.selectById(lugar.imagenID)!!.imagen))
 
         val clientREST = MisLugaresAPI.service
         val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(lugar.imagenID)
