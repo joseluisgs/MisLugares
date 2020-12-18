@@ -22,14 +22,19 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Sesiones.SesionController
+import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
+import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
 import com.joseluisgs.mislugares.Utilidades.Fotos
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.Utils
 import com.squareup.picasso.Picasso
 import io.realm.Realm
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 
 
@@ -140,15 +145,29 @@ class MainActivity : AppCompatActivity() {
      */
     private fun cerrarSesion() {
         // Borramos la sesión asociada
-        try {
-            SesionController.deleteByID(USER.id)
-            // Y vamos a login
-            val login = Intent(this, LoginActivity::class.java)
-            startActivity(login)
-            finish()
-        } catch (ex: Exception) {
-            Log.i("Salir", "Error al salir: " + ex.localizedMessage)
-        }
+        val clientREST = MisLugaresAPI.service
+        val call: Call<SesionDTO> = clientREST.sesionDelete(USER.id)
+        call.enqueue((object : Callback<SesionDTO> {
+
+            override fun onResponse(call: Call<SesionDTO>, response: Response<SesionDTO>) {
+                if (response.isSuccessful) {
+                    Log.i("REST", "sesionDelete ok")
+                    // Y vamos a login
+                    val login = Intent(applicationContext, LoginActivity::class.java)
+                    startActivity(login)
+                    finish()
+                } else {
+                    Log.i("REST", "Error: SesionDelete isSuccessful")
+                }
+            }
+
+            override fun onFailure(call: Call<SesionDTO>, t: Throwable) {
+                Toast.makeText(applicationContext,
+                    "Error al acceder al servicio: " + t.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }))
     }
 
     /**
