@@ -73,4 +73,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
     // Auth https://firebase.google.com/docs/auth
     implementation 'com.google.firebase:firebase-auth-ktx'
+    // Auth con Google https://firebase.google.com/docs/auth/android/google-signin
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
 }
