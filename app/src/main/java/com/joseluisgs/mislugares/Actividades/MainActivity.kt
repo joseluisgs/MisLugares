@@ -104,6 +104,15 @@ class MainActivity : AppCompatActivity() {
         })
 
         // Suscribirse por temas
+        FirebaseMessaging.getInstance().subscribeToTopic("lugares")
+
+        // Recuperar información de la notificación
+        val url = intent.getStringExtra("url")
+        url.let {
+            Toast.makeText(this, "Ha llegado una notificación push: $it",
+                Toast.LENGTH_LONG)
+                .show()
+        }
     }
 
     /**
