@@ -203,14 +203,13 @@ class LoginActivity : AppCompatActivity() {
      * Comprueba si hay una sesión activa
      */
     private fun procesarSesiones() {
-        try {
-            // Comprobamos si hay una sesion Local, viendo el usuario almacenado
-            usuario = SesionController.getLocal(this)!!
-            // Si tenemos sesion activa comprobamos lso datos respecto a la remota
-            comprobarSesionRemota(usuario)
-        } catch (ex: Exception) {
-            Log.i("Login", "NO hay sesion activa o no existe sesiones")
-            Log.i("Login", "Error: " + ex.localizedMessage)
+        // Vemos si hay sesión
+        val currentUser = Auth.currentUser
+        if(currentUser!=null) {
+            Log.i("Login", "SÍ hay sesión activa")
+            Toast.makeText(baseContext, "Auth: Sesión activa", Toast.LENGTH_SHORT).show()
+        } else {
+            Log.i("Login", "NO hay sesión activa")
         }
     }
 
