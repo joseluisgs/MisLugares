@@ -46,10 +46,9 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 9001
 
-    private val MAX_TIME_SEG = 600 // Tiempo en segundos
-    private lateinit var usuario: Usuario
-    private lateinit var sesionRemota: Sesion
-    private var existeSesion = false
+    companion object {
+        private const val TAG = "Login"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,6 +104,12 @@ class LoginActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
+    /**
+     * Activity Sresult de Procesar Login Google
+     * @param requestCode Int
+     * @param resultCode Int
+     * @param data Intent?
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -114,17 +119,21 @@ class LoginActivity : AppCompatActivity() {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
-                Log.d("Login", "firebaseAuthWithGoogle:" + account.id)
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
                 firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
-                Log.w("Login", "Google sign in failed", e)
+                Log.w(TAG, "Google sign in failed", e)
                 Toast.makeText(baseContext, "Error: " + e.localizedMessage,
                     Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    /**
+     * Login With Google
+     * @param idToken String
+     */
     private fun firebaseAuthWithGoogle(idToken: String) {
         loginProgressBar.visibility = View.VISIBLE;
         val credential = GoogleAuthProvider.getCredential(idToken, null)
@@ -132,13 +141,13 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.d("Login", "signInWithCredential:success")
+                    Log.d(TAG, "signInWithCredential:success")
                     val user = Auth.currentUser
-                    Log.i("Login", user.toString())
+                    Log.i(TAG, user.toString())
                     Toast.makeText(baseContext, "Auth: Usuario autenticado en Google", Toast.LENGTH_SHORT).show()
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w("Login", "signInWithCredential:failure", task.exception)
+                    Log.w(TAG, "signInWithCredential:failure", task.exception)
                     Toast.makeText(baseContext, "Error: " + task.exception?.localizedMessage,
                         Toast.LENGTH_SHORT).show()
                 }
@@ -156,15 +165,15 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.i("Login", "createUserWithEmail:success")
+                    Log.i(TAG, "createUserWithEmail:success")
                     val user = Auth.currentUser
                     // Actualizo su información de perfil
                     actualizarPerfilNuevoUsuario(user)
-                    Log.i("Login", user.toString())
+                    Log.i(TAG, user.toString())
                     Toast.makeText(baseContext, "Auth: Usuario creado con éxito", Toast.LENGTH_SHORT).show()
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w("Login", "createUserWithEmail:failure", task.exception)
+                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
                     Toast.makeText(baseContext, "Error: " + task.exception?.localizedMessage,
                         Toast.LENGTH_SHORT).show()
                     // updateUI(null)
@@ -173,6 +182,10 @@ class LoginActivity : AppCompatActivity() {
         loginProgressBar.visibility = View.INVISIBLE
     }
 
+    /**
+     * Actrualiza la información del usuario
+     * @param user FirebaseUser?
+     */
     private fun actualizarPerfilNuevoUsuario(user: FirebaseUser?) {
         // Actualiza la información de un nuevo usuario
         // https://firebase.google.com/docs/auth/android/manage-users
@@ -184,7 +197,7 @@ class LoginActivity : AppCompatActivity() {
         user!!.updateProfile(profileUpdates)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.i("Login", "Perfil Actualizado.")
+                    Log.i(TAG, "Perfil Actualizado.")
                 }
             }
     }
@@ -206,95 +219,12 @@ class LoginActivity : AppCompatActivity() {
         // Vemos si hay sesión
         val currentUser = Auth.currentUser
         if(currentUser!=null) {
-            Log.i("Login", "SÍ hay sesión activa")
+            Log.i(TAG, "SÍ hay sesión activa")
             Toast.makeText(baseContext, "Auth: Sesión activa", Toast.LENGTH_SHORT).show()
         } else {
-            Log.i("Login", "NO hay sesión activa")
+            Log.i(TAG, "NO hay sesión activa")
         }
     }
-
-    /**
-     * Comprueba la sesión remota
-     * @param usuario Usuario
-     */
-    private fun comprobarSesionRemota(usuario: Usuario) {
-        val clientREST = MisLugaresAPI.service
-        val call: Call<SesionDTO> = clientREST.sesionGetById(usuario.id)
-        call.enqueue((object : Callback<SesionDTO> {
-
-            override fun onResponse(call: Call<SesionDTO>, response: Response<SesionDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "SesionGetByID ok")
-                    var remoteSesion = SesionMapper.fromDTO(response.body() as SesionDTO)
-                    sesionRemota = Sesion()
-                    sesionRemota.fromSesion(remoteSesion)
-                    // Si la obtiene comparamos
-                    compararSesiones()
-                } else {
-                    // Si falla crea una sesión nueva
-                    Log.i("REST", "Error: SesionByID isSuccessful")
-                }
-            }
-
-            override fun onFailure(call: Call<SesionDTO>, t: Throwable) {
-                Toast.makeText(applicationContext,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }))
-    }
-
-    /**
-     * Compara las sesiones
-     */
-    private fun compararSesiones() {
-        val now = Instant.now()
-        Log.i("Login", "now: ${now.atZone(ZoneId.systemDefault())}")
-        val time = Instant.parse(sesionRemota.time)
-        Log.i("Login", "time: ${time.atZone(ZoneId.systemDefault())}")
-        val seg = ChronoUnit.SECONDS.between(time, now)
-        if (seg <= MAX_TIME_SEG) {
-            Log.i("Login", "Sesion activa, entramos")
-            (this.application as MyApp).SESION_USUARIO = usuario
-            // Actualizamos la sesión su fecha
-            actualizarSesion()
-            abrirPrincipal()
-        } else {
-            existeSesion = true // Existe y ha caducado, para borrarla
-            Log.i("Login", "Sesión ha caducado")
-        }
-    }
-
-    /**
-     * Actualiza la sesión remota
-     */
-    private fun actualizarSesion() {
-        // Cogemos y actualizamos el tiempo
-        sesionRemota.time = Instant.now().toString()
-        val sesionDTO = SesionMapper.toDTO(sesionRemota)
-
-        val clientREST = MisLugaresAPI.service
-        val call: Call<SesionDTO> = clientREST.sesionUpdate(sesionRemota.usuarioID, sesionDTO)
-        call.enqueue((object : Callback<SesionDTO> {
-
-            override fun onResponse(call: Call<SesionDTO>, response: Response<SesionDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "SesionUpdate ok")
-                } else {
-                    Log.i("REST", "Error: SesionUpdate isSuccessful")
-                }
-            }
-
-            override fun onFailure(call: Call<SesionDTO>, t: Throwable) {
-                Toast.makeText(applicationContext,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }))
-    }
-
 
     /**
      * Inicia una sesion
@@ -307,99 +237,19 @@ class LoginActivity : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.i("Login", "signInWithEmail:success")
+                        Log.i(TAG, "signInWithEmail:success")
                         val user = Auth.currentUser
-                        Log.i("Login", user.toString())
+                        Log.i(TAG, user.toString())
                         Toast.makeText(baseContext, "Auth: Usuario autentificado con éxito", Toast.LENGTH_SHORT).show()
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w("Login", "signInWithEmail:failure", task.exception)
+                        Log.w(TAG, "signInWithEmail:failure", task.exception)
                         Toast.makeText(baseContext, "Error: " + task.exception?.localizedMessage,
                             Toast.LENGTH_SHORT).show()
                     }
                 }
         }
         loginProgressBar.visibility = View.INVISIBLE
-    }
-
-
-    /**
-     * Almacenamos la sesion y pasamos
-     * @param usuario Usuario
-     */
-    private fun almacenarSesion() {
-        // Creamos la sesion
-        if (existeSesion) {
-            eliminarSesionRemota()
-        }
-        // Creamos la sesion
-        // Esto no se haría aquí si no lo haría el servidor pasándole el usuario y te devolvería el token
-        // Pero nuesta API REST es simulada
-        val sesion = Sesion(
-            usuarioID = usuario.id,
-            time = Instant.now().toString(),
-            token = UUID.randomUUID().toString()
-        )
-        // Creamos la sesión remota
-        val clientREST = MisLugaresAPI.service
-        val call: Call<SesionDTO> = clientREST.sesionPost(SesionMapper.toDTO(sesion))
-        call.enqueue((object : Callback<SesionDTO> {
-
-            override fun onResponse(call: Call<SesionDTO>, response: Response<SesionDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "sesionPost ok")
-                    (application as MyApp).SESION_USUARIO = usuario
-                    abrirPrincipal()
-                } else {
-                    Log.i("REST", "Error sesionPost isSeccesful")
-                }
-            }
-
-            override fun onFailure(call: Call<SesionDTO>, t: Throwable) {
-                Toast.makeText(applicationContext,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }))
-    }
-
-    /**
-     * Elimina la sesión remota
-     */
-    private fun eliminarSesionRemota() {
-        val clientREST = MisLugaresAPI.service
-        val call: Call<SesionDTO> = clientREST.sesionDelete(usuario.id)
-        call.enqueue((object : Callback<SesionDTO> {
-
-            override fun onResponse(call: Call<SesionDTO>, response: Response<SesionDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "sesionDelete ok")
-                    existeSesion = false
-                } else {
-                    Log.i("REST", "Error: SesionDelete isSuccessful")
-                }
-            }
-
-            override fun onFailure(call: Call<SesionDTO>, t: Throwable) {
-                Toast.makeText(applicationContext,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }))
-    }
-
-    /**
-     * Mensaje genérico de error
-     */
-    fun mensajeError() {
-        Log.i("Login", "usuario o pas incorrectos")
-        Snackbar.make(
-            findViewById(android.R.id.content),
-            "Usuario o Contraseña incorrectos",
-            Snackbar.LENGTH_LONG
-        ).show()
     }
 
     /**
