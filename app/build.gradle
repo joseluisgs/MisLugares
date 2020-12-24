@@ -75,4 +75,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     // Auth con Google https://firebase.google.com/docs/auth/android/google-signin
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    // Messaging
+    implementation 'com.google.firebase:firebase-messaging-ktx'
 }
