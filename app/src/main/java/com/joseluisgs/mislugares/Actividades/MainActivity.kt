@@ -118,9 +118,6 @@ class MainActivity : AppCompatActivity() {
             .transform(CirculoTransformacion())
             .resize(130, 130)
             .into(navUserImage)
-        // Elimino la imagen temporal
-        // ImageBase64.removeTempFile(avatar)
-        // Evento de salir
         navUserImage.setOnClickListener { salirSesion() }
     }
 
@@ -145,6 +142,8 @@ class MainActivity : AppCompatActivity() {
         // Cerramos en Firebase
         Auth.signOut()
         Log.i(TAG, "sesionDelete ok")
+        Toast.makeText(applicationContext, "Sesión cerrada", Toast.LENGTH_SHORT)
+            .show()
         // Y vamos a login
         val login = Intent(applicationContext, LoginActivity::class.java)
         startActivity(login)
