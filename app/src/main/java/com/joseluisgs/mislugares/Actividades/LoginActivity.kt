@@ -60,8 +60,8 @@ class LoginActivity : AppCompatActivity() {
 
         // Datos para no meterlos
         loginProgressBar.visibility = View.INVISIBLE;
-        loginInputLogin.setText("joseluisgs")
-        loginInputPass.setText("1234")
+        loginInputLogin.setText("joseluisgs@mislugares.com")
+        loginInputPass.setText("joseluis123")
         loginBoton.setOnClickListener { iniciarSesion() }
         loginTexCreateUser.setOnClickListener { crearUsuario() }
 
@@ -102,7 +102,7 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("Login", "createUserWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Error: " + task.exception,
+                    Toast.makeText(baseContext, "Error: " + task.exception?.localizedMessage,
                         Toast.LENGTH_SHORT).show()
                     // updateUI(null)
                 }
@@ -239,37 +239,25 @@ class LoginActivity : AppCompatActivity() {
      * @return Boolean
      */
     private fun iniciarSesion() {
+        loginProgressBar.visibility = View.VISIBLE
         if (comprobarFormulario()) {
-            val pass = Cifrador.toHash(loginInputPass.text.toString()).toString()
-            val clientREST = MisLugaresAPI.service
-            val call: Call<UsuarioDTO> = clientREST.usuarioGetById(usuario.id)
-            call.enqueue((object : Callback<UsuarioDTO> {
-
-                override fun onResponse(call: Call<UsuarioDTO>, response: Response<UsuarioDTO>) {
-                    if (response.isSuccessful) {
-                        Log.i("REST", "UsuarioGetByID ok")
-                        val usuario = UsuarioMapper.fromDTO(response.body() as UsuarioDTO)
-                        // Si la obtiene comparamos
-                        if (usuario.password == pass) {
-                            almacenarSesion()
-                        } else {
-                            mensajeError()
-                            return
-                        }
+            Auth.signInWithEmailAndPassword(loginInputLogin.text.toString(), loginInputPass.text.toString())
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.i("Login", "signInWithEmail:success")
+                        val user = Auth.currentUser
+                        Log.i("Login", user.toString())
+                        Toast.makeText(baseContext, "Auth: Usuario autentificado con éxito", Toast.LENGTH_SHORT).show()
                     } else {
-                        // Si falla crea una sesión nueva
-                        Log.i("REST", "Error: UsuarioByID isSuccessful")
+                        // If sign in fails, display a message to the user.
+                        Log.w("Login", "signInWithEmail:failure", task.exception)
+                        Toast.makeText(baseContext, "Error: " + task.exception?.localizedMessage,
+                            Toast.LENGTH_SHORT).show()
                     }
                 }
-
-                override fun onFailure(call: Call<UsuarioDTO>, t: Throwable) {
-                    Toast.makeText(applicationContext,
-                        "Error al acceder al servicio: " + t.localizedMessage,
-                        Toast.LENGTH_LONG)
-                        .show()
-                }
-            }))
         }
+        loginProgressBar.visibility = View.INVISIBLE
     }
 
 
