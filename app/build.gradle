@@ -71,4 +71,6 @@ dependencies {
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    // Auth https://firebase.google.com/docs/auth
+    implementation 'com.google.firebase:firebase-auth-ktx'
 }

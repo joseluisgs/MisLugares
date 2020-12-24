@@ -24,7 +24,7 @@ class SplashActivityActivity : AppCompatActivity() {
         val analytics = FirebaseAnalytics.getInstance(this)
         val bundle = Bundle()
         bundle.putString("message", "Iniciando Mis Lugares")
-        analytics.logEvent("SplashScreen", bundle)
+        analytics.logEvent("InitScreen", bundle)
 
         // Pantalla completa
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
