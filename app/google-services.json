@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "247550611311",
+    "project_id": "leafy-winter-261816",
+    "storage_bucket": "leafy-winter-261816.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:247550611311:android:1f89c53bb6dd566795e29a",
+        "android_client_info": {
+          "package_name": "com.joseluisgs.mislugares"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "247550611311-buasa87t185g72q767nb4cdi9pugepk9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joseluisgs.mislugares",
+            "certificate_hash": "dd4d4941caedd2fac084af62b031fa3d31566e77"
+          }
+        },
+        {
+          "client_id": "247550611311-qlk1mb20vkcchrephljfa6ao29lm3abp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoDOYA1Nkm-hSnoJFP_fxwIs48dpwbXrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "247550611311-qlk1mb20vkcchrephljfa6ao29lm3abp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
