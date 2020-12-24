@@ -18,11 +18,13 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
@@ -81,7 +83,27 @@ class MainActivity : AppCompatActivity() {
         // Elementos propios de la interfaz y funcionalidad
         initPermisos()
         comprobarConexion()
+        initNotificaciones()
         initIU()
+    }
+
+    /**
+     * Inicia el sistema de notificaciones
+     */
+    private fun initNotificaciones() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+            // Log and toast
+            Log.i(TAG, "Mi Token: " + token)
+        })
+
+        // Suscribirse por temas
     }
 
     /**
