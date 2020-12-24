@@ -7,6 +7,7 @@ import android.os.Looper
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.joseluisgs.mislugares.Actividades.LoginActivity
 import kotlinx.android.synthetic.main.activity_splash_screen.*
 
@@ -18,6 +19,13 @@ class SplashActivityActivity : AppCompatActivity() {
     private val TIME: Long = 2200
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Nos inscribimos como evento en Google Analytics
+        val analytics = FirebaseAnalytics.getInstance(this)
+        val bundle = Bundle()
+        bundle.putString("message", "Iniciando Mis Lugares")
+        analytics.logEvent("SplashScreen", bundle)
+
         // Pantalla completa
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
