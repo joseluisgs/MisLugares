@@ -58,7 +58,7 @@ class LugaresFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Iniciamos la interfaz
-        this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
+        // this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
         initUI()
     }
 
@@ -418,7 +418,7 @@ class LugaresFragment : Fragment() {
         Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
         val clientREST = MisLugaresAPI.service
         // Ontenemos los lugares filtrados por el usuario, para no mostrar otros.
-        val call: Call<List<LugarDTO>> = clientREST.lugarGetAllByUserID(USUARIO.id)
+        val call: Call<List<LugarDTO>> = clientREST.lugarGetAllByUserID("USUARIO.id")
         call.enqueue((object : Callback<List<LugarDTO>> {
 
             override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {
