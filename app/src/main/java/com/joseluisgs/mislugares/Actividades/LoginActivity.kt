@@ -145,6 +145,7 @@ class LoginActivity : AppCompatActivity() {
                     val user = Auth.currentUser
                     Log.i(TAG, user.toString())
                     Toast.makeText(baseContext, "Auth: Usuario autenticado en Google", Toast.LENGTH_SHORT).show()
+                    abrirPrincipal()
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -221,6 +222,7 @@ class LoginActivity : AppCompatActivity() {
         if(currentUser!=null) {
             Log.i(TAG, "SÍ hay sesión activa")
             Toast.makeText(baseContext, "Auth: Sesión activa", Toast.LENGTH_SHORT).show()
+            abrirPrincipal()
         } else {
             Log.i(TAG, "NO hay sesión activa")
         }
@@ -241,6 +243,7 @@ class LoginActivity : AppCompatActivity() {
                         val user = Auth.currentUser
                         Log.i(TAG, user.toString())
                         Toast.makeText(baseContext, "Auth: Usuario autentificado con éxito", Toast.LENGTH_SHORT).show()
+                        abrirPrincipal()
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
