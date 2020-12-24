@@ -2,12 +2,19 @@ package com.joseluisgs.mislugares.Actividades
 
 import Utilidades.Cifrador
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.ktx.Firebase
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Sesiones.Sesion
 import com.joseluisgs.mislugares.Entidades.Sesiones.SesionController
@@ -30,6 +37,8 @@ import java.util.*
 
 
 class LoginActivity : AppCompatActivity() {
+    private lateinit var Auth: FirebaseAuth
+
     private val MAX_TIME_SEG = 600 // Tiempo en segundos
     private lateinit var usuario: Usuario
     private lateinit var sesionRemota: Sesion
@@ -40,14 +49,21 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         setSupportActionBar(findViewById(R.id.toolbar))
 
+        // Creamos o declaramos Firebase Auth
+        Auth = Firebase.auth
+
         initUI()
     }
 
+
     private fun initUI() {
+
         // Datos para no meterlos
+        loginProgressBar.visibility = View.INVISIBLE;
         loginInputLogin.setText("joseluisgs")
         loginInputPass.setText("1234")
         loginBoton.setOnClickListener { iniciarSesion() }
+        loginTexCreateUser.setOnClickListener { crearUsuario() }
 
         // primero comprobamos que tengamos conexión
         if (Utils.isNetworkAvailable(applicationContext)) {
@@ -66,6 +82,50 @@ class LoginActivity : AppCompatActivity() {
             snackbar.show()
         }
     }
+
+    /**
+     * Crea un usuario en Firebase con nombre de usuario, email e imagen
+     */
+    private fun crearUsuario() {
+        // Llamamos a la función para crear usuario
+        loginProgressBar.visibility = View.VISIBLE;
+        Auth.createUserWithEmailAndPassword("joseluisgs@mislugares.com", "joseluis123")
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.i("Login", "createUserWithEmail:success")
+                    val user = Auth.currentUser
+                    // Actualizo su información de perfil
+                    actualizarPerfilNuevoUsuario(user)
+                    Log.i("Login", user.toString())
+                    Toast.makeText(baseContext, "Auth: Usuario creado con éxito", Toast.LENGTH_SHORT).show()
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("Login", "createUserWithEmail:failure", task.exception)
+                    Toast.makeText(baseContext, "Error: " + task.exception,
+                        Toast.LENGTH_SHORT).show()
+                    // updateUI(null)
+                }
+            }
+        loginProgressBar.visibility = View.INVISIBLE
+    }
+
+    private fun actualizarPerfilNuevoUsuario(user: FirebaseUser?) {
+        // Actualiza la información de un nuevo usuario
+        // https://firebase.google.com/docs/auth/android/manage-users
+        val profileUpdates = userProfileChangeRequest {
+            displayName = "José Luis González"
+            photoUri = Uri.parse("https://pbs.twimg.com/profile_images/1164967571579396096/YXMN71A1_400x400.jpg")
+        }
+
+        user!!.updateProfile(profileUpdates)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.i("Login", "Perfil Actualizado.")
+                }
+            }
+    }
+
 
     /**
      * Abre la sesión principal
