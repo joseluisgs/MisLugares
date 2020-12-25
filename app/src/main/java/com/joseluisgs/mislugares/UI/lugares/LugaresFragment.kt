@@ -441,7 +441,7 @@ class LugaresFragment : Fragment() {
         // Podemos hacerlo de dos maneras, manual o suscribirnos en tiempo real
         // https://firebase.google.com/docs/firestore/query-data/get-data
         // https://firebase.google.com/docs/firestore/query-data/listen
-        // Yo lo voy a hacer en tiempo real
+        // Yo lo voy a hacer en tiempo real. Pero debes sopesar esta decisión
         FireStore.collection("lugares")
             .addSnapshotListener { value, e ->
                 if (e != null) {
@@ -451,6 +451,7 @@ class LugaresFragment : Fragment() {
                         .show()
                     return@addSnapshotListener
                 }
+                LUGARES.clear()
                 for (doc in value!!) {
                     // Trasformamos el objeto
                     val miLugar = doc.toObject(Lugar::class.java)

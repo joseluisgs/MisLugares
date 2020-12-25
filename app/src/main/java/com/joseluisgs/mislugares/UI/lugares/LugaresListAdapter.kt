@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
+import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
@@ -15,7 +17,9 @@ import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
+import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_lugar.view.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,6 +32,12 @@ class LugaresListAdapter(
     private val accionPrincipal: (Lugar) -> Unit,
 
     ) : RecyclerView.Adapter<LugaresListAdapter.LugarViewHolder>() {
+    // Firebase
+    private var FireStore: FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    companion object {
+        private const val TAG = "Adapter"
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LugarViewHolder {
         return LugarViewHolder(
@@ -48,7 +58,7 @@ class LugaresListAdapter(
         holder.itemLugarVotos.text = listaLugares[position].votos.toString()
         imagenLugar(listaLugares[position], holder)
 
-        // procesamos el ffavorito
+        // procesamos el favorito
         // color
         colorBotonFavorito(position, holder)
         // Queda procesar el botón de favoritos...
@@ -112,29 +122,35 @@ class LugaresListAdapter(
      * Devuelve la imagen de un lugar
      */
     private fun imagenLugar(lugar: Lugar, holder: LugarViewHolder) {
-        val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(lugar.imagenID)
-        call.enqueue((object : Callback<FotografiaDTO> {
-
-            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "fotografiasGetById ok")
-                    var remoteFotografia = FotografiaMapper.fromDTO(response.body() as FotografiaDTO)
-                    holder.itemLugarImagen.setImageBitmap(ImageBase64.toBitmap(remoteFotografia.imagen))
+        // Buscamos la fotografia
+        val docRef = FireStore.collection("imagenes").document(lugar.imagenID)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val miImagen = document.toObject(Fotografia::class.java)
+                    Log.i(TAG, "fotografiasGetById ok: ${document.data}")
+                    Picasso.get()
+                        // .load(R.drawable.user_avatar)
+                        .load(miImagen?.uri)
+                        .into(holder.itemLugarImagen)
                 } else {
-                    Log.i("REST", "Error: fotografiasGetById isSuccessful")
-                    holder.itemLugarImagen.setImageBitmap(BitmapFactory.decodeResource(holder.context?.resources,
-                        R.drawable.ic_mapa))
+                    Log.i(TAG, "Error: No exite fotografía")
+                    imagenPorDefecto(holder)
                 }
             }
-
-            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
-                Toast.makeText(holder.context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
+            .addOnFailureListener { exception ->
+                Log.d(TAG, "ERROR: " + exception.localizedMessage)
+                imagenPorDefecto(holder)
             }
-        }))
+    }
+
+    /**
+     * Inserta una imagen por defecto
+     * @param holder LugarViewHolder
+     */
+    private fun imagenPorDefecto(holder: LugarViewHolder) {
+        holder.itemLugarImagen.setImageBitmap(BitmapFactory.decodeResource(holder.context?.resources,
+            R.drawable.ic_mapa))
     }
 
     /**
