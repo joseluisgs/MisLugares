@@ -169,7 +169,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 if (document != null) {
                     val miImagen = document.toObject(Fotografia::class.java)
                     val posicion = LatLng(lugar.latitud.toDouble(), lugar.longitud.toDouble())
-                    var imageView = ImageView(context);
+                    val imageView = ImageView(context);
                     Picasso.get()
                         .load(miImagen?.uri)
                         .into(imageView, object : com.squareup.picasso.Callback {
@@ -187,11 +187,9 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                                 // Le añado como tag el lugar para recuperarlo
                                 marker.tag = lugar
                             }
-
                             override fun onError(e: Exception) {
-                                TODO("Not yet implemented")
+                                Log.d(TAG, "Error al descargar imagen")
                             }
-
                         })
 
                 } else {
@@ -231,29 +229,23 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         val fecha = vista.findViewById(R.id.mapaLugarTextFecha) as TextView
         fecha.text = lugar.fecha
         val imagen = vista.findViewById(R.id.mapaLugarImagen) as ImageView
-
-        val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(lugar.imagenID)
-        call.enqueue((object : Callback<FotografiaDTO> {
-
-            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "fotografiasGetById ok")
-                    var remoteFotografia = FotografiaMapper.fromDTO(response.body() as FotografiaDTO)
-                    imagen.setImageBitmap(ImageBase64.toBitmap(remoteFotografia.imagen))
+        val docRef = FireStore.collection("imagenes").document(lugar.imagenID)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val miImagen = document.toObject(Fotografia::class.java)
+                    Picasso
+                        .get()
+                        .load(miImagen?.uri)
+                        .into(imagen)
                 } else {
-                    Log.i("REST", "Error: fotografiasGetById isSuccessful")
-                    // holder.itemLugarImagen.setImageBitmap(BitmapFactory.decodeResource(holder.context?.resources, R.drawable.ic_mapa))
+                    Log.i(TAG, "Error: No exite fotografía")
                 }
             }
-
-            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
-                Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
+            .addOnFailureListener { exception ->
+                Log.d(TAG, "ERROR: " + exception.localizedMessage)
             }
-        }))
+
         builder
             .setView(vista)
             .setIcon(R.drawable.ic_location)
