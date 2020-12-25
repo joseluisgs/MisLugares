@@ -56,6 +56,7 @@ import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.Fotos
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.QRCode
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -213,31 +214,35 @@ class LugarDetalleFragment(
      * Carga la fotografía del lugar
      */
     private fun cargarFotografia() {
-        val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(LUGAR?.imagenID.toString())
-        call.enqueue((object : Callback<FotografiaDTO> {
-
-            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "fotografiasGetById ok")
-                    LUGAR_FOTOGRAFIA = FotografiaMapper.fromDTO(response.body() as FotografiaDTO)
-                    FOTO = ImageBase64.toBitmap(LUGAR_FOTOGRAFIA!!.imagen)!!
+        val docRef = FireStore.collection("imagenes").document(LUGAR?.imagenID.toString())
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    LUGAR_FOTOGRAFIA = document.toObject(Fotografia::class.java)
+                    Log.i(TAG, "fotografiasGetById ok: ${document.data}")
                     IMAGEN_URI = Uri.parse(LUGAR_FOTOGRAFIA!!.uri)
-                    detalleLugarImagen.setImageBitmap(FOTO)
+                    Picasso.get()
+                        // .load(R.drawable.user_avatar)
+                        .load(LUGAR_FOTOGRAFIA?.uri)
+                        .into(detalleLugarImagen)
+                    FOTO =  (detalleLugarImagen.drawable as BitmapDrawable).bitmap
                 } else {
-                    Log.i("REST", "Error: fotografiasGetById isSuccessful")
-                    detalleLugarImagen.setImageBitmap(BitmapFactory.decodeResource(context?.resources,
-                        R.drawable.ic_mapa))
+                    Log.i(TAG, "Error: No exite fotografía")
+                    imagenPorDefecto()
                 }
             }
-
-            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
-                Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
+            .addOnFailureListener { exception ->
+                Log.d(TAG, "ERROR: " + exception.localizedMessage)
+                imagenPorDefecto()
             }
-        }))
+    }
+
+    /**
+     * Inserta una imagen por defecto
+     */
+    private fun imagenPorDefecto() {
+        detalleLugarImagen.setImageBitmap(BitmapFactory.decodeResource(context?.resources,
+            R.drawable.ic_mapa))
     }
 
     /**

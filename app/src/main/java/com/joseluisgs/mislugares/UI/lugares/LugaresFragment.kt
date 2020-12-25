@@ -442,6 +442,7 @@ class LugaresFragment : Fragment() {
         // https://firebase.google.com/docs/firestore/query-data/get-data
         // https://firebase.google.com/docs/firestore/query-data/listen
         // Yo lo voy a hacer en tiempo real. Pero debes sopesar esta decisión
+        // Si hubiese varios clientes y los datos fuesen cmpartidos, los detectaría sin recargar.
         FireStore.collection("lugares")
             .addSnapshotListener { value, e ->
                 if (e != null) {
