@@ -318,7 +318,7 @@ class LugarDetalleFragment(
                 Log.i(TAG, "Lugar insertado con éxito con id" + LUGAR)
                 volver()
             }
-            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+            .addOnFailureListener { e -> Log.w(TAG, "Error insertar lugar", e) }
     }
 
     /**
@@ -351,8 +351,8 @@ class LugarDetalleFragment(
                 FireStore.collection("imagenes")
                     .document(fotografiaID)
                     .set(LUGAR_FOTOGRAFIA!!)
-                    .addOnSuccessListener { Log.i(TAG, "Fotografia successfully written!") }
-                    .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+                    .addOnSuccessListener { Log.i(TAG, "Fotografia insertada con éxito") }
+                    .addOnFailureListener { e -> Log.w(TAG, "Error al insertar fotografía", e) }
                 }
             }
     }
@@ -401,8 +401,8 @@ class LugarDetalleFragment(
             FireStore.collection("imagenes")
                 .document(LUGAR_FOTOGRAFIA!!.id)
                 .delete()
-                .addOnSuccessListener { Log.i(TAG, "Fotografia successfully deleted!") }
-                .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+                .addOnSuccessListener { Log.i(TAG, "Fotografia eliminada con exito!") }
+                .addOnFailureListener { e -> Log.w(TAG, "Error eliminar fotografía", e) }
 
         }.addOnFailureListener {
             Log.i(TAG, "storage:failure: "+ it.localizedMessage)
@@ -848,7 +848,7 @@ class LugarDetalleFragment(
      * @param data Intent?
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.i("FOTO", "Opción::--->$requestCode")
+        Log.i("FOTO", "Opción:--->$requestCode")
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_CANCELED) {
             Log.i("FOTO", "Se ha cancelado")

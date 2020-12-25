@@ -189,7 +189,7 @@ class LugaresListAdapter(
                 Log.i(TAG, "lugarUpdate ok")
                 holder.itemLugarVotos.text = lugar.votos.toString()
             }
-            .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+            .addOnFailureListener { e -> Log.w(TAG, "Error actualiza votos", e) }
     }
 
     /**
