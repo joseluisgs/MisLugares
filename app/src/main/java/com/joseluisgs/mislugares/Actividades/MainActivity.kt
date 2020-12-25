@@ -49,11 +49,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var Auth: FirebaseAuth
 
     companion object {
-        private const val TAG = "MainActivity"
+        private const val TAG = "Main"
     }
-
-    // Obtenemos el usuario de la sesión
-    private lateinit var USER: Usuario
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             // Get new FCM registration token
             val token = task.result
             // Log and toast
-            Log.i(TAG, "Mi Token: " + token)
+            Log.i(TAG, "Mi Token: $token")
         })
 
         // Suscribirse por temas

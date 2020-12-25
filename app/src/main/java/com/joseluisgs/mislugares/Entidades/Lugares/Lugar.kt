@@ -21,30 +21,20 @@ import java.util.*
  * @property usuarioID: Long
  * @constructor
  */
-@RealmClass
-open class Lugar(
-    @PrimaryKey
+data class Lugar(
     // Cambiar a UUID.randomUUID().toString() o long
     var id: String = "",
-    @Required
     var nombre: String = "",
-    @Required
     var tipo: String = "Ciudad",
-    @Required
     var fecha: String = "",
-    @Required
     var latitud: String = "",
-    @Required
     var longitud: String = "",
-    @Required
     var imagenID: String = "",
     var favorito: Boolean = false,
     var votos: Int = 0,
-    @Required
     var time: String = "",
-    @Required
     var usuarioID: String = "",
-) : RealmObject(), Serializable {
+){
     constructor(
         nombre: String,
         tipo: String,

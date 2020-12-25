@@ -57,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        // CServicios de Firebase
+        // Servicios de Firebase
         Auth = Firebase.auth
         FireStore = FirebaseFirestore.getInstance()
         // Configuramos el SigIn con google

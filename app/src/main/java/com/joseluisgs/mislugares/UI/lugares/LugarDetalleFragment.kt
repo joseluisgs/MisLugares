@@ -34,7 +34,15 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import com.google.gson.Gson
+import com.joseluisgs.mislugares.Actividades.LoginActivity
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
@@ -52,6 +60,7 @@ import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.time.Instant
 import java.time.LocalDateTime
@@ -67,11 +76,15 @@ class LugarDetalleFragment(
     private val MODO: Modo? = Modo.INSERTAR,
     private val ANTERIOR: LugaresFragment? = null,
     private val LUGAR_INDEX: Int? = null,
-    private var LUGAR_FOTOGRAFIA: Fotografia? = null,
 ) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+    // Firebase
+    private lateinit var Auth: FirebaseAuth
+    private lateinit var FireStore: FirebaseFirestore
+    private lateinit var Storage: FirebaseStorage
+
 
     // Mis Variables
-    private lateinit var USUARIO: Usuario
+    private lateinit var USUARIO: FirebaseUser
     private var PERMISOS: Boolean = false
 
     // Variables a usar y permisos del mapa
@@ -91,6 +104,11 @@ class LugarDetalleFragment(
     private var IMAGEN_COMPRESION = 60
     private val IMAGEN_PREFIJO = "lugar"
     private val IMAGEN_EXTENSION = ".jpg"
+    private var LUGAR_FOTOGRAFIA: Fotografia? = null
+
+    companion object {
+        private const val TAG = "Lugar"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -102,7 +120,11 @@ class LugarDetalleFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.i("Lugares", "Creando Lugar Detalle")
+        // Servicios de Firebase
+        Auth = Firebase.auth
+        FireStore = FirebaseFirestore.getInstance()
+        Storage = FirebaseStorage.getInstance()
+        Log.i(TAG, "Creando Lugar Detalle")
         // Y esto que parece una tonteria es para que no se propagen los eventos
         // entre fragments y no disparar eventos de otros fragments
         view.setOnTouchListener { view, motionEvent ->
@@ -116,7 +138,7 @@ class LugarDetalleFragment(
      */
     private fun initIU() {
         // Actualizo la vista anterior para que no se quede el swipe marcado
-        ANTERIOR?.actualizarVistaLista()
+        //ANTERIOR?.actualizarVistaLista()
         initPermisos()
         initUsuario()
         // Modos de ejecución
@@ -136,7 +158,7 @@ class LugarDetalleFragment(
      * Lee el usuario
      */
     private fun initUsuario() {
-        this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
+        this.USUARIO = Auth.currentUser!!
     }
 
     /**
@@ -261,17 +283,10 @@ class LugarDetalleFragment(
      */
     private fun insertar() {
         // Iderntamos la fotografia
-        val b64 = ImageBase64.toBase64(this.FOTO)!!
-        LUGAR_FOTOGRAFIA = Fotografia(
-            id = UUID.randomUUID().toString(),
-            imagen = b64,
-            uri = IMAGEN_URI.toString(),
-            hash = Cifrador.toHash(b64).toString(),
-            time = Instant.now().toString(),
-            usuarioID = USUARIO.id
-        )
+
+        val fotografiaID =  UUID.randomUUID().toString()
         // Lanzamos el hilo de insertar fotografia
-        insertarFotografia()
+        insertarFotografia(fotografiaID)
 
         // Insertamos lugar
         LUGAR = Lugar(
@@ -281,14 +296,25 @@ class LugarDetalleFragment(
             fecha = detalleLugarBotonFecha.text.toString(),
             latitud = posicion?.latitude.toString(),
             longitud = posicion?.longitude.toString(),
-            imagenID = LUGAR_FOTOGRAFIA!!.id,
+            imagenID = fotografiaID,
             favorito = false,
             votos = 0,
             time = Instant.now().toString(),
-            usuarioID = USUARIO.id
+            usuarioID = USUARIO.uid
         )
+        FireStore.collection("lugares")
+            .document(LUGAR!!.id)
+            .set(LUGAR!!)
+            .addOnSuccessListener {
+                Log.i(TAG, "lugarPost ok")
+                // ANTERIOR?.insertarItemLista(LUGAR!!)
+                Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show()
+                Log.i(TAG, "Lugar insertado con éxito con id" + LUGAR)
+                volver()
+            }
+            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
 
-        val clientREST = MisLugaresAPI.service
+      /*  val clientREST = MisLugaresAPI.service
         val call: Call<LugarDTO> = clientREST.lugarPost((LugarMapper.toDTO(LUGAR!!)))
         call.enqueue((object : Callback<LugarDTO> {
 
@@ -312,32 +338,43 @@ class LugarDetalleFragment(
                     Toast.LENGTH_LONG)
                     .show()
             }
-        }))
+        }))*/
     }
 
     /**
      * Inserta una fotografía
      */
-    private fun insertarFotografia() {
-        val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaPost((FotografiaMapper.toDTO(LUGAR_FOTOGRAFIA!!)))
-        call.enqueue((object : Callback<FotografiaDTO> {
-
-            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "fotografiaPost ok")
-                } else {
-                    Log.i("REST", "Error fotografiaPost isSeccesful")
+    private fun insertarFotografia(fotografiaID: String) {
+        // Subimos la fotografía y obtenemos su URL
+        var storageRef = Storage.reference
+        val baos = ByteArrayOutputStream()
+        FOTO.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+        val lugarImagesRef = storageRef.child("images/$fotografiaID.jpg")
+        var uploadTask = lugarImagesRef.putBytes(data)
+        uploadTask.addOnFailureListener {
+            Log.i(TAG, "storage:failure: "+ it.localizedMessage)
+            Toast.makeText(context, "Error: " + it.localizedMessage,
+                Toast.LENGTH_SHORT).show()
+        }.addOnSuccessListener { taskSnapshot ->
+            // Si se sube la imagen insertamos la foto
+            Log.i(TAG, "storage:ok")
+            // Necesitamos su URI Publica para poder almacenarla
+            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl;
+            downloadUri.addOnSuccessListener {
+                LUGAR_FOTOGRAFIA = Fotografia(
+                    id = fotografiaID,
+                    time = Instant.now().toString(),
+                    usuarioID = USUARIO.uid,
+                    uri = it.toString()
+                )
+                FireStore.collection("imagenes")
+                    .document(fotografiaID)
+                    .set(LUGAR_FOTOGRAFIA!!)
+                    .addOnSuccessListener { Log.i(TAG, "Fotografia successfully written!") }
+                    .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
                 }
             }
-
-            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
-                Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }))
     }
 
 
@@ -431,7 +468,7 @@ class LugarDetalleFragment(
             uri = IMAGEN_URI.toString()
             hash = Cifrador.toHash(b64).toString()
             time = Instant.now().toString() // Fecha de la ultima actualización
-            usuarioID = USUARIO.id
+            usuarioID = USUARIO.uid
         }
         // Llamamos al hilo de actualizar fotografía
         actualizarFotografia()
