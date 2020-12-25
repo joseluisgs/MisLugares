@@ -13,6 +13,7 @@ import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.StrictMode
 import android.provider.MediaStore
 import android.util.Log
@@ -337,7 +338,7 @@ class LugarDetalleFragment(
                 Toast.LENGTH_SHORT).show()
         }.addOnSuccessListener { taskSnapshot ->
             // Si se sube la imagen insertamos la foto
-            Log.i(TAG, "storage:ok")
+            Log.i(TAG, "storage:ok insert")
             // Necesitamos su URI Publica para poder almacenarla
             val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl;
             downloadUri.addOnSuccessListener {
@@ -369,35 +370,20 @@ class LugarDetalleFragment(
      */
     private fun eliminar() {
         //Eliminamos lógicamente // Eliminamos el lugar
-        // val fotografiaID = LUGAR?.imagenID.toString()
         // Lanzo el hilo de eliminar fotografía
         eliminarFotografia()
         // Borramos el lugar
-        val clientREST = MisLugaresAPI.service
-        val call: Call<LugarDTO> = clientREST.lugarDelete((LUGAR!!.id))
-        call.enqueue((object : Callback<LugarDTO> {
-
-            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "lugarDelete ok")
-                    ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
-                    Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show()
-                    Log.i("Eliminar", "Lugar eliminado con éxito")
-                    volver()
-                } else {
-                    Log.i("REST", "Error: lugarDelete isSuccessful")
-                    Toast.makeText(context, "Error al eliminar: " + response.message(), Toast.LENGTH_LONG).show()
-                    Log.i("Eliminar", "Error al eliminar: " + response.message())
-                }
+        FireStore.collection("lugares")
+            .document(LUGAR!!.id)
+            .delete()
+            .addOnSuccessListener {
+                Log.i(TAG, "Lugar eliminado con éxito")
+                ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
+                Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show()
+                volver()
             }
-
-            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
-                Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
+            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e)
             }
-        }))
     }
 
     /**
@@ -405,25 +391,24 @@ class LugarDetalleFragment(
      * @param fotografiaID String
      */
     private fun eliminarFotografia() {
-        val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaDelete((LUGAR_FOTOGRAFIA!!.id))
-        call.enqueue((object : Callback<FotografiaDTO> {
+        // Primero elimino el fichero adjunto
+        val storageRef = Storage.reference
+        val lugarImagesRef = storageRef.child("images/${LUGAR_FOTOGRAFIA?.id}.jpg")
+        // Delete the file
+        lugarImagesRef.delete().addOnSuccessListener {
+            // Borramos de la BD
+            Log.i(TAG, "storage:ok delete")
+            FireStore.collection("imagenes")
+                .document(LUGAR_FOTOGRAFIA!!.id)
+                .delete()
+                .addOnSuccessListener { Log.i(TAG, "Fotografia successfully deleted!") }
+                .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
 
-            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "fotografiaDelete ok")
-                } else {
-                    Log.i("REST", "Error: fotografiaDelete isSuccessful")
-                }
-            }
-
-            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
-                Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }))
+        }.addOnFailureListener {
+            Log.i(TAG, "storage:failure: "+ it.localizedMessage)
+            Toast.makeText(context, "Error: " + it.localizedMessage,
+                Toast.LENGTH_SHORT).show()
+        }
     }
 
     /**
