@@ -178,32 +178,18 @@ class LugaresListAdapter(
      * @param holder LugarViewHolder
      */
     private fun actualizarLugarVotos(lugar: Lugar, holder: LugarViewHolder) {
-        val clientREST = MisLugaresAPI.service
-        val lugarDTO = LugarMapper.toDTO(lugar)
-
-        val call: Call<LugarDTO> = clientREST.lugarUpdate(lugar.id, lugarDTO)
-        call.enqueue((object : Callback<LugarDTO> {
-
-            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "lugarUpdate ok")
-
-                    holder.itemLugarVotos.text = lugar.votos.toString()
-                    Log.i("Favorito", lugar.favorito.toString())
-                    Log.i("Favorito", lugar.votos.toString())
-                } else {
-                    Log.i("REST", "Error: lugarUpdate isSuccessful")
-                }
+        // Obtenemos el lugar y actualiamos solo los campos, no entero
+        val lugarRef = FireStore.collection("lugares").document(lugar.id)
+        lugarRef
+            .update(mapOf(
+                "votos" to lugar.votos,
+                "favorito" to lugar.favorito
+            ))
+            .addOnSuccessListener {
+                Log.i(TAG, "lugarUpdate ok")
+                holder.itemLugarVotos.text = lugar.votos.toString()
             }
-
-            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
-                Toast.makeText(holder.context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }))
-
+            .addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
     }
 
     /**
