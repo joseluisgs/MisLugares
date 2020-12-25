@@ -76,6 +76,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     // Auth con Google https://firebase.google.com/docs/auth/android/google-signin
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
-    // Messaging
+    // Messaging https://firebase.google.com/docs/cloud-messaging/android/client
     implementation 'com.google.firebase:firebase-messaging-ktx'
+    // Firestore https://firebase.google.com/docs/firestore/quickstart
+    implementation 'com.google.firebase:firebase-firestore:21.2.1'
+    // Storage https://firebase.google.com/docs/storage/android/start
+    implementation 'com.google.firebase:firebase-storage-ktx'
 }
