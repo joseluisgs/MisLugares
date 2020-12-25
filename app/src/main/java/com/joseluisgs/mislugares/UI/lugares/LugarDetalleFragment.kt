@@ -138,7 +138,7 @@ class LugarDetalleFragment(
      */
     private fun initIU() {
         // Actualizo la vista anterior para que no se quede el swipe marcado
-        //ANTERIOR?.actualizarVistaLista()
+        ANTERIOR?.actualizarVistaLista()
         initPermisos()
         initUsuario()
         // Modos de ejecución
@@ -307,38 +307,12 @@ class LugarDetalleFragment(
             .set(LUGAR!!)
             .addOnSuccessListener {
                 Log.i(TAG, "lugarPost ok")
-                // ANTERIOR?.insertarItemLista(LUGAR!!)
+                ANTERIOR?.insertarItemLista(LUGAR!!)
                 Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show()
                 Log.i(TAG, "Lugar insertado con éxito con id" + LUGAR)
                 volver()
             }
             .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
-
-      /*  val clientREST = MisLugaresAPI.service
-        val call: Call<LugarDTO> = clientREST.lugarPost((LugarMapper.toDTO(LUGAR!!)))
-        call.enqueue((object : Callback<LugarDTO> {
-
-            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "lugarPost ok")
-                    ANTERIOR?.insertarItemLista(LUGAR!!)
-                    Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show()
-                    Log.i("Insertar", "Lugar insertado con éxito con id" + LUGAR)
-                    volver()
-                } else {
-                    Log.i("REST", "Error lugarPost isSeccesful")
-                    Toast.makeText(context, "Error al insertar: " + response.message(), Toast.LENGTH_LONG).show()
-                    Log.i("Insertar", "Error al insertar: " + response.message())
-                }
-            }
-
-            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
-                Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }))*/
     }
 
     /**
@@ -346,12 +320,12 @@ class LugarDetalleFragment(
      */
     private fun insertarFotografia(fotografiaID: String) {
         // Subimos la fotografía y obtenemos su URL
-        var storageRef = Storage.reference
+        val storageRef = Storage.reference
         val baos = ByteArrayOutputStream()
         FOTO.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val data = baos.toByteArray()
         val lugarImagesRef = storageRef.child("images/$fotografiaID.jpg")
-        var uploadTask = lugarImagesRef.putBytes(data)
+        val uploadTask = lugarImagesRef.putBytes(data)
         uploadTask.addOnFailureListener {
             Log.i(TAG, "storage:failure: "+ it.localizedMessage)
             Toast.makeText(context, "Error: " + it.localizedMessage,
