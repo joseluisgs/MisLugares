@@ -20,25 +20,19 @@ import java.util.*
  * @property github String
  * @constructor
  */
-@RealmClass
-open class Usuario(
+data class Usuario(
     // Es importante iniciar todos los valores de la clases
     // Ponemos los datos que queremos almacenar
-    @PrimaryKey
     // Cambiar a UUID.randomUUID().toString() o long
     var id: String = "",
-    @Required
     var nombre: String = "",
-    @Required @Index
     var login: String = "",
-    @Required
     var password: String = "",
     var avatar: String = "",
-    @Required @Index
     var correo: String = "",
     var twitter: String = "",
     var github: String = "",
-) : RealmObject(), Serializable {
+) {
 
     /**
      * Constructor
@@ -66,6 +60,4 @@ open class Usuario(
     override fun toString(): String {
         return "Usuario(id=$id, nombre='$nombre', login='$login', password='$password', avatar='$avatar', correo='$correo', twitter='$twitter', github='$github')"
     }
-
-
 }

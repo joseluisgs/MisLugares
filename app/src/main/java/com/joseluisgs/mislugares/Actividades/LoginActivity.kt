@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Sesiones.Sesion
@@ -43,6 +44,7 @@ import java.util.*
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var Auth: FirebaseAuth
+    private lateinit var FireStore: FirebaseFirestore
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 9001
 
@@ -55,8 +57,9 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        // Creamos o declaramos Firebase Auth
+        // CServicios de Firebase
         Auth = Firebase.auth
+        FireStore = FirebaseFirestore.getInstance()
         // Configuramos el SigIn con google
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -145,6 +148,7 @@ class LoginActivity : AppCompatActivity() {
                     val user = Auth.currentUser
                     Log.i(TAG, user.toString())
                     Toast.makeText(baseContext, "Auth: Usuario autenticado en Google", Toast.LENGTH_SHORT).show()
+                    user?.let { insertarUsuario(it) };
                     abrirPrincipal()
                 } else {
                     // If sign in fails, display a message to the user.
@@ -199,8 +203,30 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.i(TAG, "Perfil Actualizado.")
+                    insertarUsuario(user);
                 }
             }
+    }
+
+    /**
+     * Inserta un usuario, si existe lo sobre-escribe....
+     * @param user FirebaseUser
+     */
+    private fun insertarUsuario(user: FirebaseUser) {
+        val usuario = Usuario(
+            id = user.uid,
+            nombre = user.displayName.toString(),
+            login = user.email.toString(),
+            github = "https://github.com/joseluisgs",
+            twitter = "https://twitter.com/joseluisgonsan",
+            avatar = user.photoUrl.toString(),
+            correo = user.email.toString()
+        )
+        FireStore.collection("usuarios")
+            .document(usuario.id)
+            .set(usuario)
+            .addOnSuccessListener { Log.i(TAG, "DocumentSnapshot successfully written!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
     }
 
 
