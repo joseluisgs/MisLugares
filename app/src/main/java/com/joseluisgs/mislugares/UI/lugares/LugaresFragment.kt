@@ -443,7 +443,7 @@ class LugaresFragment : Fragment() {
         // https://firebase.google.com/docs/firestore/query-data/listen
         // Yo lo voy a hacer en tiempo real. Pero debes sopesar esta decisión
         // Si hubiese varios clientes y los datos fuesen cmpartidos, los detectaría sin recargar.
-        FireStore.collection("lugares")
+        /*FireStore.collection("lugares")
             .addSnapshotListener { value, e ->
                 if (e != null) {
                     Toast.makeText(context,
@@ -458,9 +458,28 @@ class LugaresFragment : Fragment() {
                     val miLugar = doc.toObject(Lugar::class.java)
                     LUGARES.add(miLugar);
                 }
-                Log.i("Lugares", "Lista de lugares de tamaño: " + LUGARES.size)
+                Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
+                procesarLugares()
+            }*/
+        // Sin tiempo real
+        FireStore.collection("lugares")
+            .get()
+            .addOnSuccessListener { result ->
+                LUGARES.clear()
+                for (document in result) {
+                    val miLugar = document.toObject(Lugar::class.java)
+                    LUGARES.add(miLugar);
+                }
+                Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
                 procesarLugares()
             }
+            .addOnFailureListener { exception ->
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + exception.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+
     }
 
     /**
@@ -476,7 +495,7 @@ class LugaresFragment : Fragment() {
         lugaresAdapter.notifyDataSetChanged()
         lugaresRecycler.setHasFixedSize(true)
         lugaresSwipeRefresh.isRefreshing = false
-        Toast.makeText(context, "Lugares cargados", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "Lugares actualizados", Toast.LENGTH_LONG).show()
     }
 
     /**
