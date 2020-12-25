@@ -107,7 +107,6 @@ class LugarDetalleFragment(
     private val IMAGEN_PREFIJO = "lugar"
     private val IMAGEN_EXTENSION = ".jpg"
     private var LUGAR_FOTOGRAFIA: Fotografia? = null
-    private var NUEVA_FOTOGRAFIA = true;
 
     companion object {
         private const val TAG = "Lugar"
