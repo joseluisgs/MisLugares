@@ -302,7 +302,6 @@ class LugarDetalleFragment(
      */
     private fun insertar() {
         detalleProgressBar.visibility = View.VISIBLE
-        // Iderntamos la fotografia
 
         val fotografiaID =  UUID.randomUUID().toString()
         // Lanzamos el hilo de insertar fotografia
