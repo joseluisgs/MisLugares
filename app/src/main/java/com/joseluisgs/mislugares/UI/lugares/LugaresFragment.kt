@@ -459,7 +459,7 @@ class LugaresFragment : Fragment() {
                 LUGARES.clear()
                 for (document in result) {
                     val miLugar = document.toObject(Lugar::class.java)
-                    LUGARES.add(miLugar);
+                    LUGARES.add(miLugar)
                 }
                 Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
                 procesarLugares()

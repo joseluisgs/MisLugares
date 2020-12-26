@@ -178,7 +178,7 @@ class LugarImportarFragment : Fragment(), OnMapReadyCallback {
      */
     private fun importar() {
         importarProgressBar.visibility = View.VISIBLE
-        val fotografiaID =  UUID.randomUUID().toString()
+        val fotografiaID = UUID.randomUUID().toString()
 
         // Insertamos lugar
         LUGAR = Lugar(
@@ -208,7 +208,7 @@ class LugarImportarFragment : Fragment(), OnMapReadyCallback {
      * Carga la fotografía del lugar
      */
     private fun cargarFotografia() {
-        val docRef = FireStore.collection("imagenes").document(LUGAR?.imagenID.toString())
+        val docRef = FireStore.collection("imagenes").document(LUGAR.imagenID.toString())
         docRef.get()
             .addOnSuccessListener { document ->
                 if (document != null) {
@@ -221,6 +221,7 @@ class LugarImportarFragment : Fragment(), OnMapReadyCallback {
                             override fun onSuccess() {
                                 FOTO = (importarLugarImagen.drawable as BitmapDrawable).bitmap
                             }
+
                             override fun onError(ex: Exception?) {
                                 Log.i(TAG, "Error: Descargar fotografia Picasso")
                             }
@@ -256,14 +257,14 @@ class LugarImportarFragment : Fragment(), OnMapReadyCallback {
         val lugarImagesRef = storageRef.child("images/$fotografiaID.jpg")
         val uploadTask = lugarImagesRef.putBytes(data)
         uploadTask.addOnFailureListener {
-            Log.i(TAG, "storage:failure: "+ it.localizedMessage)
+            Log.i(TAG, "storage:failure: " + it.localizedMessage)
             Toast.makeText(context, "Error: " + it.localizedMessage,
                 Toast.LENGTH_SHORT).show()
         }.addOnSuccessListener { taskSnapshot ->
             // Si se sube la imagen insertamos la foto
             Log.i(TAG, "storage:ok insert")
             // Necesitamos su URI Publica para poder almacenarla
-            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl;
+            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl
             downloadUri.addOnSuccessListener {
                 LUGAR_FOTOGRAFIA = Fotografia(
                     id = fotografiaID,
