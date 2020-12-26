@@ -456,11 +456,7 @@ class LugaresFragment : Fragment() {
         FireStore.collection("lugares")
             .get()
             .addOnSuccessListener { result ->
-                LUGARES.clear()
-                for (document in result) {
-                    val miLugar = document.toObject(Lugar::class.java)
-                    LUGARES.add(miLugar)
-                }
+                LUGARES = result.toObjects(Lugar::class.java)
                 Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
                 procesarLugares()
             }
