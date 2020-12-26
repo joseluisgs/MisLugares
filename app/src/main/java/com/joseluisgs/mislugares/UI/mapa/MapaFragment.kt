@@ -115,7 +115,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 val listaLugares = mutableListOf<Lugar>()
                 for (document in result) {
                     val miLugar = document.toObject(Lugar::class.java)
-                    listaLugares.add(miLugar);
+                    listaLugares.add(miLugar)
                 }
                 procesarLugares(listaLugares)
             }
@@ -162,7 +162,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 if (document != null) {
                     val miImagen = document.toObject(Fotografia::class.java)
                     val posicion = LatLng(lugar.latitud.toDouble(), lugar.longitud.toDouble())
-                    val imageView = ImageView(context);
+                    val imageView = ImageView(context)
                     Picasso.get()
                         .load(miImagen?.uri)
                         .into(imageView, object : com.squareup.picasso.Callback {
@@ -180,6 +180,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                                 // Le añado como tag el lugar para recuperarlo
                                 marker.tag = lugar
                             }
+
                             override fun onError(e: Exception) {
                                 Log.d(TAG, "Error al descargar imagen")
                             }
