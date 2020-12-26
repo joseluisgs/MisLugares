@@ -8,6 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Backup.BackupController
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
@@ -15,7 +21,10 @@ import com.joseluisgs.mislugares.R
 import kotlinx.android.synthetic.main.fragment_backup.*
 
 class BackupFragment : Fragment() {
-    var RES = false
+    // Firebase
+
+
+    private var RES = false
     private lateinit var USUARIO: Usuario
 
     override fun onCreateView(
@@ -28,8 +37,6 @@ class BackupFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
         initUI()
     }
 
@@ -41,6 +48,8 @@ class BackupFragment : Fragment() {
         backupUltimaText.text = BackupController.fechaUltimoBackup(context!!)
         backupArchivarImage.setOnClickListener { exportar() }
         backupImportarImage.setOnClickListener { importar() }
+        backupImportarImage.visibility = View.GONE
+        backupImportarText.visibility = View.GONE
     }
 
     /**
@@ -50,7 +59,7 @@ class BackupFragment : Fragment() {
         AlertDialog.Builder(context)
             .setIcon(R.drawable.ic_exportar)
             .setTitle("Exportar datos")
-            .setMessage("¿Desea exportar los datos? Se sobreeescribirá el último fichero de copia de seguridad")
+            .setMessage("¿Desea exportar los datos? Se sobreescribirá el último fichero de copia de seguridad")
             .setPositiveButton(getString(R.string.aceptar)) { dialog, which -> exportarDatos(context!!) }
             .setNegativeButton(getString(R.string.cancelar), null)
             .show()
@@ -99,7 +108,7 @@ class BackupFragment : Fragment() {
         // Tarea
         override fun doInBackground(vararg args: Void?): Void? {
             try {
-                RES = BackupController.exportarDatos(context!!, USUARIO)
+                RES = BackupController.exportarDatos(context!!)
             } catch (e: Exception) {
                 RES = false
             }
