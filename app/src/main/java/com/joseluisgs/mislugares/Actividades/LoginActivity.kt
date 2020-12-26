@@ -1,6 +1,5 @@
 package com.joseluisgs.mislugares.Actividades
 
-import Utilidades.Cifrador
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -21,25 +20,10 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import com.joseluisgs.mislugares.App.MyApp
-import com.joseluisgs.mislugares.Entidades.Sesiones.Sesion
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionController
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionMapper
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
-import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioDTO
-import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioMapper
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.Utils
 import kotlinx.android.synthetic.main.activity_login.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.time.Instant
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
-import java.util.*
 
 
 class LoginActivity : AppCompatActivity() {
