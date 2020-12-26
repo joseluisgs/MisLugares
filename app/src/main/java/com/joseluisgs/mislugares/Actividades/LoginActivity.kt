@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Sesiones.Sesion
@@ -43,6 +44,7 @@ import java.util.*
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var Auth: FirebaseAuth
+    private lateinit var FireStore: FirebaseFirestore
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 9001
 
@@ -55,8 +57,9 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        // Creamos o declaramos Firebase Auth
+        // Servicios de Firebase
         Auth = Firebase.auth
+        FireStore = FirebaseFirestore.getInstance()
         // Configuramos el SigIn con google
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -123,7 +126,7 @@ class LoginActivity : AppCompatActivity() {
                 firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e)
+                Log.w(TAG, "Google sign in error", e)
                 Toast.makeText(baseContext, "Error: " + e.localizedMessage,
                     Toast.LENGTH_SHORT).show()
             }
@@ -141,14 +144,15 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
+                    Log.d(TAG, "signInWithCredential: Ok")
                     val user = Auth.currentUser
                     Log.i(TAG, user.toString())
                     Toast.makeText(baseContext, "Auth: Usuario autenticado en Google", Toast.LENGTH_SHORT).show()
+                    user?.let { insertarUsuario(it) };
                     abrirPrincipal()
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
+                    Log.w(TAG, "signInWithCredential: Error", task.exception)
                     Toast.makeText(baseContext, "Error: " + task.exception?.localizedMessage,
                         Toast.LENGTH_SHORT).show()
                 }
@@ -166,7 +170,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.i(TAG, "createUserWithEmail:success")
+                    Log.i(TAG, "createUserWithEmail: Ok")
                     val user = Auth.currentUser
                     // Actualizo su información de perfil
                     actualizarPerfilNuevoUsuario(user)
@@ -174,7 +178,7 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, "Auth: Usuario creado con éxito", Toast.LENGTH_SHORT).show()
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                    Log.w(TAG, "createUserWithEmail: Error", task.exception)
                     Toast.makeText(baseContext, "Error: " + task.exception?.localizedMessage,
                         Toast.LENGTH_SHORT).show()
                     // updateUI(null)
@@ -199,8 +203,30 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.i(TAG, "Perfil Actualizado.")
+                    insertarUsuario(user);
                 }
             }
+    }
+
+    /**
+     * Inserta un usuario, si existe lo sobre-escribe....
+     * @param user FirebaseUser
+     */
+    private fun insertarUsuario(user: FirebaseUser) {
+        val usuario = Usuario(
+            id = user.uid,
+            nombre = user.displayName.toString(),
+            login = user.email.toString(),
+            github = "https://github.com/joseluisgs",
+            twitter = "https://twitter.com/joseluisgonsan",
+            avatar = user.photoUrl.toString(),
+            correo = user.email.toString()
+        )
+        FireStore.collection("usuarios")
+            .document(usuario.id)
+            .set(usuario)
+            .addOnSuccessListener { Log.i(TAG, "Usuario insertado!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error insertar usuario", e) }
     }
 
 
@@ -239,14 +265,14 @@ class LoginActivity : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.i(TAG, "signInWithEmail:success")
+                        Log.i(TAG, "signInWithEmail: OK")
                         val user = Auth.currentUser
                         Log.i(TAG, user.toString())
                         Toast.makeText(baseContext, "Auth: Usuario autentificado con éxito", Toast.LENGTH_SHORT).show()
                         abrirPrincipal()
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithEmail:failure", task.exception)
+                        Log.w(TAG, "signInWithEmail: Error", task.exception)
                         Toast.makeText(baseContext, "Error: " + task.exception?.localizedMessage,
                             Toast.LENGTH_SHORT).show()
                     }

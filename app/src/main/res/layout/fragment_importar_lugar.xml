@@ -46,7 +46,8 @@
         <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="177dp" app:srcCompat="@drawable/ic_mapa_item_list"
-                android:id="@+id/importarLugarImagen" android:layout_marginTop="120dp"/>
+                android:id="@+id/importarLugarImagen" android:layout_marginTop="120dp"
+                android:scaleType="centerCrop"/>
         <fragment
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
@@ -63,6 +64,13 @@
                 android:layout_alignParentBottom="true" android:layout_marginBottom="36dp"
                 android:id="@+id/importarFabAccion" android:backgroundTint="@color/importColor"
                 app:backgroundTint="@color/importColor"/>
+        <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_width="92dp"
+                android:layout_height="95dp"
+                android:layout_alignParentEnd="true" android:layout_marginEnd="153dp"
+                android:layout_alignParentBottom="true" android:layout_marginBottom="215dp"
+                android:id="@+id/importarProgressBar"/>
 
 
     </RelativeLayout>

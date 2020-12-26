@@ -37,6 +37,7 @@ class TiempoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        tiempoProgressBar.visibility = View.VISIBLE
         mPosicion = LocationServices.getFusedLocationProviderClient(activity!!)
         // Evento que obtiene la posición
         mPosicion.lastLocation
@@ -85,6 +86,7 @@ class TiempoFragment : Fragment() {
                     tiempoAmanecerHora.text = sdf.format(date)
                     date = Date((weatherResponse.sys!!.sunset * 1000))
                     tiempoAnocherHora.text = sdf.format(date)
+                    tiempoProgressBar.visibility = View.INVISIBLE
                 }
             }
 

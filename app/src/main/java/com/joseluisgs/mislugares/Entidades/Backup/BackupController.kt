@@ -4,6 +4,11 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
@@ -13,6 +18,7 @@ import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,6 +42,12 @@ object BackupController {
     private lateinit var LUGARES: MutableList<Lugar>
     private lateinit var FOTOGRAFIAS: MutableList<Fotografia>
     private lateinit var BACKUP: Backup
+    private val FireStore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val Auth: FirebaseAuth =  Firebase.auth
+
+    private const val TAG ="Backup"
+
+    val scope = CoroutineScope(Job() + Dispatchers.Main)
 
     /**
      * Obtiene la fecha del fichero
@@ -51,25 +63,43 @@ object BackupController {
      * @param context Context
      * @return Boolean
      */
-    fun exportarDatos(context: Context, usuario: Usuario): Boolean {
+    fun exportarDatos(context: Context,): Boolean {
+
         // Recojo los datos
         // Primero fotografías
-        this.USUARIO = usuario
-        recuperarFotografias(context)
-        recuperarLugares(context)
-        BACKUP = Backup(
-            usuario = this.USUARIO,
-            lugares = this.LUGARES,
-            fotografias = this.FOTOGRAFIAS
-        )
+        scope.launch {
+            val tareas = listOf(
+                async {recuperarUsuario(context)},
+                async {recuperarFotografias(context)},
+                async {recuperarLugares(context)}
+            )
+            tareas.awaitAll()
+        }
         // Creo el objeto JSON
         val backupJSON = Gson().toJson(BACKUP)
         // Archivo el objeto JSON
-        Log.i("REST", this.USUARIO.nombre)
-        Log.i("REST", this.LUGARES.size.toString())
-        Log.i("REST", this.FOTOGRAFIAS.size.toString())
+        //Log.i("REST", this.USUARIO.nombre)
+        Log.i(TAG, LUGARES.size.toString())
+        Log.i(TAG, FOTOGRAFIAS.size.toString())
         //return false;
         return archivar(context, backupJSON.toString())
+    }
+
+    // Recupera un usuario de la Base de datos
+    private fun recuperarUsuario(context: Context) {
+        USUARIO = Usuario()
+        FireStore.collection("usuarios").whereEqualTo("id", Auth.currentUser?.uid).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    USUARIO = document.toObject(Usuario::class.java)
+                }
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(context,
+                    "Error al acceder al servicio: " + exception.localizedMessage,
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
     }
 
     /**
@@ -77,55 +107,40 @@ object BackupController {
      * @param context Context
      */
     private fun recuperarLugares(context: Context) {
-        val clientREST = MisLugaresAPI.service
-        // Ontenemos los lugares filtrados por el usuario, para no mostrar otros.
-        val call: Call<List<LugarDTO>> = clientREST.lugarGetAllByUserID(USUARIO.id)
-        call.enqueue((object : Callback<List<LugarDTO>> {
-
-            override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "LugaresGetAll ok")
-                    LUGARES = (LugarMapper.fromDTO(response.body() as MutableList<LugarDTO>)) as MutableList<Lugar>
-                } else {
-                    Log.i("REST", "Error: LugaresGetAll isSuccessful")
+        LUGARES = mutableListOf();
+        FireStore.collection("lugares").whereEqualTo("usuarioID", Auth.currentUser?.uid).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val miLugar = document.toObject(Lugar::class.java)
+                    LUGARES.add(miLugar)
                 }
             }
-
-            override fun onFailure(call: Call<List<LugarDTO>>, t: Throwable) {
+            .addOnFailureListener { exception ->
                 Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
+                    "Error al acceder al servicio: " + exception.localizedMessage,
                     Toast.LENGTH_LONG)
                     .show()
             }
-        }))
     }
 
     /**
      * Recupera las fotografias
      */
     private fun recuperarFotografias(context: Context) {
-        val clientREST = MisLugaresAPI.service
-        // Ontenemos los lugares filtrados por el usuario, para no mostrar otros.
-        val call: Call<List<FotografiaDTO>> = clientREST.fotografiaGetAllByUserID(USUARIO.id)
-        call.enqueue((object : Callback<List<FotografiaDTO>> {
-
-            override fun onResponse(call: Call<List<FotografiaDTO>>, response: Response<List<FotografiaDTO>>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "fotografiasGetAll ok")
-                    FOTOGRAFIAS =
-                        (FotografiaMapper.fromDTO(response.body() as MutableList<FotografiaDTO>)) as MutableList<Fotografia>
-                } else {
-                    Log.i("REST", "Error: LugaresGetAll isSuccessful")
+        FOTOGRAFIAS = mutableListOf()
+        FireStore.collection("imagenes").whereEqualTo("usuarioID", Auth.currentUser?.uid).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val miImagen = document.toObject(Fotografia::class.java)
+                    FOTOGRAFIAS.add(miImagen)
                 }
             }
-
-            override fun onFailure(call: Call<List<FotografiaDTO>>, t: Throwable) {
+            .addOnFailureListener { exception ->
                 Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
+                    "Error al acceder al servicio: " + exception.localizedMessage,
                     Toast.LENGTH_LONG)
                     .show()
             }
-        }))
     }
 
     /**

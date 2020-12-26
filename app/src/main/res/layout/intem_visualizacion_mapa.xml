@@ -2,8 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
              android:background="@color/itemListColor" android:id="@+id/mapaLugar">
 
 
@@ -41,14 +41,14 @@
                 android:layout_height="wrap_content" android:id="@+id/mapaLugarTextFecha"
                 android:layout_marginTop="80dp"
                 android:textStyle="bold" tools:text="Lugar" android:layout_alignParentEnd="true"
-                android:layout_marginEnd="0dp" android:textSize="18sp"
+                android:layout_marginEnd="-6dp" android:textSize="18sp"
                 android:gravity="center|center_horizontal|center_vertical" android:textColor="@color/colorPrimary"/>
         <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" app:srcCompat="@drawable/ic_mapa_item_list"
+                android:layout_width="match_parent"
+                android:layout_height="610dp" app:srcCompat="@drawable/ic_mapa_item_list"
                 android:id="@+id/mapaLugarImagen" android:layout_alignParentEnd="true" android:layout_marginEnd="0dp"
-                android:layout_alignParentBottom="true" android:layout_marginTop="20dp"
-                android:layout_below="@+id/mapaLugarTextTipo"/>
+                android:layout_alignParentBottom="true" android:layout_marginTop="8dp"
+                android:layout_below="@id/mapaLugarTextFecha" android:scaleType="fitCenter"/>
 
 
     </RelativeLayout>

@@ -127,6 +127,13 @@
                 android:clickable="true"
                 android:id="@+id/detalleLugarFabAccion"
                 app:rippleColor="#FFFFFF" android:src="@drawable/ic_add"/>
+        <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_width="129dp"
+                android:layout_height="102dp"
+                android:layout_alignParentStart="true" android:layout_marginStart="127dp"
+                android:layout_alignParentBottom="true" android:layout_marginBottom="194dp"
+                android:id="@+id/detalleProgressBar"/>
 
 
     </RelativeLayout>

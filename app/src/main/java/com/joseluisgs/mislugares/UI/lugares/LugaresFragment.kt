@@ -18,6 +18,12 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
@@ -36,15 +42,23 @@ import java.util.*
 
 
 class LugaresFragment : Fragment() {
+    // Firebase
+    private lateinit var Auth: FirebaseAuth
+    private lateinit var FireStore: FirebaseFirestore
+
     // Propiedades
     private var LUGARES = mutableListOf<Lugar>()
     private lateinit var lugaresAdapter: LugaresListAdapter //Adaptador de Noticias de Recycler
     private var paintSweep = Paint()
-    private lateinit var USUARIO: Usuario
+    private lateinit var USUARIO: FirebaseUser
 
     // Búsquedas
     private var FILTRO = Filtro.NADA
     private val VOZ = 10
+
+    companion object {
+        private const val TAG = "Lugares"
+    }
 
 
     override fun onCreateView(
@@ -57,8 +71,11 @@ class LugaresFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Servicios de Firebase
+        Auth = Firebase.auth
+        FireStore = FirebaseFirestore.getInstance()
         // Iniciamos la interfaz
-        // this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
+        this.USUARIO = Auth.currentUser!!
         initUI()
     }
 
@@ -66,7 +83,7 @@ class LugaresFragment : Fragment() {
      * Inicia la Interfaz de Usuario
      */
     private fun initUI() {
-        Log.i("Lugares", "Init IU")
+        Log.i(TAG, "Init IU")
         iniciarSwipeRecarga()
         cargarLugares()
         iniciarSpinner()
@@ -75,7 +92,7 @@ class LugaresFragment : Fragment() {
         lugaresFabNuevo.setOnClickListener { nuevoElemento() }
         lugaresButtonVoz.setOnClickListener { controlPorVoz() }
 
-        Log.i("Lugares", "Fin la IU")
+        Log.i(TAG, "Fin la IU")
     }
 
     private fun iniciarSpinner() {
@@ -165,7 +182,7 @@ class LugaresFragment : Fragment() {
                     val itemView = viewHolder.itemView
                     val height = itemView.bottom.toFloat() - itemView.top.toFloat()
                     val width = height / 3
-                    // Si es dirección a la derecha: izquierda->derecta
+                    // Si es dirección a la derecha: izquierda->derecha
                     // Pintamos de azul y ponemos el icono
                     if (dX > 0) {
                         // Pintamos el botón izquierdo
@@ -184,7 +201,7 @@ class LugaresFragment : Fragment() {
     }
 
     /**
-     * Mostramos el elemento iquierdo
+     * Mostramos el elemento izquerdo
      * @param canvas Canvas
      * @param dX Float
      * @param itemView View
@@ -233,7 +250,7 @@ class LugaresFragment : Fragment() {
      * Abre un nuevo elemeneto
      */
     private fun nuevoElemento() {
-        Log.i("Lugares", "Nuevo lugar")
+        Log.i(TAG, "Nuevo lugar")
         abrirDetalle(null, Modo.INSERTAR, this, null)
     }
 
@@ -250,10 +267,15 @@ class LugaresFragment : Fragment() {
      * @param position Int
      */
     private fun editarElemento(position: Int) {
-        Log.i("Lugares", "Editando el elemento pos: " + position)
+        Log.i(TAG, "Editando el elemento pos: $position")
         abrirDetalle(LUGARES[position], Modo.ACTUALIZAR, this, position)
     }
 
+    /**
+     * Actualiza la lista de items
+     * @param item Lugar
+     * @param position Int
+     */
     fun actualizarItemLista(item: Lugar, position: Int) {
         this.lugaresAdapter.updateItem(item, position)
         lugaresAdapter.notifyDataSetChanged()
@@ -264,7 +286,7 @@ class LugaresFragment : Fragment() {
      * @param position Int
      */
     private fun borrarElemento(position: Int) {
-        Log.i("Lugares", "Borrando el elemento pos: " + position)
+        Log.i(TAG, "Borrando el elemento pos: $position")
         abrirDetalle(LUGARES[position], Modo.ELIMINAR, this, position)
     }
 
@@ -286,7 +308,7 @@ class LugaresFragment : Fragment() {
      * @param lugar Lugar
      */
     private fun abrirElemento(lugar: Lugar) {
-        Log.i("Lugares", "Visualizando el elemento: " + lugar.id)
+        Log.i(TAG, "Visualizando el elemento: ${lugar.id}")
         abrirDetalle(lugar, Modo.VISUALIZAR, this, null)
     }
 
@@ -416,29 +438,47 @@ class LugaresFragment : Fragment() {
     private fun cargarLugares() {
         lugaresSwipeRefresh.isRefreshing = true
         Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
-        val clientREST = MisLugaresAPI.service
-        // Ontenemos los lugares filtrados por el usuario, para no mostrar otros.
-        val call: Call<List<LugarDTO>> = clientREST.lugarGetAllByUserID("USUARIO.id")
-        call.enqueue((object : Callback<List<LugarDTO>> {
-
-            override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "LugaresGetAll ok")
-                    LUGARES = (LugarMapper.fromDTO(response.body() as MutableList<LugarDTO>)) as MutableList<Lugar>
-                    Log.i("Lugares", "Lista de lugares de tamaño: " + LUGARES.size)
-                    procesarLugares()
-                } else {
-                    Log.i("REST", "Error: LugaresGetAll isSuccessful")
+        // Podemos hacerlo de dos maneras, manual o suscribirnos en tiempo real
+        // https://firebase.google.com/docs/firestore/query-data/get-data
+        // https://firebase.google.com/docs/firestore/query-data/listen
+        // Yo lo voy a hacer en tiempo real. Pero debes sopesar esta decisión
+        // Si hubiese varios clientes y los datos fuesen cmpartidos, los detectaría sin recargar.
+       /* FireStore.collection("lugares")
+            .addSnapshotListener { value, e ->
+                if (e != null) {
+                    Toast.makeText(context,
+                        "Error al acceder al servicio: " + e.localizedMessage,
+                        Toast.LENGTH_LONG)
+                        .show()
+                    return@addSnapshotListener
                 }
+                LUGARES.clear()
+                for (doc in value!!) {
+                    // Trasformamos el objeto
+                    val miLugar = doc.toObject(Lugar::class.java)
+                    LUGARES.add(miLugar);
+                }
+                Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
+                procesarLugares()
+            }*/
+        // Sin tiempo real
+        FireStore.collection("lugares")
+            .get()
+            .addOnSuccessListener { result ->
+                LUGARES.clear()
+                for (document in result) {
+                    val miLugar = document.toObject(Lugar::class.java)
+                    LUGARES.add(miLugar);
+                }
+                Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
+                procesarLugares()
             }
-
-            override fun onFailure(call: Call<List<LugarDTO>>, t: Throwable) {
+            .addOnFailureListener { exception ->
                 Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
+                    "Error al acceder al servicio: " + exception.localizedMessage,
                     Toast.LENGTH_LONG)
                     .show()
             }
-        }))
     }
 
     /**
@@ -454,7 +494,7 @@ class LugaresFragment : Fragment() {
         lugaresAdapter.notifyDataSetChanged()
         lugaresRecycler.setHasFixedSize(true)
         lugaresSwipeRefresh.isRefreshing = false
-        Toast.makeText(context, "Lugares cargados", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "Lugares actualizados", Toast.LENGTH_LONG).show()
     }
 
     /**
