@@ -2,7 +2,6 @@ package com.joseluisgs.mislugares.Services.Lugares
 
 import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
 import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
-import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioDTO
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -11,32 +10,6 @@ import retrofit2.http.*
  * de nuestra API RESR
  */
 interface MisLugaresREST {
-    
-    // USUARIOS
-    // Obtener Sesion por ID de usuario
-    @GET("usuarios/{id}")
-    fun usuarioGetById(@Path("id") id: String): Call<UsuarioDTO>
-
-    // LUGARES
-    // Obtiene todos los lugares
-    @GET("lugares/")
-    fun lugarGetAll(): Call<List<LugarDTO>>
-
-    // Obtiene todos los lugares que tengan en su campo el userID que le paso
-    @GET("lugares/")
-    fun lugarGetAllByUserID(@Query("usuarioID") usuarioID: String): Call<List<LugarDTO>>
-
-    // Actualiza un lugar
-    @PUT("lugares/{id}")
-    fun lugarUpdate(@Path("id") id: String, @Body lugarDTO: LugarDTO): Call<LugarDTO>
-
-    // Inserta un lugar
-    @POST("lugares/")
-    fun lugarPost(@Body lugar: LugarDTO): Call<LugarDTO>
-
-    // Elimina el lugar
-    @DELETE("lugares/{id}")
-    fun lugarDelete(@Path("id") id: String): Call<LugarDTO>
 
     // FOTOGRAFIAS
     // Obtener Fotografias por su id

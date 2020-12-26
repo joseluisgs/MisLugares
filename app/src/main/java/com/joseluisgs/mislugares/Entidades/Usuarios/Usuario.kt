@@ -49,7 +49,6 @@ data class Usuario(
         github: String,
     ) :
             this((UUID.randomUUID().toString()), nombre, login, password, avatar, correo, twitter, github)
-    // this((System.currentTimeMillis() / 1000L), nombre, login, password, avatar, correo, twitter, github)
 
     override fun toString(): String {
         return "Usuario(id=$id, nombre='$nombre', login='$login', password='$password', avatar='$avatar', correo='$correo', twitter='$twitter', github='$github')"

@@ -175,7 +175,6 @@ object BackupController {
      * Inserta los datos
      */
     private fun insertarDatos() {
-        BACKUP.lugares.forEach { insertarLugar(it) }
         BACKUP.fotografias.forEach { insertarFotografia(it) }
     }
 
@@ -202,29 +201,6 @@ object BackupController {
         }))
     }
 
-    /**
-     * Inserta un Lugar
-     * @param it Lugar
-     */
-    private fun insertarLugar(lugar: Lugar) {
-        val clientREST = MisLugaresAPI.service
-        val call: Call<LugarDTO> = clientREST.lugarPost((LugarMapper.toDTO(lugar)))
-        call.enqueue((object : Callback<LugarDTO> {
-
-            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "lugarPost ok")
-                } else {
-                    Log.i("REST", "Error lugarPost isSeccesful")
-                    Log.i("Insertar", "Error al insertar: " + response.message())
-                }
-            }
-
-            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
-                Log.i("REST", "Error al acceder al servicio: " + t.localizedMessage)
-            }
-        }))
-    }
 
     /**
      * Elimina los datos existentes
@@ -232,39 +208,12 @@ object BackupController {
     private fun eliminarDatos() {
         // Podría lanzar por dos lados eliminar fotografía y lugar, pero si falla, voy de uno en uno y no dejo nada suelto, o eso espero :)
         BACKUP.lugares.forEach {
-            eliminarLugar(it)
+           // eliminarLugar(it)
         }
 //        BACKUP.fotografias.forEach {
 //            eliminarFotografia(it.id)
 //        }
     }
-
-    /**
-     * Elimina un lugar
-     * @param it Lugar
-     */
-    private fun eliminarLugar(lugar: Lugar) {
-        eliminarFotografia(lugar.imagenID)
-        // Borramos el lugar
-        val clientREST = MisLugaresAPI.service
-        val call: Call<LugarDTO> = clientREST.lugarDelete(lugar.id)
-        call.enqueue((object : Callback<LugarDTO> {
-
-            override fun onResponse(call: Call<LugarDTO>, response: Response<LugarDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "lugarDelete ok")
-                } else {
-                    Log.i("REST", "Error: lugarDelete isSuccessful")
-                    Log.i("Eliminar", "Error al eliminar: " + response.message())
-                }
-            }
-
-            override fun onFailure(call: Call<LugarDTO>, t: Throwable) {
-                Log.i("REST", "Error al acceder al servicio: " + t.localizedMessage)
-            }
-        }))
-    }
-
 
     /**
      * Elimina una fotografia
