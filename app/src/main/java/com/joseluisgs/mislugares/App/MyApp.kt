@@ -10,43 +10,21 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import io.realm.Realm
-import io.realm.RealmConfiguration
-
 
 class MyApp : Application() {
     // Propiedades, getters and setters (visibilidad) globales
-    lateinit var SESION_USUARIO: Usuario
     var APP_PERMISOS = false
         private set
-
-    // private set
-    private val BD_NOMBRE = "MIS_LUGARES_BD"
-    private val BD_VERSION = 1L
 
 
     override fun onCreate() {
         super.onCreate()
         Log.i("Config", "Init Configuración")
-        initRealmBD()
+        // Aquí iría cualquier cosa de configuración que queramos
         Log.i("Config", "Fin Configuración")
     }
 
 
-    /**
-     * Inicia Realm
-     */
-    private fun initRealmBD() {
-        Log.i("Config", "Init Realm")
-        Realm.init(applicationContext)
-        val config = RealmConfiguration.Builder()
-            .name(BD_NOMBRE)
-            .schemaVersion(BD_VERSION) // Versión de esquema estamos trabajando, si lo cambiamos, debemos incrementar
-            .deleteRealmIfMigrationNeeded() // Podemos borrar los datos que ya haya si cambiamos el esquema,
-            .build()
-        Realm.setDefaultConfiguration(config)
-        Log.i("Config", "Fin Realm")
-    }
 
     /**
      * Comprobamos los permisos de la aplicación

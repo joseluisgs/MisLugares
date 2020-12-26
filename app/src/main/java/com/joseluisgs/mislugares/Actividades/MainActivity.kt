@@ -35,7 +35,6 @@ import com.joseluisgs.mislugares.Utilidades.Fotos
 import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.Utils
 import com.squareup.picasso.Picasso
-import io.realm.Realm
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -248,8 +247,6 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        // Cerramos REALM
-        Realm.getDefaultInstance().close() // limpiamos realm
         limpiarBasura() // Por si acaso
         Log.i("Destroy", "Ejecutando OnDestroy")
     }
