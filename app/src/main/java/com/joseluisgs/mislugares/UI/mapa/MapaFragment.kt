@@ -21,18 +21,11 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
-import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import kotlinx.android.synthetic.main.fragment_mapa.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {

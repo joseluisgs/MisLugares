@@ -29,7 +29,7 @@ data class Lugar(
     var votos: Int = 0,
     var time: String = "",
     var usuarioID: String = "",
-){
+) {
     constructor(
         nombre: String,
         tipo: String,
@@ -93,6 +93,4 @@ data class Lugar(
         result = 31 * result + usuarioID.hashCode()
         return result
     }
-
-
 }

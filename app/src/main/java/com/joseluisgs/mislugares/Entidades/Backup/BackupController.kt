@@ -5,17 +5,12 @@ import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import kotlinx.coroutines.*
@@ -143,100 +138,6 @@ object BackupController {
             }
     }
 
-    /**
-     * Importa os datos
-     * @param context Context
-     * @return Boolean
-     */
-    fun importarDatos(context: Context): Boolean {
-        val input = importar(context)
-        BACKUP = Gson().fromJson(input, Backup::class.java)
-        return procesarImportar()
-    }
-
-    /**
-     * Procesa el exportar los datos
-     * @param backup Backup
-     * @return Boolean
-     */
-    private fun procesarImportar(): Boolean {
-        // Vamos a insertar el usuario,
-        try {
-            eliminarDatos()
-            insertarDatos()
-            return true
-        } catch (ex: Exception) {
-            Log.i("Backup", "Error: " + ex.localizedMessage)
-            return false
-        }
-    }
-
-    /**
-     * Inserta los datos
-     */
-    private fun insertarDatos() {
-        BACKUP.fotografias.forEach { insertarFotografia(it) }
-    }
-
-    /**
-     * Inserta una fotografia
-     * @param it Fotografia
-     */
-    private fun insertarFotografia(fotografia: Fotografia) {
-        val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaPost((FotografiaMapper.toDTO(fotografia)))
-        call.enqueue((object : Callback<FotografiaDTO> {
-
-            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "fotografiaPost ok")
-                } else {
-                    Log.i("REST", "Error fotografiaPost isSeccesful")
-                }
-            }
-
-            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
-                Log.i("REST", "Error al acceder al servicio: " + t.localizedMessage)
-            }
-        }))
-    }
-
-
-    /**
-     * Elimina los datos existentes
-     */
-    private fun eliminarDatos() {
-        // Podría lanzar por dos lados eliminar fotografía y lugar, pero si falla, voy de uno en uno y no dejo nada suelto, o eso espero :)
-        BACKUP.lugares.forEach {
-           // eliminarLugar(it)
-        }
-//        BACKUP.fotografias.forEach {
-//            eliminarFotografia(it.id)
-//        }
-    }
-
-    /**
-     * Elimina una fotografia
-     * @param it Fotografia
-     */
-    private fun eliminarFotografia(fotografiaID: String) {
-        val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaDelete((fotografiaID))
-        call.enqueue((object : Callback<FotografiaDTO> {
-
-            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "fotografiaDelete ok")
-                } else {
-                    Log.i("REST", "Error: fotografiaDelete isSuccessful")
-                }
-            }
-
-            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
-                Log.i("REST", "Error al acceder al servicio: " + t.localizedMessage)
-            }
-        }))
-    }
 
     /**
      * Archiva los datos

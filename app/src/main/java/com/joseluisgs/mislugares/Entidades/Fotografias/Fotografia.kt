@@ -1,4 +1,5 @@
 package com.joseluisgs.mislugares.Entidades.Fotografias
+
 import java.util.*
 
 data class Fotografia(
