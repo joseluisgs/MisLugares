@@ -12,11 +12,7 @@ import com.google.gson.Gson
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
-import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import kotlinx.coroutines.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.LinkOption
@@ -38,9 +34,9 @@ object BackupController {
     private lateinit var FOTOGRAFIAS: MutableList<Fotografia>
     private lateinit var BACKUP: Backup
     private val FireStore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private val Auth: FirebaseAuth =  Firebase.auth
+    private val Auth: FirebaseAuth = Firebase.auth
 
-    private const val TAG ="Backup"
+    private const val TAG = "Backup"
 
     val scope = CoroutineScope(Job() + Dispatchers.Main)
 
@@ -58,15 +54,15 @@ object BackupController {
      * @param context Context
      * @return Boolean
      */
-    fun exportarDatos(context: Context,): Boolean {
+    fun exportarDatos(context: Context): Boolean {
 
         // Recojo los datos
         // Primero fotografías
         scope.launch {
             val tareas = listOf(
-                async {recuperarUsuario(context)},
-                async {recuperarFotografias(context)},
-                async {recuperarLugares(context)}
+                async { recuperarUsuario(context) },
+                async { recuperarFotografias(context) },
+                async { recuperarLugares(context) }
             )
             tareas.awaitAll()
         }
@@ -102,7 +98,7 @@ object BackupController {
      * @param context Context
      */
     private fun recuperarLugares(context: Context) {
-        LUGARES = mutableListOf();
+        LUGARES = mutableListOf()
         FireStore.collection("lugares").whereEqualTo("usuarioID", Auth.currentUser?.uid).get()
             .addOnSuccessListener { result ->
                 for (document in result) {
