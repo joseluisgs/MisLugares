@@ -79,7 +79,6 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 - [HTTP Código de estado de respuestas](https://developer.mozilla.org/es/docs/Web/HTTP/Status)
 - [Retrofit](https://square.github.io/retrofit/)
 - [Firebase](https://firebase.google.com/docs?hl=es)
-- [Asincronía y Coroutines](https://developer.android.com/kotlin/coroutines-adv)
 
 ### Uso del Firebase v3.X.X
 
@@ -88,7 +87,6 @@ Es por ello que es fundamental que asegures cómo configurar tanto Firebase, com
 perfectamente. Te recomiendo sigas siempre la guía oficial de [Firebase](https://firebase.google.com/docs/android/setup?hl=es)
 o [consultes otras alternativas](https://www.youtube.com/watch?v=IiuKAmgRYeM&list=PLNdFk2_brsRcaGhfeeiVkW72qTYcn_nfQ) 
 actualizadas para ello si no será imposible que lo integres en tu propio proyecto. Cuidado con el nombre de paquetes.
-Además se ha mejorado la productividad manejando la asincronía usando [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html).
 
 ### Uso del servidor propio para API REST v2.X.X
 
