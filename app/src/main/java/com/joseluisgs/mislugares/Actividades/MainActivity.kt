@@ -36,6 +36,7 @@ import com.squareup.picasso.Picasso
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+
     // Servicios de Firebase
     private lateinit var Auth: FirebaseAuth
 
