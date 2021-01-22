@@ -61,9 +61,7 @@ import java.util.*
  */
 class LugarDetalleFragment(
     private var LUGAR: Lugar? = null,
-    private val MODO: Modo? = Modo.INSERTAR,
-    private val ANTERIOR: LugaresFragment? = null,
-    private val LUGAR_INDEX: Int? = null,
+    private val MODO: Modo? = Modo.INSERTAR
 ) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     // Firebase
     private lateinit var Auth: FirebaseAuth
@@ -126,7 +124,7 @@ class LugarDetalleFragment(
      */
     private fun initIU() {
         // Actualizo la vista anterior para que no se quede el swipe marcado
-        ANTERIOR?.actualizarVistaLista()
+        // ANTERIOR?.actualizarVistaLista()
         initPermisos()
         initUsuario()
         detalleProgressBar.visibility = View.INVISIBLE
@@ -209,25 +207,17 @@ class LugarDetalleFragment(
                     LUGAR_FOTOGRAFIA = document.toObject(Fotografia::class.java)
                     Log.i(TAG, "fotografiasGetById ok: ${document.data}")
                     IMAGEN_URI = Uri.parse(LUGAR_FOTOGRAFIA!!.uri)
-                    // Debemos cargar lagunas cosas asíncroonamente
+                    // Debemos cargar asíncronamente
                     Picasso.get()
                         .load(LUGAR_FOTOGRAFIA?.uri)
                         .into(detalleLugarImagen, object : com.squareup.picasso.Callback {
                             override fun onSuccess() {
                                 FOTO = (detalleLugarImagen.drawable as BitmapDrawable).bitmap
                             }
-
                             override fun onError(ex: Exception?) {
                                 Log.i(TAG, "Error: Descargar fotografia Picasso")
                             }
                         })
-                    /* Picasso.get()
-                         // .load(R.drawable.user_avatar)
-                         .load(LUGAR_FOTOGRAFIA?.uri)
-                         .into(detalleLugarImagen)
-                     try {
-                         FOTO = (detalleLugarImagen.drawable as BitmapDrawable).bitmap
-                     } catch (ex: Exception){}*/
                 } else {
                     Log.i(TAG, "Error: No exite fotografía")
                     imagenPorDefecto()
@@ -260,6 +250,9 @@ class LugarDetalleFragment(
 
     }
 
+    /**
+     * Inicia el modo Actualizar
+     */
     fun initModoActualizar() {
         Log.i("Lugares", "Modo Actualizar")
         initModoVisualizar()
@@ -312,11 +305,9 @@ class LugarDetalleFragment(
             .document(LUGAR!!.id)
             .set(LUGAR!!)
             .addOnSuccessListener {
+                // Insertamos su fotografía
                 insertarFotografia(fotografiaID)
                 Log.i(TAG, "Lugar insertado con éxito con id: $LUGAR")
-                // Nos los llevamos una vez se haya insertado la fotografía
-                /* ANTERIOR?.insertarItemLista(LUGAR!!)
-                 volver()*/
             }
             .addOnFailureListener { e -> Log.w(TAG, "Error insertar lugar", e) }
     }
@@ -348,13 +339,13 @@ class LugarDetalleFragment(
                     usuarioID = USUARIO.uid,
                     uri = it.toString()
                 )
+                // Inertamos en la tabla de fotografías
                 FireStore.collection("imagenes")
                     .document(fotografiaID)
                     .set(LUGAR_FOTOGRAFIA!!)
                     .addOnSuccessListener {
                         detalleProgressBar.visibility = View.INVISIBLE
                         Log.i(TAG, "Fotografia insertada con éxito")
-                        // ANTERIOR?.insertarItemLista(LUGAR!!) --> No hace falta con tiempo real
                         Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show()
                         volver()
                     }
@@ -407,7 +398,6 @@ class LugarDetalleFragment(
                 .addOnSuccessListener {
                     detalleProgressBar.visibility = View.INVISIBLE
                     Log.i(TAG, "Fotografia eliminada con exito!")
-                    // ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
                     Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show()
                     volver()
                 }
@@ -443,15 +433,16 @@ class LugarDetalleFragment(
             longitud = posicion?.longitude.toString()
             time = Instant.now().toString()
         }
+        // Isertamos
         FireStore.collection("lugares")
             .document(LUGAR!!.id)
             .set(LUGAR!!)
             .addOnSuccessListener {
                 Log.i(TAG, "Lugar actualizado con éxito con id: " + LUGAR!!.id)
                 if (IMAGEN_URI.toString() != LUGAR_FOTOGRAFIA?.uri) {
+                    // Actualizamos la imagen
                     actualizarFotografia()
                 } else {
-                    // ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!) --> No hace falta por Tiempo Real
                     Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show()
                     volver()
                 }
@@ -460,6 +451,9 @@ class LugarDetalleFragment(
             .addOnFailureListener { e -> Log.w(TAG, "Error actualizar lugar", e) }
     }
 
+    /**
+     * Actualiza la fotografía
+     */
     private fun actualizarFotografia() {
         // Subimos la nueva con el nombre antiguo (todo queda igual)
         val storageRef = Storage.reference
@@ -482,7 +476,6 @@ class LugarDetalleFragment(
                     .addOnSuccessListener {
                         detalleProgressBar.visibility = View.INVISIBLE
                         Log.i(TAG, "forografia update ok")
-                        ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
                         Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show()
                         volver()
                     }
@@ -528,7 +521,6 @@ class LugarDetalleFragment(
             setPositiveButton(R.string.aceptar) { _, _ ->
                 when (MODO) {
                     Modo.INSERTAR -> insertar()
-                    // VISUALIZAR -> initModoVisualizar
                     Modo.ELIMINAR -> eliminar()
                     Modo.ACTUALIZAR -> actualizar()
                     else -> {

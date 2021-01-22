@@ -31,7 +31,6 @@ import com.joseluisgs.mislugares.UI.lugares.filtro.FiltroController
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import kotlinx.android.synthetic.main.fragment_lugares.*
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
 
 
@@ -89,6 +88,9 @@ class LugaresFragment : Fragment() {
         Log.i(TAG, "Fin la IU")
     }
 
+    /**
+     * Inicia el Spinner
+     */
     private fun iniciarSpinner() {
         val tipoBusqueda = resources.getStringArray(R.array.tipos_busqueda)
         val adapter = ArrayAdapter(context!!,
@@ -156,7 +158,7 @@ class LugaresFragment : Fragment() {
                 }
             }
 
-            // Dibujamos los botones y eveneto. Nos lo creemos :):)
+            // Dibujamos los botones y evento. Nos lo creemos :):)
             // IMPORTANTE
             // Para que no te explote las imagenes deben ser PNG
             // Así que añade un IMAGE ASEET bjándtelos de internet
@@ -245,13 +247,13 @@ class LugaresFragment : Fragment() {
      */
     private fun nuevoElemento() {
         Log.i(TAG, "Nuevo lugar")
-        abrirDetalle(null, Modo.INSERTAR, this, null)
+        abrirDetalle(null, Modo.INSERTAR)
     }
 
     /**
      * Inserta un elemento en la lista
      */
-    fun insertarItemLista(item: Lugar) {
+    private fun insertarItemLista(item: Lugar) {
         this.lugaresAdapter.addItem(item)
         lugaresAdapter.notifyDataSetChanged()
     }
@@ -262,7 +264,9 @@ class LugaresFragment : Fragment() {
      */
     private fun editarElemento(position: Int) {
         Log.i(TAG, "Editando el elemento pos: $position")
-        abrirDetalle(LUGARES[position], Modo.ACTUALIZAR, this, position)
+        // Para que no se quede el elemento de modificar o borrar marcado al deslizar
+        actualizarVistaLista()
+        abrirDetalle(LUGARES[position], Modo.ACTUALIZAR)
     }
 
     /**
@@ -270,7 +274,7 @@ class LugaresFragment : Fragment() {
      * @param item Lugar
      * @param position Int
      */
-    fun actualizarItemLista(item: Lugar, position: Int) {
+    private fun actualizarItemLista(item: Lugar, position: Int) {
         this.lugaresAdapter.updateItem(item, position)
         lugaresAdapter.notifyDataSetChanged()
     }
@@ -281,19 +285,23 @@ class LugaresFragment : Fragment() {
      */
     private fun borrarElemento(position: Int) {
         Log.i(TAG, "Borrando el elemento pos: $position")
-        abrirDetalle(LUGARES[position], Modo.ELIMINAR, this, position)
+        // Para que no se quede el elemento de modificar o borrar marcado al deslizar
+        abrirDetalle(LUGARES[position], Modo.ELIMINAR)
     }
 
     /**
      * Elimina un elemento de la vista
      * @param position Int
      */
-    fun eliminarItemLista(position: Int) {
+    private fun eliminarItemLista(position: Int) {
         this.lugaresAdapter.removeItem(position)
         lugaresAdapter.notifyDataSetChanged()
     }
 
-    fun actualizarVistaLista() {
+    /**
+     * Actualizamos la vista para evitar que se quede pulsado al deslizar.
+     */
+    private fun actualizarVistaLista() {
         lugaresRecycler.adapter = lugaresAdapter
     }
 
@@ -303,24 +311,24 @@ class LugaresFragment : Fragment() {
      */
     private fun abrirElemento(lugar: Lugar) {
         Log.i(TAG, "Visualizando el elemento: ${lugar.id}")
-        abrirDetalle(lugar, Modo.VISUALIZAR, this, null)
+        abrirDetalle(lugar, Modo.VISUALIZAR)
     }
 
     /**
      * Abre el detalle del item
      * @param lugar Lugar?
      * @param modo Modo?
-     * @param anterior LugaresFragment?
-     * @param position Int?
      */
-    private fun abrirDetalle(lugar: Lugar?, modo: Modo?, anterior: LugaresFragment?, position: Int?) {
+    private fun abrirDetalle(lugar: Lugar?, modo: Modo?) {
         Log.i("Lugares", "Abriendo el elemento pos: " + lugar?.id)
-        val lugarDetalle = LugarDetalleFragment(lugar, modo, anterior, position)
+        val lugarDetalle = LugarDetalleFragment(lugar, modo)
         val transaction = activity!!.supportFragmentManager.beginTransaction()
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.add(R.id.nav_host_fragment, lugarDetalle)
         transaction.addToBackStack(null)
         transaction.commit()
+        // Para evitar que se quede pulsado un elemento que deslizamos
+        actualizarVistaLista()
     }
 
     /**
@@ -420,9 +428,6 @@ class LugaresFragment : Fragment() {
             // Votos
             Filtro.VOTOS_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.votos.compareTo(l2.votos) }
             Filtro.VOTOS_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l2.votos.compareTo(l1.votos) }
-
-            else -> {
-            }
         }
     }
 
@@ -441,7 +446,9 @@ class LugaresFragment : Fragment() {
         // https://firebase.google.com/docs/firestore/query-data/get-data
         // https://firebase.google.com/docs/firestore/query-data/listen
         // Yo lo voy a hacer en tiempo real. Pero debes sopesar esta decisión
-        // Si hubiese varios clientes y los datos fuesen cmpartidos, los detectaría sin recargar.
+        // Si hubiese varios clientes y los datos fuesen compartidos, los detectaría sin recargar (swipe).
+        // Esto nos ahorra otro codigo que teneiamos por otro lado (lugardetallefragmen) donde obligamos a actualizar la Interfaz
+        // Ahora lo hace,os todo al estar suscritos desde aquí
         FireStore.collection("lugares")
             .addSnapshotListener { value, e ->
                 if (e != null) {
@@ -457,116 +464,93 @@ class LugaresFragment : Fragment() {
                     when (doc.type) {
                         DocumentChange.Type.ADDED -> {
                             Log.i(TAG, "ADDED  ${doc.document.data}")
-                            insertarDatoLista(doc.document.data);
+                            insertarDocumento(doc.document.data)
                         }
                         DocumentChange.Type.MODIFIED -> {
                             Log.i(TAG, "MODIFIED: ${doc.document.data}")
-                            modificarDatoLista(doc.document.data);
+                            modificarDocumento(doc.document.data)
                         }
                         DocumentChange.Type.REMOVED -> {
                             Log.i(TAG, "REMOVED: ${doc.document.data}")
-                            eliminarDatoLista(doc.document.data);
+                            eliminarDocumento(doc.document.data)
                         }
                     }
-                    // Trasformamos el objeto
-                    // val miLugar = doc.toObject(Lugar::class.java)
-                    // LUGARES.add(miLugar);
                 }
-                // Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
             }
-        // Sin tiempo real
-      /*  FireStore.collection("lugares")
-            .get()
-            .addOnSuccessListener { result ->
-                LUGARES = result.toObjects(Lugar::class.java)
-                Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
-                procesarLugares()
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(context,
-                    "Error al acceder al servicio: " + exception.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }*/
+        // Sin tiempo real, entonces si necesiariamos refrescar y tener metodos en detalle que aactualicen la lista
+        /*  FireStore.collection("lugares")
+              .get()
+              .addOnSuccessListener { result ->
+                  LUGARES = result.toObjects(Lugar::class.java)
+                  Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
+                  procesarLugares()
+              }
+              .addOnFailureListener { exception ->
+                  Toast.makeText(context,
+                      "Error al acceder al servicio: " + exception.localizedMessage,
+                      Toast.LENGTH_LONG)
+                      .show()
+              }*/
     }
 
     /**
      * Elimina un dato de una lista
      * @param doc Map<String, Any>
      */
-    private fun eliminarDatoLista(doc: Map<String, Any>) {
-        val miLugar = Lugar (
-            id = doc["id"].toString(),
-            nombre = doc["nombre"].toString(),
-            tipo = doc["tipo"].toString(),
-            fecha =doc["fecha"].toString(),
-            latitud = doc["latitud"].toString(),
-            longitud = doc["longitud"].toString(),
-            imagenID = doc["imagenID"].toString(),
-            favorito = (doc["favorito"].toString().toBoolean()),
-            votos = doc["votos"].toString().toInt(),
-            time = doc["time"].toString(),
-            usuarioID = doc["usuarioID"].toString()
-        )
-        Log.i(TAG, "Modificando lugar: ${miLugar.id}");
+    private fun eliminarDocumento(doc: Map<String, Any>) {
+        val miLugar = documentToLugar(doc)
+        Log.i(TAG, "Elimando lugar: ${miLugar.id}")
         // Buscamos que esté
-        val index = LUGARES.indexOf(miLugar);
-        if(index>=0)
-            eliminarItemLista(index);
+        val index = LUGARES.indexOf(miLugar)
+        if (index >= 0)
+            eliminarItemLista(index)
     }
+
 
     /**
      * Modifica el dato de una lista
      * @param doc Map<String, Any>
      */
-    private fun modificarDatoLista(doc: Map<String, Any>) {
-        val miLugar = Lugar (
-            id = doc["id"].toString(),
-            nombre = doc["nombre"].toString(),
-            tipo = doc["tipo"].toString(),
-            fecha =doc["fecha"].toString(),
-            latitud = doc["latitud"].toString(),
-            longitud = doc["longitud"].toString(),
-            imagenID = doc["imagenID"].toString(),
-            favorito = (doc["favorito"].toString().toBoolean()),
-            votos = doc["votos"].toString().toInt(),
-            time = doc["time"].toString(),
-            usuarioID = doc["usuarioID"].toString()
-        )
-        Log.i(TAG, "Eliminando lugar: ${miLugar.id}");
-        // Buscamos que esté
-        val index = LUGARES.indexOf(miLugar);
-        if(index>=0)
-            actualizarItemLista(miLugar,index);
+    private fun modificarDocumento(doc: Map<String, Any>) {
+        val miLugar = documentToLugar(doc)
+        Log.i(TAG, "Modificando lugar: ${miLugar.id}")
+        // Buscamos que esté,
+        val index = LUGARES.indexOf(miLugar)
+        if (index >= 0)
+            actualizarItemLista(miLugar, index)
     }
+
+    /**
+     * Devuelve un lugar de un documento (mapa)
+     * @param doc Map<String, Any>
+     * @return Lugar
+     */
+    private fun documentToLugar(doc: Map<String, Any>) = Lugar(
+        id = doc["id"].toString(),
+        nombre = doc["nombre"].toString(),
+        tipo = doc["tipo"].toString(),
+        fecha = doc["fecha"].toString(),
+        latitud = doc["latitud"].toString(),
+        longitud = doc["longitud"].toString(),
+        imagenID = doc["imagenID"].toString(),
+        favorito = (doc["favorito"].toString().toBoolean()),
+        votos = doc["votos"].toString().toInt(),
+        time = doc["time"].toString(),
+        usuarioID = doc["usuarioID"].toString()
+    )
 
     /**
      * Inserta el dato en una lista
      * @param doc MutableMap<String, Any>
      */
-    private fun insertarDatoLista(doc: MutableMap<String, Any>) {
-        val miLugar = Lugar (
-            id = doc["id"].toString(),
-            nombre = doc["nombre"].toString(),
-            tipo = doc["tipo"].toString(),
-            fecha =doc["fecha"].toString(),
-            latitud = doc["latitud"].toString(),
-            longitud = doc["longitud"].toString(),
-            imagenID = doc["imagenID"].toString(),
-            favorito = (doc["favorito"].toString().toBoolean()),
-            votos = doc["votos"].toString().toInt(),
-            time = doc["time"].toString(),
-            usuarioID = doc["usuarioID"].toString()
-        )
-        Log.i(TAG, "Añadiendo lugar: ${miLugar.id}");
-        // Buscamos que no este por si se ha disparado el insertar vmetodo ADD
-        val existe = LUGARES.any{ lugar -> lugar.id == miLugar.id }
-        if(!existe)
+    private fun insertarDocumento(doc: MutableMap<String, Any>) {
+        val miLugar = documentToLugar(doc)
+        Log.i(TAG, "Añadiendo lugar: ${miLugar.id}")
+        // Buscamos que no este... para evitar distintas llamadas de ADD
+        val existe = LUGARES.any { lugar -> lugar.id == miLugar.id }
+        if (!existe)
             insertarItemLista(miLugar)
-        // lugaresAdapter.notifyDataSetChanged()
-        // lugaresRecycler.setHasFixedSize(true)
     }
-
 
 
     /**
@@ -575,7 +559,7 @@ class LugaresFragment : Fragment() {
     private fun visualizarListaItems() {
         ordenarLugares()
         try {
-            lugaresRecycler.adapter = lugaresAdapter
+            actualizarVistaLista()
         } catch (ex: Exception) {
         }
     }

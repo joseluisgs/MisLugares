@@ -21,6 +21,7 @@ class LugaresListAdapter(
     private val accionPrincipal: (Lugar) -> Unit,
 
     ) : RecyclerView.Adapter<LugaresListAdapter.LugarViewHolder>() {
+
     // Firebase
     private var FireStore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
@@ -63,7 +64,6 @@ class LugaresListAdapter(
                 accionPrincipal(listaLugares[position])
             }
     }
-
 
     /**
      * Elimina un item de la lista
