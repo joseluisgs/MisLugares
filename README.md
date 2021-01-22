@@ -82,7 +82,8 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 
 ### Uso del Firebase v3.X.X
 
-En la versión 3.X.X se hace uso de Google Firebase como sistema o conjunto de servicios a usar por nuestro cliente. 
+En la versión 3.X.X se hace uso de Google Firebase como sistema o conjunto de servicios a usar por nuestro cliente: autenticación, 
+base de datos en tiempo real, almacenamiento de ficheros y notificaiones. 
 Es por ello que es fundamental que asegures cómo configurar tanto Firebase, como tu proyecto Android para que funcione 
 perfectamente. Te recomiendo sigas siempre la guía oficial de [Firebase](https://firebase.google.com/docs/android/setup?hl=es)
 o [consultes otras alternativas](https://www.youtube.com/watch?v=IiuKAmgRYeM&list=PLNdFk2_brsRcaGhfeeiVkW72qTYcn_nfQ) 

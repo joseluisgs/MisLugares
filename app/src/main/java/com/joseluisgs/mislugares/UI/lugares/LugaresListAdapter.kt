@@ -176,7 +176,7 @@ class LugaresListAdapter(
             ))
             .addOnSuccessListener {
                 Log.i(TAG, "lugarUpdate ok")
-                holder.itemLugarVotos.text = lugar.votos.toString()
+                // holder.itemLugarVotos.text = lugar.votos.toString() --> Tiempo Real
             }
             .addOnFailureListener { e -> Log.w(TAG, "Error actualiza votos", e) }
     }

@@ -21,14 +21,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
 import com.joseluisgs.mislugares.R
 import com.joseluisgs.mislugares.UI.lugares.filtro.Filtro
 import com.joseluisgs.mislugares.UI.lugares.filtro.FiltroController
+import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import kotlinx.android.synthetic.main.fragment_lugares.*
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 
 
@@ -427,14 +430,19 @@ class LugaresFragment : Fragment() {
      * Carga los lugares
      */
     private fun cargarLugares() {
+        LUGARES.clear()
         lugaresSwipeRefresh.isRefreshing = true
+        lugaresAdapter = LugaresListAdapter(LUGARES) {
+            eventoClicFila(it)
+        }
+        lugaresRecycler.adapter = lugaresAdapter
         Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
         // Podemos hacerlo de dos maneras, manual o suscribirnos en tiempo real
         // https://firebase.google.com/docs/firestore/query-data/get-data
         // https://firebase.google.com/docs/firestore/query-data/listen
         // Yo lo voy a hacer en tiempo real. Pero debes sopesar esta decisión
         // Si hubiese varios clientes y los datos fuesen cmpartidos, los detectaría sin recargar.
-       /* FireStore.collection("lugares")
+        FireStore.collection("lugares")
             .addSnapshotListener { value, e ->
                 if (e != null) {
                     Toast.makeText(context,
@@ -443,17 +451,31 @@ class LugaresFragment : Fragment() {
                         .show()
                     return@addSnapshotListener
                 }
-                LUGARES.clear()
-                for (doc in value!!) {
+                // LUGARES.clear()
+                lugaresSwipeRefresh.isRefreshing = false
+                for (doc in value!!.documentChanges) {
+                    when (doc.type) {
+                        DocumentChange.Type.ADDED -> {
+                            Log.i(TAG, "ADDED  ${doc.document.data}")
+                            insertarDatoLista(doc.document.data);
+                        }
+                        DocumentChange.Type.MODIFIED -> {
+                            Log.i(TAG, "MODIFIED: ${doc.document.data}")
+                            modificarDatoLista(doc.document.data);
+                        }
+                        DocumentChange.Type.REMOVED -> {
+                            Log.i(TAG, "REMOVED: ${doc.document.data}")
+                            eliminarDatoLista(doc.document.data);
+                        }
+                    }
                     // Trasformamos el objeto
-                    val miLugar = doc.toObject(Lugar::class.java)
-                    LUGARES.add(miLugar);
+                    // val miLugar = doc.toObject(Lugar::class.java)
+                    // LUGARES.add(miLugar);
                 }
-                Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
-                procesarLugares()
-            }*/
+                // Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
+            }
         // Sin tiempo real
-        FireStore.collection("lugares")
+      /*  FireStore.collection("lugares")
             .get()
             .addOnSuccessListener { result ->
                 LUGARES = result.toObjects(Lugar::class.java)
@@ -465,24 +487,87 @@ class LugaresFragment : Fragment() {
                     "Error al acceder al servicio: " + exception.localizedMessage,
                     Toast.LENGTH_LONG)
                     .show()
-            }
+            }*/
     }
 
     /**
-     * Procesa los lugares
+     * Elimina un dato de una lista
+     * @param doc Map<String, Any>
      */
-    private fun procesarLugares() {
-        ordenarLugares()
-        lugaresAdapter = LugaresListAdapter(LUGARES) {
-            eventoClicFila(it)
-        }
-        lugaresRecycler.adapter = lugaresAdapter
-        // Avismos que ha cambiado
-        lugaresAdapter.notifyDataSetChanged()
-        lugaresRecycler.setHasFixedSize(true)
-        lugaresSwipeRefresh.isRefreshing = false
-        Toast.makeText(context, "Lugares actualizados", Toast.LENGTH_LONG).show()
+    private fun eliminarDatoLista(doc: Map<String, Any>) {
+        val miLugar = Lugar (
+            id = doc["id"].toString(),
+            nombre = doc["nombre"].toString(),
+            tipo = doc["tipo"].toString(),
+            fecha =doc["fecha"].toString(),
+            latitud = doc["latitud"].toString(),
+            longitud = doc["longitud"].toString(),
+            imagenID = doc["imagenID"].toString(),
+            favorito = (doc["favorito"].toString().toBoolean()),
+            votos = doc["votos"].toString().toInt(),
+            time = doc["time"].toString(),
+            usuarioID = doc["usuarioID"].toString()
+        )
+        Log.i(TAG, "Modificando lugar: ${miLugar.id}");
+        // Buscamos que esté
+        val index = LUGARES.indexOf(miLugar);
+        if(index>=0)
+            eliminarItemLista(index);
     }
+
+    /**
+     * Modifica el dato de una lista
+     * @param doc Map<String, Any>
+     */
+    private fun modificarDatoLista(doc: Map<String, Any>) {
+        val miLugar = Lugar (
+            id = doc["id"].toString(),
+            nombre = doc["nombre"].toString(),
+            tipo = doc["tipo"].toString(),
+            fecha =doc["fecha"].toString(),
+            latitud = doc["latitud"].toString(),
+            longitud = doc["longitud"].toString(),
+            imagenID = doc["imagenID"].toString(),
+            favorito = (doc["favorito"].toString().toBoolean()),
+            votos = doc["votos"].toString().toInt(),
+            time = doc["time"].toString(),
+            usuarioID = doc["usuarioID"].toString()
+        )
+        Log.i(TAG, "Eliminando lugar: ${miLugar.id}");
+        // Buscamos que esté
+        val index = LUGARES.indexOf(miLugar);
+        if(index>=0)
+            actualizarItemLista(miLugar,index);
+    }
+
+    /**
+     * Inserta el dato en una lista
+     * @param doc MutableMap<String, Any>
+     */
+    private fun insertarDatoLista(doc: MutableMap<String, Any>) {
+        val miLugar = Lugar (
+            id = doc["id"].toString(),
+            nombre = doc["nombre"].toString(),
+            tipo = doc["tipo"].toString(),
+            fecha =doc["fecha"].toString(),
+            latitud = doc["latitud"].toString(),
+            longitud = doc["longitud"].toString(),
+            imagenID = doc["imagenID"].toString(),
+            favorito = (doc["favorito"].toString().toBoolean()),
+            votos = doc["votos"].toString().toInt(),
+            time = doc["time"].toString(),
+            usuarioID = doc["usuarioID"].toString()
+        )
+        Log.i(TAG, "Añadiendo lugar: ${miLugar.id}");
+        // Buscamos que no este por si se ha disparado el insertar vmetodo ADD
+        val existe = LUGARES.any{ lugar -> lugar.id == miLugar.id }
+        if(!existe)
+            insertarItemLista(miLugar)
+        // lugaresAdapter.notifyDataSetChanged()
+        // lugaresRecycler.setHasFixedSize(true)
+    }
+
+
 
     /**
      * Visualiza la lista de items

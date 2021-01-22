@@ -354,7 +354,7 @@ class LugarDetalleFragment(
                     .addOnSuccessListener {
                         detalleProgressBar.visibility = View.INVISIBLE
                         Log.i(TAG, "Fotografia insertada con éxito")
-                        ANTERIOR?.insertarItemLista(LUGAR!!)
+                        // ANTERIOR?.insertarItemLista(LUGAR!!) --> No hace falta con tiempo real
                         Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show()
                         volver()
                     }
@@ -407,7 +407,7 @@ class LugarDetalleFragment(
                 .addOnSuccessListener {
                     detalleProgressBar.visibility = View.INVISIBLE
                     Log.i(TAG, "Fotografia eliminada con exito!")
-                    ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
+                    // ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
                     Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show()
                     volver()
                 }
@@ -451,7 +451,7 @@ class LugarDetalleFragment(
                 if (IMAGEN_URI.toString() != LUGAR_FOTOGRAFIA?.uri) {
                     actualizarFotografia()
                 } else {
-                    ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
+                    // ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!) --> No hace falta por Tiempo Real
                     Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show()
                     volver()
                 }
