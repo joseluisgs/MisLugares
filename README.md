@@ -49,7 +49,7 @@ de las distintas funcionalidades que nos aporta como [Authentication](https://fi
 
 #### Referencias
 
-Se destacan las siguientes tecnologías usadas, cuyos enlaces son los mismos que hemos utilizado como apuntes en clase y
+Se destacan las siguientes tecnologías usadas en algún momento o versión del proyecto, cuyos enlaces son los mismos que hemos utilizado como apuntes en clase y
 están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 
 - [Android](https://developer.android.com/docs)
@@ -105,7 +105,7 @@ asegúrate que los scripts de NPM son compatibles y las rutas de tu sistema.
 
 #### Configuración y puesta en marcha
 
-Para arrancar el servidor debes hacer lo siguiente:
+Para arrancar el servidor debes hacer lo siguiente desde la carpeta apirest:
 
 ```bash
 $npm install --> Instala las dependencias necesarias para su uso
