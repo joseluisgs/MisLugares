@@ -18,33 +18,40 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.joseluisgs.mislugares.App.MyApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
-import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.UI.lugares.filtro.Filtro
 import com.joseluisgs.mislugares.UI.lugares.filtro.FiltroController
+import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import kotlinx.android.synthetic.main.fragment_lugares.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class LugaresFragment : Fragment() {
+    // Firebase
+    private lateinit var Auth: FirebaseAuth
+    private lateinit var FireStore: FirebaseFirestore
+
     // Propiedades
     private var LUGARES = mutableListOf<Lugar>()
     private lateinit var lugaresAdapter: LugaresListAdapter //Adaptador de Noticias de Recycler
     private var paintSweep = Paint()
-    private lateinit var USUARIO: Usuario
+    private lateinit var USUARIO: FirebaseUser
 
     // Búsquedas
     private var FILTRO = Filtro.NADA
     private val VOZ = 10
+
+    companion object {
+        private const val TAG = "Lugares"
+    }
 
 
     override fun onCreateView(
@@ -57,8 +64,11 @@ class LugaresFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Servicios de Firebase
+        Auth = Firebase.auth
+        FireStore = FirebaseFirestore.getInstance()
         // Iniciamos la interfaz
-        this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
+        this.USUARIO = Auth.currentUser!!
         initUI()
     }
 
@@ -66,7 +76,7 @@ class LugaresFragment : Fragment() {
      * Inicia la Interfaz de Usuario
      */
     private fun initUI() {
-        Log.i("Lugares", "Init IU")
+        Log.i(TAG, "Init IU")
         iniciarSwipeRecarga()
         cargarLugares()
         iniciarSpinner()
@@ -75,9 +85,12 @@ class LugaresFragment : Fragment() {
         lugaresFabNuevo.setOnClickListener { nuevoElemento() }
         lugaresButtonVoz.setOnClickListener { controlPorVoz() }
 
-        Log.i("Lugares", "Fin la IU")
+        Log.i(TAG, "Fin la IU")
     }
 
+    /**
+     * Inicia el Spinner
+     */
     private fun iniciarSpinner() {
         val tipoBusqueda = resources.getStringArray(R.array.tipos_busqueda)
         val adapter = ArrayAdapter(context!!,
@@ -145,7 +158,7 @@ class LugaresFragment : Fragment() {
                 }
             }
 
-            // Dibujamos los botones y eveneto. Nos lo creemos :):)
+            // Dibujamos los botones y evento. Nos lo creemos :):)
             // IMPORTANTE
             // Para que no te explote las imagenes deben ser PNG
             // Así que añade un IMAGE ASEET bjándtelos de internet
@@ -165,7 +178,7 @@ class LugaresFragment : Fragment() {
                     val itemView = viewHolder.itemView
                     val height = itemView.bottom.toFloat() - itemView.top.toFloat()
                     val width = height / 3
-                    // Si es dirección a la derecha: izquierda->derecta
+                    // Si es dirección a la derecha: izquierda->derecha
                     // Pintamos de azul y ponemos el icono
                     if (dX > 0) {
                         // Pintamos el botón izquierdo
@@ -184,7 +197,7 @@ class LugaresFragment : Fragment() {
     }
 
     /**
-     * Mostramos el elemento iquierdo
+     * Mostramos el elemento izquerdo
      * @param canvas Canvas
      * @param dX Float
      * @param itemView View
@@ -233,14 +246,14 @@ class LugaresFragment : Fragment() {
      * Abre un nuevo elemeneto
      */
     private fun nuevoElemento() {
-        Log.i("Lugares", "Nuevo lugar")
-        abrirDetalle(null, Modo.INSERTAR, this, null)
+        Log.i(TAG, "Nuevo lugar")
+        abrirDetalle(null, Modo.INSERTAR)
     }
 
     /**
      * Inserta un elemento en la lista
      */
-    fun insertarItemLista(item: Lugar) {
+    private fun insertarItemLista(item: Lugar) {
         this.lugaresAdapter.addItem(item)
         lugaresAdapter.notifyDataSetChanged()
     }
@@ -250,11 +263,18 @@ class LugaresFragment : Fragment() {
      * @param position Int
      */
     private fun editarElemento(position: Int) {
-        Log.i("Lugares", "Editando el elemento pos: " + position)
-        abrirDetalle(LUGARES[position], Modo.ACTUALIZAR, this, position)
+        Log.i(TAG, "Editando el elemento pos: $position")
+        // Para que no se quede el elemento de modificar o borrar marcado al deslizar
+        actualizarVistaLista()
+        abrirDetalle(LUGARES[position], Modo.ACTUALIZAR)
     }
 
-    fun actualizarItemLista(item: Lugar, position: Int) {
+    /**
+     * Actualiza la lista de items
+     * @param item Lugar
+     * @param position Int
+     */
+    private fun actualizarItemLista(item: Lugar, position: Int) {
         this.lugaresAdapter.updateItem(item, position)
         lugaresAdapter.notifyDataSetChanged()
     }
@@ -264,20 +284,24 @@ class LugaresFragment : Fragment() {
      * @param position Int
      */
     private fun borrarElemento(position: Int) {
-        Log.i("Lugares", "Borrando el elemento pos: " + position)
-        abrirDetalle(LUGARES[position], Modo.ELIMINAR, this, position)
+        Log.i(TAG, "Borrando el elemento pos: $position")
+        // Para que no se quede el elemento de modificar o borrar marcado al deslizar
+        abrirDetalle(LUGARES[position], Modo.ELIMINAR)
     }
 
     /**
      * Elimina un elemento de la vista
      * @param position Int
      */
-    fun eliminarItemLista(position: Int) {
+    private fun eliminarItemLista(position: Int) {
         this.lugaresAdapter.removeItem(position)
         lugaresAdapter.notifyDataSetChanged()
     }
 
-    fun actualizarVistaLista() {
+    /**
+     * Actualizamos la vista para evitar que se quede pulsado al deslizar.
+     */
+    private fun actualizarVistaLista() {
         lugaresRecycler.adapter = lugaresAdapter
     }
 
@@ -286,25 +310,25 @@ class LugaresFragment : Fragment() {
      * @param lugar Lugar
      */
     private fun abrirElemento(lugar: Lugar) {
-        Log.i("Lugares", "Visualizando el elemento: " + lugar.id)
-        abrirDetalle(lugar, Modo.VISUALIZAR, this, null)
+        Log.i(TAG, "Visualizando el elemento: ${lugar.id}")
+        abrirDetalle(lugar, Modo.VISUALIZAR)
     }
 
     /**
      * Abre el detalle del item
      * @param lugar Lugar?
      * @param modo Modo?
-     * @param anterior LugaresFragment?
-     * @param position Int?
      */
-    private fun abrirDetalle(lugar: Lugar?, modo: Modo?, anterior: LugaresFragment?, position: Int?) {
+    private fun abrirDetalle(lugar: Lugar?, modo: Modo?) {
         Log.i("Lugares", "Abriendo el elemento pos: " + lugar?.id)
-        val lugarDetalle = LugarDetalleFragment(lugar, modo, anterior, position)
+        val lugarDetalle = LugarDetalleFragment(lugar, modo)
         val transaction = activity!!.supportFragmentManager.beginTransaction()
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.add(R.id.nav_host_fragment, lugarDetalle)
         transaction.addToBackStack(null)
         transaction.commit()
+        // Para evitar que se quede pulsado un elemento que deslizamos
+        actualizarVistaLista()
     }
 
     /**
@@ -404,9 +428,6 @@ class LugaresFragment : Fragment() {
             // Votos
             Filtro.VOTOS_ASC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l1.votos.compareTo(l2.votos) }
             Filtro.VOTOS_DESC -> this.LUGARES.sortWith { l1: Lugar, l2: Lugar -> l2.votos.compareTo(l1.votos) }
-
-            else -> {
-            }
         }
     }
 
@@ -414,48 +435,123 @@ class LugaresFragment : Fragment() {
      * Carga los lugares
      */
     private fun cargarLugares() {
+        LUGARES.clear()
         lugaresSwipeRefresh.isRefreshing = true
-        Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
-        val clientREST = MisLugaresAPI.service
-        // Ontenemos los lugares filtrados por el usuario, para no mostrar otros.
-        val call: Call<List<LugarDTO>> = clientREST.lugarGetAllByUserID(USUARIO.id)
-        call.enqueue((object : Callback<List<LugarDTO>> {
-
-            override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "LugaresGetAll ok")
-                    LUGARES = (LugarMapper.fromDTO(response.body() as MutableList<LugarDTO>)) as MutableList<Lugar>
-                    Log.i("Lugares", "Lista de lugares de tamaño: " + LUGARES.size)
-                    procesarLugares()
-                } else {
-                    Log.i("REST", "Error: LugaresGetAll isSuccessful")
-                }
-            }
-
-            override fun onFailure(call: Call<List<LugarDTO>>, t: Throwable) {
-                Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }))
-    }
-
-    /**
-     * Procesa los lugares
-     */
-    private fun procesarLugares() {
-        ordenarLugares()
         lugaresAdapter = LugaresListAdapter(LUGARES) {
             eventoClicFila(it)
         }
         lugaresRecycler.adapter = lugaresAdapter
-        // Avismos que ha cambiado
-        lugaresAdapter.notifyDataSetChanged()
-        lugaresRecycler.setHasFixedSize(true)
-        lugaresSwipeRefresh.isRefreshing = false
-        Toast.makeText(context, "Lugares cargados", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "Obteniendo lugares", Toast.LENGTH_LONG).show()
+        // Podemos hacerlo de dos maneras, manual o suscribirnos en tiempo real
+        // https://firebase.google.com/docs/firestore/query-data/get-data
+        // https://firebase.google.com/docs/firestore/query-data/listen
+        // Yo lo voy a hacer en tiempo real. Pero debes sopesar esta decisión
+        // Si hubiese varios clientes y los datos fuesen compartidos, los detectaría sin recargar (swipe).
+        // Esto nos ahorra otro codigo que teneiamos por otro lado (lugardetallefragmen) donde obligamos a actualizar la Interfaz
+        // Ahora lo hace,os todo al estar suscritos desde aquí
+        FireStore.collection("lugares")
+            .addSnapshotListener { value, e ->
+                if (e != null) {
+                    Toast.makeText(context,
+                        "Error al acceder al servicio: " + e.localizedMessage,
+                        Toast.LENGTH_LONG)
+                        .show()
+                    return@addSnapshotListener
+                }
+                // LUGARES.clear()
+                lugaresSwipeRefresh.isRefreshing = false
+                for (doc in value!!.documentChanges) {
+                    when (doc.type) {
+                        DocumentChange.Type.ADDED -> {
+                            Log.i(TAG, "ADDED  ${doc.document.data}")
+                            insertarDocumento(doc.document.data)
+                        }
+                        DocumentChange.Type.MODIFIED -> {
+                            Log.i(TAG, "MODIFIED: ${doc.document.data}")
+                            modificarDocumento(doc.document.data)
+                        }
+                        DocumentChange.Type.REMOVED -> {
+                            Log.i(TAG, "REMOVED: ${doc.document.data}")
+                            eliminarDocumento(doc.document.data)
+                        }
+                    }
+                }
+            }
+        // Sin tiempo real, entonces si necesiariamos refrescar y tener metodos en detalle que aactualicen la lista
+        /*  FireStore.collection("lugares")
+              .get()
+              .addOnSuccessListener { result ->
+                  LUGARES = result.toObjects(Lugar::class.java)
+                  Log.i(TAG, "Lista de lugares de tamaño: " + LUGARES.size)
+                  procesarLugares()
+              }
+              .addOnFailureListener { exception ->
+                  Toast.makeText(context,
+                      "Error al acceder al servicio: " + exception.localizedMessage,
+                      Toast.LENGTH_LONG)
+                      .show()
+              }*/
     }
+
+    /**
+     * Elimina un dato de una lista
+     * @param doc Map<String, Any>
+     */
+    private fun eliminarDocumento(doc: Map<String, Any>) {
+        val miLugar = documentToLugar(doc)
+        Log.i(TAG, "Elimando lugar: ${miLugar.id}")
+        // Buscamos que esté
+        val index = LUGARES.indexOf(miLugar)
+        if (index >= 0)
+            eliminarItemLista(index)
+    }
+
+
+    /**
+     * Modifica el dato de una lista
+     * @param doc Map<String, Any>
+     */
+    private fun modificarDocumento(doc: Map<String, Any>) {
+        val miLugar = documentToLugar(doc)
+        Log.i(TAG, "Modificando lugar: ${miLugar.id}")
+        // Buscamos que esté,
+        val index = LUGARES.indexOf(miLugar)
+        if (index >= 0)
+            actualizarItemLista(miLugar, index)
+    }
+
+    /**
+     * Devuelve un lugar de un documento (mapa)
+     * @param doc Map<String, Any>
+     * @return Lugar
+     */
+    private fun documentToLugar(doc: Map<String, Any>) = Lugar(
+        id = doc["id"].toString(),
+        nombre = doc["nombre"].toString(),
+        tipo = doc["tipo"].toString(),
+        fecha = doc["fecha"].toString(),
+        latitud = doc["latitud"].toString(),
+        longitud = doc["longitud"].toString(),
+        imagenID = doc["imagenID"].toString(),
+        favorito = (doc["favorito"].toString().toBoolean()),
+        votos = doc["votos"].toString().toInt(),
+        time = doc["time"].toString(),
+        usuarioID = doc["usuarioID"].toString()
+    )
+
+    /**
+     * Inserta el dato en una lista
+     * @param doc MutableMap<String, Any>
+     */
+    private fun insertarDocumento(doc: MutableMap<String, Any>) {
+        val miLugar = documentToLugar(doc)
+        Log.i(TAG, "Añadiendo lugar: ${miLugar.id}")
+        // Buscamos que no este... para evitar distintas llamadas de ADD
+        val existe = LUGARES.any { lugar -> lugar.id == miLugar.id }
+        if (!existe)
+            insertarItemLista(miLugar)
+    }
+
 
     /**
      * Visualiza la lista de items
@@ -463,7 +559,7 @@ class LugaresFragment : Fragment() {
     private fun visualizarListaItems() {
         ordenarLugares()
         try {
-            lugaresRecycler.adapter = lugaresAdapter
+            actualizarVistaLista()
         } catch (ex: Exception) {
         }
     }

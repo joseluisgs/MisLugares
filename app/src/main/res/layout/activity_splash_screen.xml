@@ -23,9 +23,9 @@
             android:textColor="@color/letter_color_splash" android:fontFamily="@font/black_ops_one"
             android:textSize="48sp"/>
     <TextView
-            android:text="REST Version"
-            android:layout_width="154dp"
-            android:layout_height="44dp" android:id="@+id/splashVersionText"
+            android:text="Firebase Version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/splashVersionText"
             app:layout_constraintTop_toBottomOf="@+id/splashTituloText"
             android:textColor="@color/color_selector_navigation_item" android:textSize="30sp"
             android:textStyle="bold|italic" android:fontFamily="@font/caveat_bold"

@@ -5,6 +5,7 @@ en sistemas Android usando de lenguaje Android. Podrás llevar tus momentos favo
 
 [![Android](https://img.shields.io/badge/App-Android-g)](https://www.android.com/intl/es_es/)
 [![Kotlin](https://img.shields.io/badge/Code-Kotlin-blue)](https://kotlinlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-%20Ready-FFA000)](https://gulpjs.com/)
 [![LICENSE](https://img.shields.io/badge/Lisence-MIT-green)](https://github.com/joseluisgs/RetrofitCRUD2020/blob/master/LICENSE)
 ![GitHub](https://img.shields.io/github/last-commit/joseluisgs/MisLugaresKotlinRealm)
 
@@ -23,7 +24,8 @@ En definitiva, este es un proyecto integrador que resume lo trabajado en este mo
 
 ### Versiones y revisiones
 
-Las versiones no están pensadas para que el alumnado maneje distintas técnicas, no buscando la ideal que dependerá de siempre del problema y la tecnología.s
+Las versiones no están pensadas para que el alumnado maneje distintas técnicas, no buscando la ideal que dependerá de 
+siempre del problema y la tecnología.
 
 - **v0.4.0**: Esta versión trabajamos conjuntamente con imágenes en base de datos y en ficheros usando en path.
   A partir de esta versión cambiaremos esta forma y solo trabajaremos con las imágenes dentro de la base de Datos Realm
@@ -34,14 +36,20 @@ Las versiones no están pensadas para que el alumnado maneje distintas técnicas
   nos enfrentamos a servicios remotos donde desconocemos como subir la imagen. Este sistema tiene el problema de que sobrecarga
   la base de datos y no es muy recomendado salvo excepciones como esta.
 - **v2.0.0**: Versión donde el almacenamiento de todos los datos se hace a través de una API REST con el objetivo de salir
-  al exterior para enviar o recibir información. De nuevo mandaremos las imágenes en Base64, aunque lo ideal sería hacer peticiones
-  multipart. De nuevo se hace hincapié en el uso docente y este es acercar la tecnología de uso de Servicios Web y de una API REST
-  para poder intercambiar información con una app móvil y el exterior (otros servidores y recursos).
-  Para el desarrollo de la API REST nos basaremos en el proyecto [API REST Fake](https://github.com/joseluisgs/APIRESTFake).
+    al exterior para enviar o recibir información. De nuevo mandaremos las imágenes en Base64, aunque lo ideal sería hacer peticiones
+    multipart. De nuevo se hace hincapié en el uso docente y este es acercar la tecnología de uso de Servicios Web y de una API REST
+    para poder intercambiar información con una app móvil y el exterior (otros servidores y recursos).
+    Para el desarrollo de la API REST nos basaremos en el proyecto [API REST Fake](https://github.com/joseluisgs/APIRESTFake). 
+- **v3.0.0**: Versión donde se integra Firebase como sistema de backend de nuestra aplicación. Con ello nos ofrece poder
+realizar un backend compatible con distintos clientes (móviles o web). Para ello haremos uso
+de las distintas funcionalidades que nos aporta como [Authentication](https://firebase.google.com/products/auth?hl=es),
+[Firestore](https://firebase.google.com/products/firestore?hl=es), [Storage](https://firebase.google.com/products/storage?hl=es), 
+[Messaging](https://firebase.google.com/products/cloud-messaging?hl=es) o [Analytics](https://firebase.google.com/docs/analytics).
+
 
 #### Referencias
 
-Se destacan las siguientes tecnologías usadas, cuyos enlaces son los mismos que hemos utilizado como apuntes en clase y
+Se destacan las siguientes tecnologías usadas en algún momento o versión del proyecto, cuyos enlaces son los mismos que hemos utilizado como apuntes en clase y
 están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 
 - [Android](https://developer.android.com/docs)
@@ -70,8 +78,18 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 - [HTTP Métodos de petición](https://developer.mozilla.org/es/docs/Web/HTTP/Methods)
 - [HTTP Código de estado de respuestas](https://developer.mozilla.org/es/docs/Web/HTTP/Status)
 - [Retrofit](https://square.github.io/retrofit/)
+- [Firebase](https://firebase.google.com/docs?hl=es)
 
-### Uso del servidor propio para API REST
+### Uso del Firebase v3.X.X
+
+En la versión 3.X.X se hace uso de Google Firebase como sistema o conjunto de servicios a usar por nuestro cliente: autenticación, 
+base de datos en tiempo real, almacenamiento de ficheros y notificaiones. 
+Es por ello que es fundamental que asegures cómo configurar tanto Firebase, como tu proyecto Android para que funcione 
+perfectamente. Te recomiendo sigas siempre la guía oficial de [Firebase](https://firebase.google.com/docs/android/setup?hl=es)
+o [consultes otras alternativas](https://www.youtube.com/watch?v=IiuKAmgRYeM&list=PLNdFk2_brsRcaGhfeeiVkW72qTYcn_nfQ) 
+actualizadas para ello si no será imposible que lo integres en tu propio proyecto. Cuidado con el nombre de paquetes.
+
+### Uso del servidor propio para API REST v2.X.X
 
 Para la versión 2.X.X se hace uso del servidor propio [API REST Fake](https://github.com/joseluisgs/APIRESTFake), con
 el objetivo de no complicar el asunto aprendiendo a hacer un servidor propio REST. Para ello se ha creado en la carpeta
@@ -87,7 +105,7 @@ asegúrate que los scripts de NPM son compatibles y las rutas de tu sistema.
 
 #### Configuración y puesta en marcha
 
-Para arrancar el servidor debes hacer lo siguiente:
+Para arrancar el servidor debes hacer lo siguiente desde la carpeta apirest:
 
 ```bash
 $npm install --> Instala las dependencias necesarias para su uso
@@ -103,6 +121,25 @@ Si todo ha ido bien obtendrás la siguiente salida:
 
 Te recomiendo el uso de [Postman](https://www.postman.com/) para testear y comprender como hacer las llamadas que luego
 realizarás en [Retrofit](https://square.github.io/retrofit/).
+
+### Consideraciones para ver los mapas
+
+Los mapas hace uso de Google Map Api Key, es por ello que debes activar la clave de la API y activarla para tu proyecto,
+pues puede que varíe a la huella del mio, o que simplemente yo haya desactivado la mía (te recuerdo que es un proyecto para finn docente y lo activo y desactivo sobre la marcha).
+Por favor sigue [este tutorial](https://developers.google.com/maps/documentation/android-sdk/get-api-key?hl=es-419) para que puedas ver tus mapas con tu clave.
+
+Recuerda cambiar el fichero Manifest y añadir:
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<meta-data android:name="com.google.android.geo.API_KEY"
+android:value="@string/google_maps_key" />
+```
+
+Te recomiendo que mires la pestaña Run, pues si falla el mapa te dirá si no se ha podido identificar correctamente con la clave de tu API generada.. En el modo debug se hace en ese fichero con la huella SHA-1 y se pone, en el Modo Release,
+se debe generar con keytool la huella SHA-1 con los datos del paquete Release, crear un proyecto y subirla
+https://developers.google.com/maps/documentation/android-sdk/get-api-key
+
 
 ### Capturas
 
@@ -127,24 +164,6 @@ realizarás en [Retrofit](https://square.github.io/retrofit/).
     height="325">
  </p>
 
-### Consideraciones para ver los mapas
-
-Los mapas hace uso de Google Map Api Key, es por ello que debes activar la clave de la API y activarla para tu proyecto,
-pues puede que varíe a la huella del mio, o que simplemente yo haya desactivado la mía (te recuerdo que es un proyecto para finn docente y lo activo y desactivo sobre la marcha).
-Por favor sigue [este tutorial](https://developers.google.com/maps/documentation/android-sdk/get-api-key?hl=es-419) para que puedas ver tus mapas con tu clave.
-
-Recuerda cambiar el fichero Manifest y añadir:
-
-```xml
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<meta-data android:name="com.google.android.geo.API_KEY"
-android:value="@string/google_maps_key" />
-```
-
-Te recomiendo que mires la pestaña Run, pues si falla el mapa te dirá si no se ha podido identificar correctamente con la clave de tu API generada.. En el modo debug se hace en ese fichero con la huella SHA-1 y se pone, en el Modo Release,
-se debe generar con keytool la huella SHA-1 con los datos del paquete Release, crear un proyecto y subirla
-https://developers.google.com/maps/documentation/android-sdk/get-api-key
-
 #### Herramientas usadas
 
 Estas son las herramientas que más hemos usado en clase para la realización de este proyecto:
@@ -154,6 +173,8 @@ Estas son las herramientas que más hemos usado en clase para la realización de
     height="45">
     <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Kotlin-logo.png" 
     height="45">
+    <img src="https://firebase.google.com/downloads/brand-guidelines/PNG/logo-logomark.png?hl=es-419" 
+        height="45">
      <img src="https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png" 
       height="45">
   <img src="https://miro.medium.com/max/650/1*zzvdRmHGGXONZpuQ2FeqsQ.png" 
@@ -162,6 +183,8 @@ Estas son las herramientas que más hemos usado en clase para la realización de
   height="45">
    <img src="https://user-images.githubusercontent.com/17736615/30980083-f7f8a860-a43c-11e7-939e-f6717a2210fe.png" 
   height="45">
+  <img src="https://cdn.iconscout.com/icon/free/png-256/github-153-675523.png" 
+    height="45">
  </p>
 
 ## Autor

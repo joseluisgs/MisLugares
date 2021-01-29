@@ -18,34 +18,38 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.joseluisgs.mislugares.App.MyApp
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
-import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
 import com.joseluisgs.mislugares.Utilidades.Fotos
-import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.Utils
 import com.squareup.picasso.Picasso
-import io.realm.Realm
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    // Obtenemos el usuario de la sesión
-    private lateinit var USER: Usuario
+    // Servicios de Firebase
+    private lateinit var Auth: FirebaseAuth
+
+    companion object {
+        private const val TAG = "Main"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Servicios de Firebase
+        // Creamos o declaramos Firebase Auth
+        Auth = Firebase.auth
+
         // Limpiamos la cache y temporales.
         limpiarBasura()
         // elementos de la interfaz propios
@@ -67,9 +71,37 @@ class MainActivity : AppCompatActivity() {
 
         // Elementos propios de la interfaz y funcionalidad
         initPermisos()
-        leerSesion()
         comprobarConexion()
+        initNotificaciones()
         initIU()
+    }
+
+    /**
+     * Inicia el sistema de notificaciones
+     */
+    private fun initNotificaciones() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+            // Log and toast
+            Log.i(TAG, "Mi Token: $token")
+        })
+
+        // Suscribirse por temas
+        FirebaseMessaging.getInstance().subscribeToTopic("lugares")
+
+        // Recuperar información de la notificación
+        val url = intent.getStringExtra("url")
+        url.let {
+            Toast.makeText(this, "Ha llegado una notificación push: $it",
+                Toast.LENGTH_LONG)
+                .show()
+        }
     }
 
     /**
@@ -78,13 +110,6 @@ class MainActivity : AppCompatActivity() {
     private fun initPermisos() {
         if (!(this.application as MyApp).APP_PERMISOS)
             (this.application as MyApp).initPermisos()
-    }
-
-    /**
-     * Lee la sesión o usuario conectado
-     */
-    private fun leerSesion() {
-        USER = (this.application as MyApp).SESION_USUARIO
     }
 
     /**
@@ -105,24 +130,14 @@ class MainActivity : AppCompatActivity() {
         val navUsername: TextView = headerView.findViewById(R.id.navHeaderUserName)
         val navUserEmail: TextView = headerView.findViewById(R.id.navHeaderUserEmail)
         val navUserImage: ImageView = headerView.findViewById(R.id.navHeaderUserImage)
-        navUsername.text = USER.login
-        navUserEmail.text = USER.correo
-        // Cargo la imagen como temporal
-        val avatar = File(
-            ImageBase64.fromTempUri(
-                ImageBase64.toBitmap(USER.avatar)!!,
-                applicationContext,
-            ).path!!
-        )
+        navUsername.text = Auth.currentUser?.displayName
+        navUserEmail.text = Auth.currentUser?.email
         Picasso.get()
             // .load(R.drawable.user_avatar)
-            .load(avatar)
+            .load(Auth.currentUser?.photoUrl)
             .transform(CirculoTransformacion())
             .resize(130, 130)
             .into(navUserImage)
-        // Elimino la imagen temporal
-        // ImageBase64.removeTempFile(avatar)
-        // Evento de salir
         navUserImage.setOnClickListener { salirSesion() }
     }
 
@@ -130,7 +145,7 @@ class MainActivity : AppCompatActivity() {
      * Sale de la sesion
      */
     private fun salirSesion() {
-        Log.i("Salir", "Saliendo...")
+        Log.i(TAG, "Saliendo...")
         AlertDialog.Builder(this)
             .setIcon(R.drawable.ic_exit_app)
             .setTitle("Cerrar sesión actual")
@@ -144,30 +159,15 @@ class MainActivity : AppCompatActivity() {
      * Cerra la sesión Actual
      */
     private fun cerrarSesion() {
-        // Borramos la sesión asociada
-        val clientREST = MisLugaresAPI.service
-        val call: Call<SesionDTO> = clientREST.sesionDelete(USER.id)
-        call.enqueue((object : Callback<SesionDTO> {
-
-            override fun onResponse(call: Call<SesionDTO>, response: Response<SesionDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "sesionDelete ok")
-                    // Y vamos a login
-                    val login = Intent(applicationContext, LoginActivity::class.java)
-                    startActivity(login)
-                    finish()
-                } else {
-                    Log.i("REST", "Error: SesionDelete isSuccessful")
-                }
-            }
-
-            override fun onFailure(call: Call<SesionDTO>, t: Throwable) {
-                Toast.makeText(applicationContext,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }))
+        // Cerramos en Firebase
+        Auth.signOut()
+        Log.i(TAG, "sesionDelete ok")
+        Toast.makeText(applicationContext, "Sesión cerrada", Toast.LENGTH_SHORT)
+            .show()
+        // Y vamos a login
+        val login = Intent(applicationContext, LoginActivity::class.java)
+        startActivity(login)
+        finish()
     }
 
     /**
@@ -240,8 +240,6 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        // Cerramos REALM
-        Realm.getDefaultInstance().close() // limpiamos realm
         limpiarBasura() // Por si acaso
         Log.i("Destroy", "Ejecutando OnDestroy")
     }

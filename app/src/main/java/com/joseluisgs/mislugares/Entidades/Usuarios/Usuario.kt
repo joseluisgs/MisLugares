@@ -1,11 +1,5 @@
 package com.joseluisgs.mislugares.Entidades.Usuarios
 
-import io.realm.RealmObject
-import io.realm.annotations.Index
-import io.realm.annotations.PrimaryKey
-import io.realm.annotations.RealmClass
-import io.realm.annotations.Required
-import java.io.Serializable
 import java.util.*
 
 /**
@@ -20,25 +14,19 @@ import java.util.*
  * @property github String
  * @constructor
  */
-@RealmClass
-open class Usuario(
+data class Usuario(
     // Es importante iniciar todos los valores de la clases
     // Ponemos los datos que queremos almacenar
-    @PrimaryKey
     // Cambiar a UUID.randomUUID().toString() o long
     var id: String = "",
-    @Required
     var nombre: String = "",
-    @Required @Index
     var login: String = "",
-    @Required
     var password: String = "",
     var avatar: String = "",
-    @Required @Index
     var correo: String = "",
     var twitter: String = "",
     var github: String = "",
-) : RealmObject(), Serializable {
+) {
 
     /**
      * Constructor
@@ -61,11 +49,8 @@ open class Usuario(
         github: String,
     ) :
             this((UUID.randomUUID().toString()), nombre, login, password, avatar, correo, twitter, github)
-    // this((System.currentTimeMillis() / 1000L), nombre, login, password, avatar, correo, twitter, github)
 
     override fun toString(): String {
         return "Usuario(id=$id, nombre='$nombre', login='$login', password='$password', avatar='$avatar', correo='$correo', twitter='$twitter', github='$github')"
     }
-
-
 }

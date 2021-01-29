@@ -2,6 +2,7 @@ package com.joseluisgs.mislugares.UI.mapa
 
 import android.app.AlertDialog
 import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,26 +15,30 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
-import com.joseluisgs.mislugares.App.MyApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
-import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
-import com.joseluisgs.mislugares.Utilidades.ImageBase64
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
 import kotlinx.android.synthetic.main.fragment_mapa.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+    // Firebase
+    private lateinit var Auth: FirebaseAuth
+    private lateinit var FireStore: FirebaseFirestore
+
     private lateinit var mMap: GoogleMap
-    private lateinit var USUARIO: Usuario
+    private lateinit var USUARIO: FirebaseUser
+
+    companion object {
+        private const val TAG = "Mapa"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,12 +50,16 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.i("Mapa", "Creando Mapa")
+        // Servicios de Firebase
+        Auth = Firebase.auth
+        FireStore = FirebaseFirestore.getInstance()
+
+        Log.i(TAG, "Creando Mapa")
         view.setOnTouchListener { view, motionEvent ->
             return@setOnTouchListener true
         }
 
-        this.USUARIO = (activity?.application as MyApp).SESION_USUARIO
+        this.USUARIO = Auth.currentUser!!
         initUI()
 
     }
@@ -97,30 +106,25 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     }
 
     fun puntosEnMapa() {
-        // Obtenemos los lugares
-        val clientREST = MisLugaresAPI.service
-        // Ontenemos los lugares filtrados por el usuario, para no mostrar otros.
-        val call: Call<List<LugarDTO>> = clientREST.lugarGetAllByUserID(USUARIO.id)
-        call.enqueue((object : Callback<List<LugarDTO>> {
-
-            override fun onResponse(call: Call<List<LugarDTO>>, response: Response<List<LugarDTO>>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "LugaresGetAll ok")
-                    val listaLugares =
-                        (LugarMapper.fromDTO(response.body() as MutableList<LugarDTO>)) as MutableList<Lugar>
-                    procesarLugares(listaLugares)
-                } else {
-                    Log.i("REST", "Error: LugaresGetAll isSuccessful")
+        // Obtenemos los lugares del usuario
+        FireStore.collection("lugares")
+            .whereEqualTo("usuarioID", USUARIO.uid)
+            .get()
+            .addOnSuccessListener { result ->
+                Log.i(TAG, "LugaresGetAll ok")
+                val listaLugares = mutableListOf<Lugar>()
+                for (document in result) {
+                    val miLugar = document.toObject(Lugar::class.java)
+                    listaLugares.add(miLugar)
                 }
+                procesarLugares(listaLugares)
             }
-
-            override fun onFailure(call: Call<List<LugarDTO>>, t: Throwable) {
+            .addOnFailureListener { exception ->
                 Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
+                    "Error al acceder al servicio: " + exception.localizedMessage,
                     Toast.LENGTH_LONG)
                     .show()
             }
-        }))
     }
 
     private fun procesarLugares(listaLugares: MutableList<Lugar>) {
@@ -152,39 +156,43 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
      */
     private fun añadirMarcador(lugar: Lugar) {
         // Buscamos la fotografia
-        val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(lugar.imagenID)
-        call.enqueue((object : Callback<FotografiaDTO> {
-
-            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "fotografiasGetById ok")
-                    var remoteFotografia = FotografiaMapper.fromDTO(response.body() as FotografiaDTO)
+        val docRef = FireStore.collection("imagenes").document(lugar.imagenID)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val miImagen = document.toObject(Fotografia::class.java)
                     val posicion = LatLng(lugar.latitud.toDouble(), lugar.longitud.toDouble())
-                    val pin: Bitmap = crearPin(remoteFotografia)!!
-                    val marker = mMap.addMarker(
-                        MarkerOptions() // Posición
-                            .position(posicion) // Título
-                            .title(lugar.nombre) // Subtitulo
-                            .snippet(lugar.tipo + " del " + lugar.fecha) // Color o tipo d icono
-                            .anchor(0.5f, 0.907f)
-                            .icon(BitmapDescriptorFactory.fromBitmap(pin))
-                    )
-                    // Le añado como tag el lugar para recuperarlo
-                    marker.tag = lugar
+                    val imageView = ImageView(context)
+                    Picasso.get()
+                        .load(miImagen?.uri)
+                        .into(imageView, object : com.squareup.picasso.Callback {
+                            override fun onSuccess() {
+                                val temp = (imageView.drawable as BitmapDrawable).bitmap
+                                val pin: Bitmap = crearPin(temp)!!
+                                val marker = mMap.addMarker(
+                                    MarkerOptions() // Posición
+                                        .position(posicion) // Título
+                                        .title(lugar.nombre) // Subtitulo
+                                        .snippet(lugar.tipo + " del " + lugar.fecha) // Color o tipo d icono
+                                        .anchor(0.5f, 0.907f)
+                                        .icon(BitmapDescriptorFactory.fromBitmap(pin))
+                                )
+                                // Le añado como tag el lugar para recuperarlo
+                                marker.tag = lugar
+                            }
+
+                            override fun onError(e: Exception) {
+                                Log.d(TAG, "Error al descargar imagen")
+                            }
+                        })
+
                 } else {
-                    Log.i("REST", "Error: fotografiasGetById isSuccessful")
-                    // holder.itemLugarImagen.setImageBitmap(BitmapFactory.decodeResource(holder.context?.resources, R.drawable.ic_mapa))
+                    Log.i(TAG, "Error: No exite fotografía")
                 }
             }
-
-            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
-                Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
+            .addOnFailureListener { exception ->
+                Log.d(TAG, "ERROR: " + exception.localizedMessage)
             }
-        }))
     }
 
     /**
@@ -215,29 +223,23 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         val fecha = vista.findViewById(R.id.mapaLugarTextFecha) as TextView
         fecha.text = lugar.fecha
         val imagen = vista.findViewById(R.id.mapaLugarImagen) as ImageView
-
-        val clientREST = MisLugaresAPI.service
-        val call: Call<FotografiaDTO> = clientREST.fotografiaGetById(lugar.imagenID)
-        call.enqueue((object : Callback<FotografiaDTO> {
-
-            override fun onResponse(call: Call<FotografiaDTO>, response: Response<FotografiaDTO>) {
-                if (response.isSuccessful) {
-                    Log.i("REST", "fotografiasGetById ok")
-                    var remoteFotografia = FotografiaMapper.fromDTO(response.body() as FotografiaDTO)
-                    imagen.setImageBitmap(ImageBase64.toBitmap(remoteFotografia.imagen))
+        val docRef = FireStore.collection("imagenes").document(lugar.imagenID)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val miImagen = document.toObject(Fotografia::class.java)
+                    Picasso
+                        .get()
+                        .load(miImagen?.uri)
+                        .into(imagen)
                 } else {
-                    Log.i("REST", "Error: fotografiasGetById isSuccessful")
-                    // holder.itemLugarImagen.setImageBitmap(BitmapFactory.decodeResource(holder.context?.resources, R.drawable.ic_mapa))
+                    Log.i(TAG, "Error: No exite fotografía")
                 }
             }
-
-            override fun onFailure(call: Call<FotografiaDTO>, t: Throwable) {
-                Toast.makeText(context,
-                    "Error al acceder al servicio: " + t.localizedMessage,
-                    Toast.LENGTH_LONG)
-                    .show()
+            .addOnFailureListener { exception ->
+                Log.d(TAG, "ERROR: " + exception.localizedMessage)
             }
-        }))
+
         builder
             .setView(vista)
             .setIcon(R.drawable.ic_location)
@@ -256,7 +258,7 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
      * @param imagenID String
      * @return Bitmap?
      */
-    private fun crearPin(fotografia: Fotografia): Bitmap? {
+    private fun crearPin(bitmap: Bitmap): Bitmap? {
         var result: Bitmap? = null
         try {
             result = Bitmap.createBitmap(dp(62f), dp(76f), Bitmap.Config.ARGB_8888)
@@ -268,7 +270,6 @@ class MapaFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             val roundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
             val bitmapRect = RectF()
             canvas.save()
-            val bitmap = ImageBase64.toBitmap(fotografia.imagen.toString())
             //Bitmap bitmap = BitmapFactory.decodeFile(path.toString()); /*generate bitmap here if your image comes from any url*/
             if (bitmap != null) {
                 val shader = BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)

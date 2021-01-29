@@ -1,10 +1,5 @@
 package com.joseluisgs.mislugares.Entidades.Lugares
 
-import io.realm.RealmObject
-import io.realm.annotations.PrimaryKey
-import io.realm.annotations.RealmClass
-import io.realm.annotations.Required
-import java.io.Serializable
 import java.util.*
 
 /**
@@ -21,30 +16,20 @@ import java.util.*
  * @property usuarioID: Long
  * @constructor
  */
-@RealmClass
-open class Lugar(
-    @PrimaryKey
+data class Lugar(
     // Cambiar a UUID.randomUUID().toString() o long
     var id: String = "",
-    @Required
     var nombre: String = "",
-    @Required
     var tipo: String = "Ciudad",
-    @Required
     var fecha: String = "",
-    @Required
     var latitud: String = "",
-    @Required
     var longitud: String = "",
-    @Required
     var imagenID: String = "",
     var favorito: Boolean = false,
     var votos: Int = 0,
-    @Required
     var time: String = "",
-    @Required
     var usuarioID: String = "",
-) : RealmObject(), Serializable {
+) {
     constructor(
         nombre: String,
         tipo: String,
@@ -108,6 +93,4 @@ open class Lugar(
         result = 31 * result + usuarioID.hashCode()
         return result
     }
-
-
 }
