@@ -1,6 +1,5 @@
 package com.joseluisgs.mislugares.UI.lugares
 
-import Utilidades.Cifrador
 import android.app.Activity.RESULT_CANCELED
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -13,7 +12,6 @@ import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.os.StrictMode
 import android.provider.MediaStore
 import android.util.Log
@@ -41,27 +39,15 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
 import com.google.gson.Gson
-import com.joseluisgs.mislugares.Actividades.LoginActivity
 import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
-import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.Fotos
-import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.QRCode
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.time.Instant
@@ -75,9 +61,7 @@ import java.util.*
  */
 class LugarDetalleFragment(
     private var LUGAR: Lugar? = null,
-    private val MODO: Modo? = Modo.INSERTAR,
-    private val ANTERIOR: LugaresFragment? = null,
-    private val LUGAR_INDEX: Int? = null,
+    private val MODO: Modo? = Modo.INSERTAR
 ) : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     // Firebase
     private lateinit var Auth: FirebaseAuth
@@ -140,7 +124,7 @@ class LugarDetalleFragment(
      */
     private fun initIU() {
         // Actualizo la vista anterior para que no se quede el swipe marcado
-        ANTERIOR?.actualizarVistaLista()
+        // ANTERIOR?.actualizarVistaLista()
         initPermisos()
         initUsuario()
         detalleProgressBar.visibility = View.INVISIBLE
@@ -223,6 +207,7 @@ class LugarDetalleFragment(
                     LUGAR_FOTOGRAFIA = document.toObject(Fotografia::class.java)
                     Log.i(TAG, "fotografiasGetById ok: ${document.data}")
                     IMAGEN_URI = Uri.parse(LUGAR_FOTOGRAFIA!!.uri)
+                    // Debemos cargar asíncronamente
                     Picasso.get()
                         .load(LUGAR_FOTOGRAFIA?.uri)
                         .into(detalleLugarImagen, object : com.squareup.picasso.Callback {
@@ -233,13 +218,6 @@ class LugarDetalleFragment(
                                 Log.i(TAG, "Error: Descargar fotografia Picasso")
                             }
                         })
-                   /* Picasso.get()
-                        // .load(R.drawable.user_avatar)
-                        .load(LUGAR_FOTOGRAFIA?.uri)
-                        .into(detalleLugarImagen)
-                    try {
-                        FOTO = (detalleLugarImagen.drawable as BitmapDrawable).bitmap
-                    } catch (ex: Exception){}*/
                 } else {
                     Log.i(TAG, "Error: No exite fotografía")
                     imagenPorDefecto()
@@ -272,6 +250,9 @@ class LugarDetalleFragment(
 
     }
 
+    /**
+     * Inicia el modo Actualizar
+     */
     fun initModoActualizar() {
         Log.i("Lugares", "Modo Actualizar")
         initModoVisualizar()
@@ -303,7 +284,7 @@ class LugarDetalleFragment(
     private fun insertar() {
         detalleProgressBar.visibility = View.VISIBLE
 
-        val fotografiaID =  UUID.randomUUID().toString()
+        val fotografiaID = UUID.randomUUID().toString()
         // Lanzamos el hilo de insertar fotografia
 
         // Insertamos lugar
@@ -324,11 +305,9 @@ class LugarDetalleFragment(
             .document(LUGAR!!.id)
             .set(LUGAR!!)
             .addOnSuccessListener {
+                // Insertamos su fotografía
                 insertarFotografia(fotografiaID)
                 Log.i(TAG, "Lugar insertado con éxito con id: $LUGAR")
-                // Nos los llevamos una vez se haya insertado la fotografía
-               /* ANTERIOR?.insertarItemLista(LUGAR!!)
-                volver()*/
             }
             .addOnFailureListener { e -> Log.w(TAG, "Error insertar lugar", e) }
     }
@@ -345,14 +324,14 @@ class LugarDetalleFragment(
         val lugarImagesRef = storageRef.child("images/$fotografiaID.jpg")
         val uploadTask = lugarImagesRef.putBytes(data)
         uploadTask.addOnFailureListener {
-            Log.i(TAG, "storage:failure: "+ it.localizedMessage)
+            Log.i(TAG, "storage:failure: " + it.localizedMessage)
             Toast.makeText(context, "Error: " + it.localizedMessage,
                 Toast.LENGTH_SHORT).show()
         }.addOnSuccessListener { taskSnapshot ->
             // Si se sube la imagen insertamos la foto
             Log.i(TAG, "storage:ok insert")
             // Necesitamos su URI Publica para poder almacenarla
-            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl;
+            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl
             downloadUri.addOnSuccessListener {
                 LUGAR_FOTOGRAFIA = Fotografia(
                     id = fotografiaID,
@@ -360,19 +339,19 @@ class LugarDetalleFragment(
                     usuarioID = USUARIO.uid,
                     uri = it.toString()
                 )
+                // Inertamos en la tabla de fotografías
                 FireStore.collection("imagenes")
                     .document(fotografiaID)
                     .set(LUGAR_FOTOGRAFIA!!)
                     .addOnSuccessListener {
                         detalleProgressBar.visibility = View.INVISIBLE
                         Log.i(TAG, "Fotografia insertada con éxito")
-                        ANTERIOR?.insertarItemLista(LUGAR!!)
                         Snackbar.make(view!!, "¡Lugar añadido con éxito!", Snackbar.LENGTH_LONG).show()
                         volver()
                     }
                     .addOnFailureListener { e -> Log.w(TAG, "Error al insertar fotografía", e) }
-                }
             }
+        }
     }
 
 
@@ -396,7 +375,8 @@ class LugarDetalleFragment(
                 Log.i(TAG, "Lugar eliminado con éxito")
                 eliminarFotografia()
             }
-            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e)
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error writing document", e)
             }
     }
 
@@ -418,14 +398,13 @@ class LugarDetalleFragment(
                 .addOnSuccessListener {
                     detalleProgressBar.visibility = View.INVISIBLE
                     Log.i(TAG, "Fotografia eliminada con exito!")
-                    ANTERIOR?.eliminarItemLista(LUGAR_INDEX!!)
                     Snackbar.make(view!!, "¡Lugar eliminado con éxito!", Snackbar.LENGTH_LONG).show()
                     volver()
                 }
                 .addOnFailureListener { e -> Log.w(TAG, "Error eliminar fotografía", e) }
 
         }.addOnFailureListener {
-            Log.i(TAG, "storage:failure: "+ it.localizedMessage)
+            Log.i(TAG, "storage:failure: " + it.localizedMessage)
             Toast.makeText(context, "Error: " + it.localizedMessage,
                 Toast.LENGTH_SHORT).show()
         }
@@ -454,15 +433,16 @@ class LugarDetalleFragment(
             longitud = posicion?.longitude.toString()
             time = Instant.now().toString()
         }
+        // Isertamos
         FireStore.collection("lugares")
             .document(LUGAR!!.id)
             .set(LUGAR!!)
             .addOnSuccessListener {
                 Log.i(TAG, "Lugar actualizado con éxito con id: " + LUGAR!!.id)
-                if(IMAGEN_URI.toString()!= LUGAR_FOTOGRAFIA?.uri)  {
+                if (IMAGEN_URI.toString() != LUGAR_FOTOGRAFIA?.uri) {
+                    // Actualizamos la imagen
                     actualizarFotografia()
                 } else {
-                    ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
                     Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show()
                     volver()
                 }
@@ -471,6 +451,9 @@ class LugarDetalleFragment(
             .addOnFailureListener { e -> Log.w(TAG, "Error actualizar lugar", e) }
     }
 
+    /**
+     * Actualiza la fotografía
+     */
     private fun actualizarFotografia() {
         // Subimos la nueva con el nombre antiguo (todo queda igual)
         val storageRef = Storage.reference
@@ -481,23 +464,23 @@ class LugarDetalleFragment(
         val lugarImagesRef = storageRef.child("images/${LUGAR_FOTOGRAFIA?.id}.jpg")
         val uploadTask = lugarImagesRef.putBytes(data)
         uploadTask.addOnFailureListener {
-            Log.i(TAG, "storage:failure: "+ it.localizedMessage)
+            Log.i(TAG, "storage:failure: " + it.localizedMessage)
         }.addOnSuccessListener { taskSnapshot ->
             // Si se sube la imagen insertamos la foto
             Log.i(TAG, "storage:ok updated")
             // Necesitamos su URI Publica para poder almacenarla
-            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl;
+            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl
             downloadUri.addOnSuccessListener {
                 val forografiaRef = FireStore.collection("imagenes").document(LUGAR_FOTOGRAFIA?.id.toString())
                 forografiaRef.update("uri", it.toString())
                     .addOnSuccessListener {
                         detalleProgressBar.visibility = View.INVISIBLE
                         Log.i(TAG, "forografia update ok")
-                        ANTERIOR?.actualizarItemLista(LUGAR!!, LUGAR_INDEX!!)
                         Snackbar.make(view!!, "¡Lugar actualizado con éxito!", Snackbar.LENGTH_LONG).show()
                         volver()
                     }
-                    .addOnFailureListener { e -> Log.w(TAG, "Error actualizar imagen", e)
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error actualizar imagen", e)
                     }
             }
         }
@@ -538,7 +521,6 @@ class LugarDetalleFragment(
             setPositiveButton(R.string.aceptar) { _, _ ->
                 when (MODO) {
                     Modo.INSERTAR -> insertar()
-                    // VISUALIZAR -> initModoVisualizar
                     Modo.ELIMINAR -> eliminar()
                     Modo.ACTUALIZAR -> actualizar()
                     else -> {

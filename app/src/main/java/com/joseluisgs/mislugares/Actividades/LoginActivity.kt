@@ -1,6 +1,5 @@
 package com.joseluisgs.mislugares.Actividades
 
-import Utilidades.Cifrador
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -21,25 +20,10 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import com.joseluisgs.mislugares.App.MyApp
-import com.joseluisgs.mislugares.Entidades.Sesiones.Sesion
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionController
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionMapper
 import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
-import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioDTO
-import com.joseluisgs.mislugares.Entidades.Usuarios.UsuarioMapper
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.Utils
 import kotlinx.android.synthetic.main.activity_login.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.time.Instant
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
-import java.util.*
 
 
 class LoginActivity : AppCompatActivity() {
@@ -74,7 +58,7 @@ class LoginActivity : AppCompatActivity() {
     private fun initUI() {
 
         // Datos para no meterlos
-        loginProgressBar.visibility = View.INVISIBLE;
+        loginProgressBar.visibility = View.INVISIBLE
         loginInputLogin.setText("joseluisgs@mislugares.com")
         loginInputPass.setText("joseluis123")
         loginBoton.setOnClickListener { iniciarSesion() }
@@ -138,7 +122,7 @@ class LoginActivity : AppCompatActivity() {
      * @param idToken String
      */
     private fun firebaseAuthWithGoogle(idToken: String) {
-        loginProgressBar.visibility = View.VISIBLE;
+        loginProgressBar.visibility = View.VISIBLE
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         Auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
@@ -148,7 +132,7 @@ class LoginActivity : AppCompatActivity() {
                     val user = Auth.currentUser
                     Log.i(TAG, user.toString())
                     Toast.makeText(baseContext, "Auth: Usuario autenticado en Google", Toast.LENGTH_SHORT).show()
-                    user?.let { insertarUsuario(it) };
+                    user?.let { insertarUsuario(it) }
                     abrirPrincipal()
                 } else {
                     // If sign in fails, display a message to the user.
@@ -156,7 +140,7 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, "Error: " + task.exception?.localizedMessage,
                         Toast.LENGTH_SHORT).show()
                 }
-                loginProgressBar.visibility = View.INVISIBLE;
+                loginProgressBar.visibility = View.INVISIBLE
             }
     }
 
@@ -165,7 +149,7 @@ class LoginActivity : AppCompatActivity() {
      */
     private fun crearUsuario() {
         // Llamamos a la función para crear usuario
-        loginProgressBar.visibility = View.VISIBLE;
+        loginProgressBar.visibility = View.VISIBLE
         Auth.createUserWithEmailAndPassword("joseluisgs@mislugares.com", "joseluis123")
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -203,7 +187,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.i(TAG, "Perfil Actualizado.")
-                    insertarUsuario(user);
+                    insertarUsuario(user)
                 }
             }
     }
@@ -245,7 +229,7 @@ class LoginActivity : AppCompatActivity() {
     private fun procesarSesiones() {
         // Vemos si hay sesión
         val currentUser = Auth.currentUser
-        if(currentUser!=null) {
+        if (currentUser != null) {
             Log.i(TAG, "SÍ hay sesión activa")
             Toast.makeText(baseContext, "Auth: Sesión activa", Toast.LENGTH_SHORT).show()
             abrirPrincipal()

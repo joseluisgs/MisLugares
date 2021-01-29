@@ -49,7 +49,7 @@ de las distintas funcionalidades que nos aporta como [Authentication](https://fi
 
 #### Referencias
 
-Se destacan las siguientes tecnologías usadas, cuyos enlaces son los mismos que hemos utilizado como apuntes en clase y
+Se destacan las siguientes tecnologías usadas en algún momento o versión del proyecto, cuyos enlaces son los mismos que hemos utilizado como apuntes en clase y
 están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 
 - [Android](https://developer.android.com/docs)
@@ -82,7 +82,8 @@ están en otras prácticas en mi [GitHub](https://github.com/joseluisgs).
 
 ### Uso del Firebase v3.X.X
 
-En la versión 3.X.X se hace uso de Google Firebase como sistema o conjunto de servicios a usar por nuestro cliente. 
+En la versión 3.X.X se hace uso de Google Firebase como sistema o conjunto de servicios a usar por nuestro cliente: autenticación, 
+base de datos en tiempo real, almacenamiento de ficheros y notificaiones. 
 Es por ello que es fundamental que asegures cómo configurar tanto Firebase, como tu proyecto Android para que funcione 
 perfectamente. Te recomiendo sigas siempre la guía oficial de [Firebase](https://firebase.google.com/docs/android/setup?hl=es)
 o [consultes otras alternativas](https://www.youtube.com/watch?v=IiuKAmgRYeM&list=PLNdFk2_brsRcaGhfeeiVkW72qTYcn_nfQ) 
@@ -104,7 +105,7 @@ asegúrate que los scripts de NPM son compatibles y las rutas de tu sistema.
 
 #### Configuración y puesta en marcha
 
-Para arrancar el servidor debes hacer lo siguiente:
+Para arrancar el servidor debes hacer lo siguiente desde la carpeta apirest:
 
 ```bash
 $npm install --> Instala las dependencias necesarias para su uso

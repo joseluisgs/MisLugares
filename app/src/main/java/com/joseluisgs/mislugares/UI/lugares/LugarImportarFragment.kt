@@ -1,6 +1,5 @@
 package com.joseluisgs.mislugares.UI.lugares
 
-import Utilidades.Cifrador
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
@@ -28,23 +27,13 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.zxing.integration.android.IntentIntegrator
-import com.joseluisgs.mislugares.App.MyApp
 import com.joseluisgs.mislugares.Entidades.Fotografias.Fotografia
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaDTO
-import com.joseluisgs.mislugares.Entidades.Fotografias.FotografiaMapper
 import com.joseluisgs.mislugares.Entidades.Lugares.Lugar
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarDTO
-import com.joseluisgs.mislugares.Entidades.Lugares.LugarMapper
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.CaptureActivity
-import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_importar_lugar.*
 import kotlinx.android.synthetic.main.fragment_lugar_detalle.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.util.*
@@ -189,7 +178,7 @@ class LugarImportarFragment : Fragment(), OnMapReadyCallback {
      */
     private fun importar() {
         importarProgressBar.visibility = View.VISIBLE
-        val fotografiaID =  UUID.randomUUID().toString()
+        val fotografiaID = UUID.randomUUID().toString()
 
         // Insertamos lugar
         LUGAR = Lugar(
@@ -219,7 +208,7 @@ class LugarImportarFragment : Fragment(), OnMapReadyCallback {
      * Carga la fotografía del lugar
      */
     private fun cargarFotografia() {
-        val docRef = FireStore.collection("imagenes").document(LUGAR?.imagenID.toString())
+        val docRef = FireStore.collection("imagenes").document(LUGAR.imagenID.toString())
         docRef.get()
             .addOnSuccessListener { document ->
                 if (document != null) {
@@ -232,6 +221,7 @@ class LugarImportarFragment : Fragment(), OnMapReadyCallback {
                             override fun onSuccess() {
                                 FOTO = (importarLugarImagen.drawable as BitmapDrawable).bitmap
                             }
+
                             override fun onError(ex: Exception?) {
                                 Log.i(TAG, "Error: Descargar fotografia Picasso")
                             }
@@ -267,14 +257,14 @@ class LugarImportarFragment : Fragment(), OnMapReadyCallback {
         val lugarImagesRef = storageRef.child("images/$fotografiaID.jpg")
         val uploadTask = lugarImagesRef.putBytes(data)
         uploadTask.addOnFailureListener {
-            Log.i(TAG, "storage:failure: "+ it.localizedMessage)
+            Log.i(TAG, "storage:failure: " + it.localizedMessage)
             Toast.makeText(context, "Error: " + it.localizedMessage,
                 Toast.LENGTH_SHORT).show()
         }.addOnSuccessListener { taskSnapshot ->
             // Si se sube la imagen insertamos la foto
             Log.i(TAG, "storage:ok insert")
             // Necesitamos su URI Publica para poder almacenarla
-            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl;
+            val downloadUri = taskSnapshot.metadata!!.reference!!.downloadUrl
             downloadUri.addOnSuccessListener {
                 LUGAR_FOTOGRAFIA = Fotografia(
                     id = fotografiaID,

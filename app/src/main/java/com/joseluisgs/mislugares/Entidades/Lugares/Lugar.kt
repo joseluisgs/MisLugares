@@ -1,10 +1,5 @@
 package com.joseluisgs.mislugares.Entidades.Lugares
 
-import io.realm.RealmObject
-import io.realm.annotations.PrimaryKey
-import io.realm.annotations.RealmClass
-import io.realm.annotations.Required
-import java.io.Serializable
 import java.util.*
 
 /**
@@ -34,7 +29,7 @@ data class Lugar(
     var votos: Int = 0,
     var time: String = "",
     var usuarioID: String = "",
-){
+) {
     constructor(
         nombre: String,
         tipo: String,
@@ -98,6 +93,4 @@ data class Lugar(
         result = 31 * result + usuarioID.hashCode()
         return result
     }
-
-
 }

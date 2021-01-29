@@ -26,25 +26,17 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.joseluisgs.mislugares.App.MyApp
-import com.joseluisgs.mislugares.Entidades.Sesiones.SesionDTO
-import com.joseluisgs.mislugares.Entidades.Usuarios.Usuario
 import com.joseluisgs.mislugares.R
-import com.joseluisgs.mislugares.Services.Lugares.MisLugaresAPI
 import com.joseluisgs.mislugares.Utilidades.CirculoTransformacion
 import com.joseluisgs.mislugares.Utilidades.Fotos
-import com.joseluisgs.mislugares.Utilidades.ImageBase64
 import com.joseluisgs.mislugares.Utilidades.Utils
 import com.squareup.picasso.Picasso
-import io.realm.Realm
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+
     // Servicios de Firebase
     private lateinit var Auth: FirebaseAuth
 
@@ -248,8 +240,6 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        // Cerramos REALM
-        Realm.getDefaultInstance().close() // limpiamos realm
         limpiarBasura() // Por si acaso
         Log.i("Destroy", "Ejecutando OnDestroy")
     }

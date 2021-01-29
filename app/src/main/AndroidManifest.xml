@@ -47,10 +47,10 @@
                 android:resource="@color/colorAccent" />
         <!-- Ponemos de comienzo la actividad Splash que llama a la main -->
         <activity android:name=".SplashActivityActivity">
-           <!-- <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>-->
+            </intent-filter>
         </activity>
         <activity
                 android:name=".Actividades.MainActivity"
