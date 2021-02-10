@@ -183,8 +183,6 @@ Estas son las herramientas que más hemos usado en clase para la realización de
   height="45">
    <img src="https://user-images.githubusercontent.com/17736615/30980083-f7f8a860-a43c-11e7-939e-f6717a2210fe.png" 
   height="45">
-  <img src="https://cdn.iconscout.com/icon/free/png-256/github-153-675523.png" 
-    height="45">
  </p>
 
 ## Autor
